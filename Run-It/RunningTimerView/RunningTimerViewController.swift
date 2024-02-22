@@ -9,23 +9,39 @@ import UIKit
 
 
 class RunningTimerViewController: UIViewController {
+    
+    
+    //MARK: - properties
+    
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // 여기에 프로필에 관련된 코드를 추가합니다.
+
         view.backgroundColor = .white // 예시로 배경색을 지정합니다.
         
-        let label = UILabel()
-        label.text = "RunningTimerVC"
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(label)
+        let timetextLabel = UILabel()
+        timetextLabel.text = "RunningTimerVC"
+        timetextLabel.textAlignment = .center
+        timetextLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(timetextLabel)
         
         NSLayoutConstraint.activate([
-            label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            timetextLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            timetextLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
+        
+    }
+}
+
+extension RunningTimerViewController {
+    
+    private func addSubview() {
+        
+    }
+    
+    private func setUI() {
         
     }
 }
