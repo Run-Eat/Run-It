@@ -9,23 +9,31 @@
 /* Begin PBXBuildFile section */
 		C82CEDC92B86FCB200B619AD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDC82B86FCB200B619AD /* AppDelegate.swift */; };
 		C82CEDCB2B86FCB200B619AD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDCA2B86FCB200B619AD /* SceneDelegate.swift */; };
-		C82CEDCD2B86FCB200B619AD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDCC2B86FCB200B619AD /* ViewController.swift */; };
-		C82CEDD02B86FCB200B619AD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C82CEDCE2B86FCB200B619AD /* Main.storyboard */; };
+		C82CEDCD2B86FCB200B619AD /* MainTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDCC2B86FCB200B619AD /* MainTabBarViewController.swift */; };
 		C82CEDD32B86FCB200B619AD /* Run_It.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDD12B86FCB200B619AD /* Run_It.xcdatamodeld */; };
 		C82CEDD52B86FCB300B619AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C82CEDD42B86FCB300B619AD /* Assets.xcassets */; };
 		C82CEDD82B86FCB300B619AD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C82CEDD62B86FCB300B619AD /* LaunchScreen.storyboard */; };
+		C82CEDE02B86FD5100B619AD /* BookmarkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDDF2B86FD5100B619AD /* BookmarkViewController.swift */; };
+		C82CEDE22B86FD7C00B619AD /* RunningMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDE12B86FD7C00B619AD /* RunningMapViewController.swift */; };
+		C82CEDE42B86FD8800B619AD /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDE32B86FD8800B619AD /* ProfileViewController.swift */; };
+		C82CEDE92B86FDE800B619AD /* RunningTimerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDE82B86FDE800B619AD /* RunningTimerViewController.swift */; };
+		C82CEDEB2B86FDF700B619AD /* EventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDEA2B86FDF700B619AD /* EventViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		C82CEDC52B86FCB200B619AD /* Run-It.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Run-It.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C82CEDC82B86FCB200B619AD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C82CEDCA2B86FCB200B619AD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		C82CEDCC2B86FCB200B619AD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		C82CEDCF2B86FCB200B619AD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		C82CEDCC2B86FCB200B619AD /* MainTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarViewController.swift; sourceTree = "<group>"; };
 		C82CEDD22B86FCB200B619AD /* Run_It.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Run_It.xcdatamodel; sourceTree = "<group>"; };
 		C82CEDD42B86FCB300B619AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C82CEDD72B86FCB300B619AD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C82CEDD92B86FCB300B619AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C82CEDDF2B86FD5100B619AD /* BookmarkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkViewController.swift; sourceTree = "<group>"; };
+		C82CEDE12B86FD7C00B619AD /* RunningMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningMapViewController.swift; sourceTree = "<group>"; };
+		C82CEDE32B86FD8800B619AD /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		C82CEDE82B86FDE800B619AD /* RunningTimerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningTimerViewController.swift; sourceTree = "<group>"; };
+		C82CEDEA2B86FDF700B619AD /* EventViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,14 +68,66 @@
 			children = (
 				C82CEDC82B86FCB200B619AD /* AppDelegate.swift */,
 				C82CEDCA2B86FCB200B619AD /* SceneDelegate.swift */,
-				C82CEDCC2B86FCB200B619AD /* ViewController.swift */,
-				C82CEDCE2B86FCB200B619AD /* Main.storyboard */,
 				C82CEDD42B86FCB300B619AD /* Assets.xcassets */,
-				C82CEDD62B86FCB300B619AD /* LaunchScreen.storyboard */,
 				C82CEDD92B86FCB300B619AD /* Info.plist */,
+				C82CEDEE2B86FEAF00B619AD /* MainTabBarViewController */,
+				C82CEDE52B86FDBD00B619AD /* ProfileView */,
+				C82CEDE62B86FDC700B619AD /* RunningMapView */,
+				C82CEDE72B86FDD000B619AD /* BookmarkView */,
+				C82CEDEC2B86FE0400B619AD /* RunningTimerView */,
+				C82CEDED2B86FE1A00B619AD /* EventView */,
+				C82CEDD62B86FCB300B619AD /* LaunchScreen.storyboard */,
 				C82CEDD12B86FCB200B619AD /* Run_It.xcdatamodeld */,
 			);
 			path = "Run-It";
+			sourceTree = "<group>";
+		};
+		C82CEDE52B86FDBD00B619AD /* ProfileView */ = {
+			isa = PBXGroup;
+			children = (
+				C82CEDE32B86FD8800B619AD /* ProfileViewController.swift */,
+			);
+			path = ProfileView;
+			sourceTree = "<group>";
+		};
+		C82CEDE62B86FDC700B619AD /* RunningMapView */ = {
+			isa = PBXGroup;
+			children = (
+				C82CEDE12B86FD7C00B619AD /* RunningMapViewController.swift */,
+			);
+			path = RunningMapView;
+			sourceTree = "<group>";
+		};
+		C82CEDE72B86FDD000B619AD /* BookmarkView */ = {
+			isa = PBXGroup;
+			children = (
+				C82CEDDF2B86FD5100B619AD /* BookmarkViewController.swift */,
+			);
+			path = BookmarkView;
+			sourceTree = "<group>";
+		};
+		C82CEDEC2B86FE0400B619AD /* RunningTimerView */ = {
+			isa = PBXGroup;
+			children = (
+				C82CEDE82B86FDE800B619AD /* RunningTimerViewController.swift */,
+			);
+			path = RunningTimerView;
+			sourceTree = "<group>";
+		};
+		C82CEDED2B86FE1A00B619AD /* EventView */ = {
+			isa = PBXGroup;
+			children = (
+				C82CEDEA2B86FDF700B619AD /* EventViewController.swift */,
+			);
+			path = EventView;
+			sourceTree = "<group>";
+		};
+		C82CEDEE2B86FEAF00B619AD /* MainTabBarViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C82CEDCC2B86FCB200B619AD /* MainTabBarViewController.swift */,
+			);
+			path = MainTabBarViewController;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -130,7 +190,6 @@
 			files = (
 				C82CEDD82B86FCB300B619AD /* LaunchScreen.storyboard in Resources */,
 				C82CEDD52B86FCB300B619AD /* Assets.xcassets in Resources */,
-				C82CEDD02B86FCB200B619AD /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,24 +200,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C82CEDE92B86FDE800B619AD /* RunningTimerViewController.swift in Sources */,
 				C82CEDD32B86FCB200B619AD /* Run_It.xcdatamodeld in Sources */,
-				C82CEDCD2B86FCB200B619AD /* ViewController.swift in Sources */,
+				C82CEDCD2B86FCB200B619AD /* MainTabBarViewController.swift in Sources */,
 				C82CEDC92B86FCB200B619AD /* AppDelegate.swift in Sources */,
+				C82CEDE22B86FD7C00B619AD /* RunningMapViewController.swift in Sources */,
+				C82CEDEB2B86FDF700B619AD /* EventViewController.swift in Sources */,
+				C82CEDE42B86FD8800B619AD /* ProfileViewController.swift in Sources */,
 				C82CEDCB2B86FCB200B619AD /* SceneDelegate.swift in Sources */,
+				C82CEDE02B86FD5100B619AD /* BookmarkViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		C82CEDCE2B86FCB200B619AD /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C82CEDCF2B86FCB200B619AD /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		C82CEDD62B86FCB300B619AD /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -301,7 +357,6 @@
 				INFOPLIST_FILE = "Run-It/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -329,7 +384,6 @@
 				INFOPLIST_FILE = "Run-It/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
