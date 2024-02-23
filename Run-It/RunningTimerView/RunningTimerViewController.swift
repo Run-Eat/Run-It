@@ -155,6 +155,7 @@ class RunningTimerViewController: UIViewController {
     // MARK: - @objc
     @objc private func pauseRunning() {
         print("TappedButton - pauseRunning()")
+        showMyViewControllerInACustomizedSheet()
     }
     
     @objc func longPresspauseRunning(_ sender: UILongPressGestureRecognizer) {
@@ -171,9 +172,6 @@ class RunningTimerViewController: UIViewController {
         }
     }
     
-    @objc private func stopRunning() {
-        print("TappedButton - stopRunning()")
-    }
 }
 
 extension RunningTimerViewController {
