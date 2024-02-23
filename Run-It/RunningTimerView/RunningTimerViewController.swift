@@ -39,6 +39,9 @@ extension UIViewController {
 class RunningTimerViewController: UIViewController {
     
     //MARK: - UI properties
+    
+    let statusBarView = UIView()
+    
     let timeLabel: UILabel = {
         let label = UILabel()
         label.text = "시간"
@@ -137,14 +140,14 @@ class RunningTimerViewController: UIViewController {
 
         return button
     }()
-
-
+    
+    let bottomView = UIView()
     
     //MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
         addSubview()
+        setupUI()
         setLayout()
         
     }
@@ -177,13 +180,20 @@ extension RunningTimerViewController {
 
     // MARK: - setupUI
     private func setupUI() {
+
         view.backgroundColor = .systemGreen
+        statusBarView.backgroundColor = .systemGreen
+        bottomView.backgroundColor = .systemGreen
         
+        [statusBarView, bottomView].forEach { subView in view.addSubview(subView)
+        }
 
     }
 
     // MARK: - addSubview
     private func addSubview() {
+        
+        view.addSubview(statusBarView)
         
         view.addSubview(topContainer)
         topContainer.addSubview(timeLabel)
@@ -199,11 +209,18 @@ extension RunningTimerViewController {
         distanceContainer.addSubview(kilometerLabel)
         
         view.addSubview(pauseRunningButton)
+        
+        view.addSubview(bottomView)
 
     }
 
     // MARK: - Layout
     private func setLayout() {
+        
+        statusBarView.snp.makeConstraints { make in
+            make.leading.top.trailing.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.topMargin)
+        }
 
         timeLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(25)
@@ -272,6 +289,11 @@ extension RunningTimerViewController {
             make.centerX.equalToSuperview()
             make.width.equalTo(100)
             make.height.equalTo(100)
+        }
+        
+        bottomView.snp.makeConstraints { make in
+            make.leading.bottom.trailing.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.bottomMargin)
         }
 
     }
