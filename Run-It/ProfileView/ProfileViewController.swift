@@ -39,6 +39,13 @@ class ProfileViewController: UIViewController
     
     let totalDistance = 9999.99
     
+    let thisWeek_MonthDistance = 0
+    let lastWeek_MonthDistance = 0
+    let thisWeek_MonthPace = 0
+    let lastWeek_MonthPace = 0
+    let thisWeek_MonthRunningCount = 0
+    let lastWeek_MonthRunningCount = 0
+    
 // MARK: - UI 생성
     
     let scrollView: UIScrollView =
@@ -130,18 +137,20 @@ class ProfileViewController: UIViewController
         
         return button
     }()
+    lazy var thisWeek_MonthLabel = createLabel("이번 주", 15)
+    lazy var lastWeek_MonthLabel = createLabel("지난 주", 15)
     
-    let statsStackView: UIStackView =
-    {
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.spacing = 10
-        stackView.alignment = .center
-        stackView.distribution = .fill
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.backgroundColor = .green
-        return stackView
-    }()
+    lazy var distanceTextLabel = createLabel("거리(km)", 17)
+    lazy var thisWeek_MonthDistanceLabel = createLabel("\(thisWeek_MonthDistance) km", 17)
+    lazy var lastWeek_MonthDistanceLabel = createLabel("\(lastWeek_MonthDistance) km", 17)
+    
+    lazy var paceAveragTextLabel = createLabel("평균 페이스", 17)
+    lazy var thisWeek_MonthPaceLabel = createLabel("\(thisWeek_MonthPace) (분)", 17)
+    lazy var lastWeek_MonthPaceLabel = createLabel("\(lastWeek_MonthPace) (분)", 17)
+    
+    lazy var runningCountTextLabel = createLabel("활동", 17)
+    lazy var thisWeek_MonthRunningCountLabel = createLabel("\(thisWeek_MonthRunningCount)회", 17)
+    lazy var lastWeek_MonthRunningCountLabel = createLabel("\(lastWeek_MonthRunningCount)회", 17)
     
     
     
@@ -169,9 +178,20 @@ class ProfileViewController: UIViewController
         scrollView.addSubview(statsLabel)
         scrollView.addSubview(line)
         scrollView.addSubview(totalRunningDistanceLabel)
-        scrollView.addSubview(statsStackView)
         scrollView.addSubview(weeklyButton)
         scrollView.addSubview(monthlyButton)
+        scrollView.addSubview(thisWeek_MonthLabel)
+        scrollView.addSubview(lastWeek_MonthLabel)
+        scrollView.addSubview(distanceTextLabel)
+        scrollView.addSubview(thisWeek_MonthDistanceLabel)
+        scrollView.addSubview(lastWeek_MonthDistanceLabel)
+        scrollView.addSubview(paceAveragTextLabel)
+        scrollView.addSubview(thisWeek_MonthPaceLabel)
+        scrollView.addSubview(lastWeek_MonthPaceLabel)
+        scrollView.addSubview(runningCountTextLabel)
+        scrollView.addSubview(thisWeek_MonthRunningCountLabel)
+        scrollView.addSubview(lastWeek_MonthRunningCountLabel)
+        
     }
     
 // MARK: - 레이아웃
@@ -261,12 +281,70 @@ class ProfileViewController: UIViewController
             make.trailing.equalTo(weeklyButton.snp.trailing).offset(150)
         }
         
-        statsStackView.snp.makeConstraints
+        thisWeek_MonthLabel.snp.makeConstraints
         {   make in
-            make.top.equalTo(weeklyButton.snp.bottom).offset(20)
+            make.top.equalTo(weeklyButton.snp.bottom).offset(25)
             make.centerX.equalTo(view.snp.centerX)
-            make.width.equalTo(view.frame.width - 40)
-            make.height.equalTo(300)
+        }
+        
+        lastWeek_MonthLabel.snp.makeConstraints
+        {   make in
+            make.top.equalTo(weeklyButton.snp.bottom).offset(25)
+            make.leading.equalTo(thisWeek_MonthLabel.snp.leading).offset(120)
+        }
+        
+        distanceTextLabel.snp.makeConstraints
+        {   make in
+            make.top.equalTo(thisWeek_MonthLabel.snp.bottom).offset(30)
+            make.leading.equalTo(view.snp.leading).inset(20)
+        }
+        
+        thisWeek_MonthDistanceLabel.snp.makeConstraints
+        {   make in
+            make.top.equalTo(thisWeek_MonthLabel.snp.bottom).offset(30)
+            make.centerX.equalTo(view.snp.centerX)
+        }
+        
+        lastWeek_MonthDistanceLabel.snp.makeConstraints
+        {   make in
+            make.top.equalTo(thisWeek_MonthLabel.snp.bottom).offset(30)
+            make.leading.equalTo(thisWeek_MonthLabel.snp.leading).offset(120)
+        }
+        
+        paceAveragTextLabel.snp.makeConstraints
+        {   make in
+            make.top.equalTo(distanceTextLabel.snp.bottom).offset(30)
+            make.leading.equalTo(view.snp.leading).inset(20)
+        }
+        
+        thisWeek_MonthPaceLabel.snp.makeConstraints
+        {   make in
+            make.top.equalTo(thisWeek_MonthDistanceLabel.snp.bottom).offset(30)
+            make.centerX.equalTo(view.snp.centerX)
+        }
+        
+        lastWeek_MonthPaceLabel.snp.makeConstraints
+        {   make in
+            make.top.equalTo(lastWeek_MonthDistanceLabel.snp.bottom).offset(30)
+            make.leading.equalTo(thisWeek_MonthPaceLabel.snp.leading).offset(120)
+        }
+        
+        runningCountTextLabel.snp.makeConstraints
+        {   make in
+            make.top.equalTo(paceAveragTextLabel.snp.bottom).offset(30)
+            make.leading.equalTo(view.snp.leading).inset(20)
+        }
+        
+        thisWeek_MonthRunningCountLabel.snp.makeConstraints
+        {   make in
+            make.top.equalTo(thisWeek_MonthPaceLabel.snp.bottom).offset(30)
+            make.centerX.equalTo(view.snp.centerX)
+        }
+        
+        lastWeek_MonthRunningCountLabel.snp.makeConstraints
+        {   make in
+            make.top.equalTo(thisWeek_MonthPaceLabel.snp.bottom).offset(30)
+            make.leading.equalTo(thisWeek_MonthRunningCountLabel.snp.leading).offset(120)
         }
         
     }
@@ -293,14 +371,30 @@ class ProfileViewController: UIViewController
     
     @objc func touchedWeeklyButton()
     {
+        thisWeek_MonthLabel.text = "이번 주"
+        thisWeek_MonthDistanceLabel.text = "이번 주"
+        thisWeek_MonthPaceLabel.text = "이번 주"
+        thisWeek_MonthRunningCountLabel.text = "이번 주"
         
+        lastWeek_MonthLabel.text = "지난 주"
+        lastWeek_MonthDistanceLabel.text = "지난 주"
+        lastWeek_MonthPaceLabel.text = "지난 주"
+        lastWeek_MonthRunningCountLabel.text = "지난 주"
     }
     
     @objc func touchedMonthlyButton()
     {
+        thisWeek_MonthLabel.text = "이번 달"
+        thisWeek_MonthDistanceLabel.text = "이번 달"
+        thisWeek_MonthPaceLabel.text = "이번 달"
+        thisWeek_MonthRunningCountLabel.text = "이번 달"
         
+        lastWeek_MonthLabel.text = "지난 달"
+        lastWeek_MonthDistanceLabel.text = "지난 달"
+        lastWeek_MonthPaceLabel.text = "지난 달"
+        lastWeek_MonthRunningCountLabel.text = "지난 달"
     }
-    
+    // 추후 coreData 활용 데이터 관리 코드 작성
 }
 
 
