@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2B9888242B8B76A300B2BC74 /* EventViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888232B8B76A300B2BC74 /* EventViewCell.swift */; };
 		C82CEDC92B86FCB200B619AD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDC82B86FCB200B619AD /* AppDelegate.swift */; };
 		C82CEDCB2B86FCB200B619AD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDCA2B86FCB200B619AD /* SceneDelegate.swift */; };
 		C82CEDCD2B86FCB200B619AD /* MainTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDCC2B86FCB200B619AD /* MainTabBarViewController.swift */; };
@@ -29,6 +30,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2B9888232B8B76A300B2BC74 /* EventViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewCell.swift; sourceTree = "<group>"; };
 		C82CEDC52B86FCB200B619AD /* Run-It.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Run-It.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C82CEDC82B86FCB200B619AD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C82CEDCA2B86FCB200B619AD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				C82CEDEA2B86FDF700B619AD /* EventViewController.swift */,
+				2B9888232B8B76A300B2BC74 /* EventViewCell.swift */,
 			);
 			path = EventView;
 			sourceTree = "<group>";
@@ -231,6 +234,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C82CEDE92B86FDE800B619AD /* RunningTimerViewController.swift in Sources */,
+				2B9888242B8B76A300B2BC74 /* EventViewCell.swift in Sources */,
 				C82CEDD32B86FCB200B619AD /* Run_It.xcdatamodeld in Sources */,
 				C82CEDCD2B86FCB200B619AD /* MainTabBarViewController.swift in Sources */,
 				C82CEDC92B86FCB200B619AD /* AppDelegate.swift in Sources */,
