@@ -6,39 +6,18 @@
 //
 
 import UIKit
-import SwiftUI
 
 import SnapKit
-
-// MARK: - Preview
-struct PreView: PreviewProvider {
-    static var previews: some View {
-        RunningTimerViewController().toPreview()
-    }
-}
-
-#if DEBUG
-extension UIViewController {
-    private struct Preview: UIViewControllerRepresentable {
-        let viewController: UIViewController
-        
-        func makeUIViewController(context: Context) -> UIViewController {
-            return viewController
-        }
-        
-        func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        }
-    }
-    
-    func toPreview() -> some View {
-        Preview(viewController: self)
-    }
-}
-#endif
 
 class RunningTimerViewController: UIViewController {
     
     //MARK: - UI properties
+    
+    var distance: Double = 0
+    var time: Int = 0
+    var pace: Double = 0
+
+    var timer: Timer?
     
     let statusBarView = UIView()
     
@@ -90,7 +69,7 @@ class RunningTimerViewController: UIViewController {
     
     lazy var paceNumberLabel: UILabel = {
         let label = UILabel()
-        label.text = "0:00:00"
+        label.text = "0:00"
         label.textColor = .black
         label.font = UIFont.systemFont(ofSize: 45)
         return label
@@ -106,9 +85,10 @@ class RunningTimerViewController: UIViewController {
     
     lazy var distanceNumberLabel: UILabel = {
         let label = UILabel()
-        label.text = "0:00:00"
+        label.text = "0.00"
         label.textColor = .black
         label.font = UIFont.systemFont(ofSize: 100)
+        label.adjustsFontSizeToFitWidth = false
         return label
     }()
     
@@ -152,10 +132,21 @@ class RunningTimerViewController: UIViewController {
         
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        recordRunning()
+    }
+    
     // MARK: - @objc
     @objc private func pauseRunning() {
         print("TappedButton - pauseRunning()")
-        showMyViewControllerInACustomizedSheet()
+        timer?.invalidate()
+        let pauseRunningViewController = PauseRunningHalfModalViewController()
+        pauseRunningViewController.time = self.time
+        pauseRunningViewController.distance = self.distance
+        pauseRunningViewController.pace = self.pace
+        
+        showMyViewControllerInACustomizedSheet(pauseRunningViewController)
     }
     
     @objc func longPresspauseRunning(_ sender: UILongPressGestureRecognizer) {
@@ -172,11 +163,50 @@ class RunningTimerViewController: UIViewController {
         }
     }
     
+    
 }
 
 extension RunningTimerViewController {
+    
+    // MARK: - Running Timer Method
+    private func recordRunning() {
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            DispatchQueue.global(qos: .background).async {
+                self.time += 1
+                self.distance += 0.01 // RunningTimerManager과 연계해서 변경 필요
+                // 거리가 0.05km, 즉 50m 이상일 때만 페이스를 계산
+                self.pace = self.distance >= 0.05 ? Double(self.time) / self.distance : 0
+                
+                DispatchQueue.main.async {
+                    self.updateTimerUI()
+                }
+            }
+        }
+    }
+
+    private func updateTimerUI() {
+        let hours = time / 3600
+        let minutes = (time % 3600) / 60
+        let seconds = (time % 3600) % 60
+        timeNumberLabel.text = String(format: "%01d:%02d:%02d", hours, minutes, seconds)
+        
+        if self.distance >= 0.05 {
+            let paceMinutes = Int(pace) / 60
+            let paceSeconds = Int(pace) % 60
+            paceNumberLabel.text = String(format: "%02d:%02d", paceMinutes, paceSeconds)
+        } else {
+            // 거리가 50m 미만일 때는 페이스를 표시하지 않음
+            paceNumberLabel.text = "--:--"
+        }
+        
+        distanceNumberLabel.text = String(format: "%.2f", distance)
+    }
+
+
+
 
     // MARK: - setupUI
+    
     private func setupUI() {
 
         view.backgroundColor = .systemGreen
@@ -222,7 +252,7 @@ extension RunningTimerViewController {
 
         timeLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(25)
-            make.leading.equalToSuperview().offset(10)
+            make.leading.equalToSuperview().offset(2)
         }
 
         timeNumberLabel.snp.makeConstraints { make in
@@ -232,12 +262,12 @@ extension RunningTimerViewController {
 
         paceLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(25)
-            make.trailing.equalTo(topSplitLine.snp.leading).offset(100)
+            make.trailing.equalToSuperview().offset(-10)
         }
 
         paceNumberLabel.snp.makeConstraints { make in
             make.top.equalTo(paceLabel.snp.bottom).offset(40)
-            make.trailing.equalTo(topSplitLine.snp.leading).offset(175)
+            make.trailing.equalTo(paceLabel)
         }
 
         // topContainer의 정중앙에 수직의 선
@@ -275,7 +305,7 @@ extension RunningTimerViewController {
         }
         distanceNumberLabel.snp.makeConstraints { make in
             make.top.equalTo(distanceLabel.snp.bottom).offset(40)
-            make.leading.equalTo(distanceLabel)
+            make.centerX.equalToSuperview()
         }
         kilometerLabel.snp.makeConstraints { make in
             make.top.equalTo(distanceNumberLabel.snp.bottom).offset(5)

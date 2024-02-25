@@ -10,6 +10,10 @@ import UIKit
 class PauseRunningHalfModalViewController: UIViewController {
     //MARK: - UI properties
     
+    var time: Int = 0
+    var distance: Double = 0.0
+    var pace: Double = 0.0
+    
     let modaltopContainer : UIView = {
        let container = UIView()
         return container
@@ -81,7 +85,7 @@ class PauseRunningHalfModalViewController: UIViewController {
     
     lazy var modalpaceNumberLabel: UILabel = {
         let label = UILabel()
-        label.text = "0:00:00"
+        label.text = "0:00"
         label.textColor = .black
         label.font = UIFont.systemFont(ofSize: 45)
         return label
@@ -136,9 +140,23 @@ class PauseRunningHalfModalViewController: UIViewController {
         setupModalUI()
         setModalLayout()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateModalUI()
+    }
+
     // MARK: - @objc
     @objc private func restartRunning() {
         print("TappedButton - restartRunning()")
+        
+        let runningTimerViewController =  RunningTimerViewController()
+        runningTimerViewController.modalPresentationStyle = .fullScreen
+
+        runningTimerViewController.time = self.time
+        runningTimerViewController.distance = self.distance
+        runningTimerViewController.pace = self.pace
+        self.present(runningTimerViewController, animated: true)
     }
     
     @objc func modallongPressrestartRunning(_ sender: UILongPressGestureRecognizer) {
@@ -157,10 +175,61 @@ class PauseRunningHalfModalViewController: UIViewController {
     
     @objc private func stopRunning() {
         print("TappedButton - stopRunning()")
+        
+        let alert = UIAlertController(title: "운동을 완료하시겠습니까?", message: "근처 편의점에서 물 한잔 어떻신가요?", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "운동 완료하기", style: .default, handler: { _ in
+            let startRunningViewController =  StartRunningViewController()
+            startRunningViewController.modalPresentationStyle = .fullScreen
+            self.present(startRunningViewController, animated: true)
+        }))
+        
+        //        // Core Data context를 가져옵니다.
+        //        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        //
+        //        // RunningData Entity의 새 인스턴스를 생성합니다.
+        //        let runningData = NSEntityDescription.insertNewObject(forEntityName: "RunningData", into: context) as! RunningData
+        //
+        //        // 러닝 데이터를 설정합니다.
+        //        runningData.time = Int32(self.time)
+        //        runningData.distance = self.distance
+        //        runningData.pace = self.pace
+        //
+        //        // 변경 사항을 저장합니다.
+        //        do {
+        //            try context.save()
+        //        } catch {
+        //            // 저장에 실패한 경우 에러를 출력합니다.
+        //            print("Failed to save running data: \(error)")
+        //        }
+        
+//        self.dismiss(animated: true, completion: nil)
+        
+        alert.addAction(UIAlertAction(title: "취소하기", style: .destructive, handler: nil))
+
+        self.present(alert, animated: true, completion: nil)
     }
+    
+    
 }
 
 extension PauseRunningHalfModalViewController {
+    
+    // MARK: - Running Timer Method
+    private func updateModalUI() {
+        // 시간, 거리, 페이스를 포맷에 맞게 변환
+        let hours = time / 3600
+        let minutes = (time % 3600) / 60
+        let seconds = (time % 3600) % 60
+        let paceMinutes = Int(pace) / 60
+        let paceSeconds = Int(pace) % 60
+        
+        // 레이블의 텍스트를 설정
+        modaltimeNumberLabel.text = String(format: "%01d:%02d:%02d", hours, minutes, seconds)
+        modaldistanceNumberLabel.text = String(format: "%.2f", distance)
+        modalpaceNumberLabel.text = String(format: "%02d:%02d", paceMinutes, paceSeconds)
+    }
+    
 
     // MARK: - setupUI
     private func setupModalUI() {
@@ -224,7 +293,7 @@ extension PauseRunningHalfModalViewController {
             make.leading.equalTo(modaldistanceLabel)
         }
         modalkilometerLabel.snp.makeConstraints { make in
-            make.top.equalTo(modaldistanceNumberLabel.snp.bottom).offset(5)
+            make.top.equalTo(modaldistanceNumberLabel.snp.bottom).offset(2)
             make.centerX.equalTo(modaldistanceNumberLabel.snp.centerX)
         }
         
