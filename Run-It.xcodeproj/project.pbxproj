@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0BF25AC42B8B65A600B0C8CE /* RunningMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC32B8B65A600B0C8CE /* RunningMapView.swift */; };
+		0BF25AC62B8B73E600B0C8CE /* RunningMapMobel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC52B8B73E600B0C8CE /* RunningMapMobel.swift */; };
+		0BF25AC82B8BA87900B0C8CE /* AmenitiesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC72B8BA87900B0C8CE /* AmenitiesViewController.swift */; };
+		0BF25ACC2B8C724600B0C8CE /* DistanceCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25ACB2B8C724600B0C8CE /* DistanceCollectionViewCell.swift */; };
 		C82CEDC92B86FCB200B619AD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDC82B86FCB200B619AD /* AppDelegate.swift */; };
 		C82CEDCB2B86FCB200B619AD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDCA2B86FCB200B619AD /* SceneDelegate.swift */; };
 		C82CEDCD2B86FCB200B619AD /* MainTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDCC2B86FCB200B619AD /* MainTabBarViewController.swift */; };
@@ -29,6 +33,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0BF25AC32B8B65A600B0C8CE /* RunningMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningMapView.swift; sourceTree = "<group>"; };
+		0BF25AC52B8B73E600B0C8CE /* RunningMapMobel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningMapMobel.swift; sourceTree = "<group>"; };
+		0BF25AC72B8BA87900B0C8CE /* AmenitiesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmenitiesViewController.swift; sourceTree = "<group>"; };
+		0BF25ACB2B8C724600B0C8CE /* DistanceCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceCollectionViewCell.swift; sourceTree = "<group>"; };
 		C82CEDC52B86FCB200B619AD /* Run-It.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Run-It.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C82CEDC82B86FCB200B619AD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C82CEDCA2B86FCB200B619AD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -110,6 +118,10 @@
 			isa = PBXGroup;
 			children = (
 				C82CEDE12B86FD7C00B619AD /* RunningMapViewController.swift */,
+				0BF25AC32B8B65A600B0C8CE /* RunningMapView.swift */,
+				0BF25AC52B8B73E600B0C8CE /* RunningMapMobel.swift */,
+				0BF25AC72B8BA87900B0C8CE /* AmenitiesViewController.swift */,
+				0BF25ACB2B8C724600B0C8CE /* DistanceCollectionViewCell.swift */,
 			);
 			path = RunningMapView;
 			sourceTree = "<group>";
@@ -235,9 +247,13 @@
 				C82CEDCD2B86FCB200B619AD /* MainTabBarViewController.swift in Sources */,
 				C82CEDC92B86FCB200B619AD /* AppDelegate.swift in Sources */,
 				C82CEDE22B86FD7C00B619AD /* RunningMapViewController.swift in Sources */,
+				0BF25AC42B8B65A600B0C8CE /* RunningMapView.swift in Sources */,
 				C82CEDEB2B86FDF700B619AD /* EventViewController.swift in Sources */,
 				C82CEDE42B86FD8800B619AD /* ProfileViewController.swift in Sources */,
+				0BF25ACC2B8C724600B0C8CE /* DistanceCollectionViewCell.swift in Sources */,
 				C82CEDCB2B86FCB200B619AD /* SceneDelegate.swift in Sources */,
+				0BF25AC62B8B73E600B0C8CE /* RunningMapMobel.swift in Sources */,
+				0BF25AC82B8BA87900B0C8CE /* AmenitiesViewController.swift in Sources */,
 				C82CEDE02B86FD5100B619AD /* BookmarkViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
