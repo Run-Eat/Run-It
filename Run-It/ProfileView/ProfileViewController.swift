@@ -45,7 +45,15 @@ class ProfileViewController: UIViewController
     var lastWeek_MonthPace = 0
     var thisWeek_MonthRunningCount = 0
     var lastWeek_MonthRunningCount = 0
-    
+    var tableView = UITableView()
+    var userRecord: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "활동기록"
+        label.font = UIFont.systemFont(ofSize: 18)
+        label.textAlignment = .left
+        return label
+    }()
 // MARK: - UI 생성
     
     let scrollView: UIScrollView =
@@ -64,6 +72,7 @@ class ProfileViewController: UIViewController
         let button = UIButton(configuration: configuration)
         button.setTitleColor(UIColor.black, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(noticeButtonTapped), for: .touchUpInside)
         
         return button
     }()
@@ -164,6 +173,7 @@ class ProfileViewController: UIViewController
         scrollView.contentSize = CGSize(width: view.frame.width, height: 1500)
         addScrollView()
         setLayout()
+        setupProfileUI()
     }
     
 // MARK: - addSubView
@@ -378,7 +388,7 @@ class ProfileViewController: UIViewController
         thisWeek_MonthRunningCountLabel.text = "\(thisWeek_MonthRunningCount) 이번 주"
         
         lastWeek_MonthLabel.text = "지난 주"
-        lastWeek_MonthDistanceLabel.text = "\() 지난 주"
+        lastWeek_MonthDistanceLabel.text = "\(lastWeek_MonthDistance) 지난 주"
         lastWeek_MonthPaceLabel.text = "지난 주"
         lastWeek_MonthRunningCountLabel.text = "지난 주"
     }
@@ -394,6 +404,11 @@ class ProfileViewController: UIViewController
         lastWeek_MonthDistanceLabel.text = "지난 달"
         lastWeek_MonthPaceLabel.text = "지난 달"
         lastWeek_MonthRunningCountLabel.text = "지난 달"
+    }
+    
+    @objc func noticeButtonTapped(){
+        let eventVC = EventViewController()
+        self.navigationController?.pushViewController(eventVC, animated: true)
     }
     // 추후 coreData 활용 데이터 관리 코드 작성
 }
@@ -417,5 +432,58 @@ extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationCo
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController)
     {
         picker.dismiss(animated: true, completion: nil)
+    }
+}
+
+extension ProfileViewController {
+    // MARK: - UI Setup
+    func setupProfileUI() {
+        setupRecordListUI()
+    }
+    
+    func setupRecordListUI() {
+        view.addSubview(userRecord)
+        view.addSubview(tableView)
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.separatorStyle = .none
+        tableView.register(RecordViewCell.self, forCellReuseIdentifier: "RecordCell")
+        tableView.backgroundColor = UIColor.white
+        tableView.isScrollEnabled = false
+        
+        userRecord.snp.makeConstraints { make in
+            make.top.equalTo(runningCountTextLabel.snp.bottom).offset(30)
+            make.left.equalToSuperview().offset(20)
+            make.right.equalToSuperview().offset(-20)
+            make.height.equalTo(20)
+        }
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(userRecord.snp.bottom).offset(15)
+            make.left.equalToSuperview().offset(20)
+            make.right.equalToSuperview().offset(-20)
+            make.height.equalTo(4 * 120)
+        }
+    }
+}
+extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 4
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "RecordCell", for: indexPath) as? RecordViewCell else {
+            return UITableViewCell()
+        }
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 120
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let recordVC = RunningRecordViewController()
+        navigationController?.pushViewController(recordVC, animated: true)
     }
 }
