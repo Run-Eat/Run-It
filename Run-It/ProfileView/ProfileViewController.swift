@@ -39,12 +39,12 @@ class ProfileViewController: UIViewController
     
     let totalDistance = 9999.99
     
-    let thisWeek_MonthDistance = 0
-    let lastWeek_MonthDistance = 0
-    let thisWeek_MonthPace = 0
-    let lastWeek_MonthPace = 0
-    let thisWeek_MonthRunningCount = 0
-    let lastWeek_MonthRunningCount = 0
+    var thisWeek_MonthDistance = 0
+    var lastWeek_MonthDistance = 0
+    var thisWeek_MonthPace = 0
+    var lastWeek_MonthPace = 0
+    var thisWeek_MonthRunningCount = 0
+    var lastWeek_MonthRunningCount = 0
     
 // MARK: - UI 생성
     
@@ -372,12 +372,13 @@ class ProfileViewController: UIViewController
     @objc func touchedWeeklyButton()
     {
         thisWeek_MonthLabel.text = "이번 주"
-        thisWeek_MonthDistanceLabel.text = "이번 주"
-        thisWeek_MonthPaceLabel.text = "이번 주"
-        thisWeek_MonthRunningCountLabel.text = "이번 주"
+        thisWeek_MonthDistance = 100
+        thisWeek_MonthDistanceLabel.text = "\(thisWeek_MonthDistance) 이번 주"
+        thisWeek_MonthPaceLabel.text = "\(thisWeek_MonthPace) 이번 주"
+        thisWeek_MonthRunningCountLabel.text = "\(thisWeek_MonthRunningCount) 이번 주"
         
         lastWeek_MonthLabel.text = "지난 주"
-        lastWeek_MonthDistanceLabel.text = "지난 주"
+        lastWeek_MonthDistanceLabel.text = "\() 지난 주"
         lastWeek_MonthPaceLabel.text = "지난 주"
         lastWeek_MonthRunningCountLabel.text = "지난 주"
     }
