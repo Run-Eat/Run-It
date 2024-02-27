@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		2B9888242B8B76A300B2BC74 /* EventViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888232B8B76A300B2BC74 /* EventViewCell.swift */; };
+		0BF25AC42B8B65A600B0C8CE /* RunningMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC32B8B65A600B0C8CE /* RunningMapView.swift */; };
+		0BF25AC62B8B73E600B0C8CE /* RunningMapMobel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC52B8B73E600B0C8CE /* RunningMapMobel.swift */; };
+		0BF25AC82B8BA87900B0C8CE /* AmenitiesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC72B8BA87900B0C8CE /* AmenitiesViewController.swift */; };
+		0BF25ACC2B8C724600B0C8CE /* DistanceCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25ACB2B8C724600B0C8CE /* DistanceCollectionViewCell.swift */; };
+		2B98882A2B8C770900B2BC74 /* RecordViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888292B8C770900B2BC74 /* RecordViewCell.swift */; };
 		C82CEDC92B86FCB200B619AD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDC82B86FCB200B619AD /* AppDelegate.swift */; };
 		C82CEDCB2B86FCB200B619AD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDCA2B86FCB200B619AD /* SceneDelegate.swift */; };
 		C82CEDCD2B86FCB200B619AD /* MainTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDCC2B86FCB200B619AD /* MainTabBarViewController.swift */; };
@@ -19,6 +24,10 @@
 		C82CEDE42B86FD8800B619AD /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDE32B86FD8800B619AD /* ProfileViewController.swift */; };
 		C82CEDE92B86FDE800B619AD /* RunningTimerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDE82B86FDE800B619AD /* RunningTimerViewController.swift */; };
 		C82CEDEB2B86FDF700B619AD /* EventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDEA2B86FDF700B619AD /* EventViewController.swift */; };
+		C879CD032B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879CD022B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift */; };
+		C879CD052B8880F200DBFB82 /* HalfModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879CD042B8880F200DBFB82 /* HalfModal.swift */; };
+		C879CD072B8AA9B400DBFB82 /* StartRunningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879CD062B8AA9B400DBFB82 /* StartRunningViewController.swift */; };
+		C879CD092B8B405E00DBFB82 /* RunningTimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879CD082B8B405E00DBFB82 /* RunningTimerManager.swift */; };
 		C8D903EF2B8731870008C15E /* KakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = C8D903EE2B8731870008C15E /* KakaoSDK */; };
 		C8D903F12B8731870008C15E /* KakaoSDKAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C8D903F02B8731870008C15E /* KakaoSDKAuth */; };
 		C8D903F32B8731870008C15E /* KakaoSDKCert in Frameworks */ = {isa = PBXBuildFile; productRef = C8D903F22B8731870008C15E /* KakaoSDKCert */; };
@@ -31,6 +40,11 @@
 
 /* Begin PBXFileReference section */
 		2B9888232B8B76A300B2BC74 /* EventViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewCell.swift; sourceTree = "<group>"; };
+		0BF25AC32B8B65A600B0C8CE /* RunningMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningMapView.swift; sourceTree = "<group>"; };
+		0BF25AC52B8B73E600B0C8CE /* RunningMapMobel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningMapMobel.swift; sourceTree = "<group>"; };
+		0BF25AC72B8BA87900B0C8CE /* AmenitiesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmenitiesViewController.swift; sourceTree = "<group>"; };
+		0BF25ACB2B8C724600B0C8CE /* DistanceCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceCollectionViewCell.swift; sourceTree = "<group>"; };
+		2B9888292B8C770900B2BC74 /* RecordViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordViewCell.swift; sourceTree = "<group>"; };
 		C82CEDC52B86FCB200B619AD /* Run-It.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Run-It.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C82CEDC82B86FCB200B619AD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C82CEDCA2B86FCB200B619AD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -44,6 +58,10 @@
 		C82CEDE32B86FD8800B619AD /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		C82CEDE82B86FDE800B619AD /* RunningTimerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningTimerViewController.swift; sourceTree = "<group>"; };
 		C82CEDEA2B86FDF700B619AD /* EventViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
+		C879CD022B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseRunningHalfModalViewController.swift; sourceTree = "<group>"; };
+		C879CD042B8880F200DBFB82 /* HalfModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfModal.swift; sourceTree = "<group>"; };
+		C879CD062B8AA9B400DBFB82 /* StartRunningViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartRunningViewController.swift; sourceTree = "<group>"; };
+		C879CD082B8B405E00DBFB82 /* RunningTimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningTimerManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +122,7 @@
 			isa = PBXGroup;
 			children = (
 				C82CEDE32B86FD8800B619AD /* ProfileViewController.swift */,
+				2B9888292B8C770900B2BC74 /* RecordViewCell.swift */,
 			);
 			path = ProfileView;
 			sourceTree = "<group>";
@@ -112,6 +131,10 @@
 			isa = PBXGroup;
 			children = (
 				C82CEDE12B86FD7C00B619AD /* RunningMapViewController.swift */,
+				0BF25AC32B8B65A600B0C8CE /* RunningMapView.swift */,
+				0BF25AC52B8B73E600B0C8CE /* RunningMapMobel.swift */,
+				0BF25AC72B8BA87900B0C8CE /* AmenitiesViewController.swift */,
+				0BF25ACB2B8C724600B0C8CE /* DistanceCollectionViewCell.swift */,
 			);
 			path = RunningMapView;
 			sourceTree = "<group>";
@@ -127,7 +150,11 @@
 		C82CEDEC2B86FE0400B619AD /* RunningTimerView */ = {
 			isa = PBXGroup;
 			children = (
+				C879CD062B8AA9B400DBFB82 /* StartRunningViewController.swift */,
+				C879CD082B8B405E00DBFB82 /* RunningTimerManager.swift */,
 				C82CEDE82B86FDE800B619AD /* RunningTimerViewController.swift */,
+				C879CD042B8880F200DBFB82 /* HalfModal.swift */,
+				C879CD022B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift */,
 			);
 			path = RunningTimerView;
 			sourceTree = "<group>";
@@ -236,12 +263,21 @@
 				C82CEDE92B86FDE800B619AD /* RunningTimerViewController.swift in Sources */,
 				2B9888242B8B76A300B2BC74 /* EventViewCell.swift in Sources */,
 				C82CEDD32B86FCB200B619AD /* Run_It.xcdatamodeld in Sources */,
+				C879CD072B8AA9B400DBFB82 /* StartRunningViewController.swift in Sources */,
+				C879CD052B8880F200DBFB82 /* HalfModal.swift in Sources */,
 				C82CEDCD2B86FCB200B619AD /* MainTabBarViewController.swift in Sources */,
+				2B98882A2B8C770900B2BC74 /* RecordViewCell.swift in Sources */,
 				C82CEDC92B86FCB200B619AD /* AppDelegate.swift in Sources */,
+				C879CD092B8B405E00DBFB82 /* RunningTimerManager.swift in Sources */,
 				C82CEDE22B86FD7C00B619AD /* RunningMapViewController.swift in Sources */,
+				0BF25AC42B8B65A600B0C8CE /* RunningMapView.swift in Sources */,
 				C82CEDEB2B86FDF700B619AD /* EventViewController.swift in Sources */,
 				C82CEDE42B86FD8800B619AD /* ProfileViewController.swift in Sources */,
+				0BF25ACC2B8C724600B0C8CE /* DistanceCollectionViewCell.swift in Sources */,
 				C82CEDCB2B86FCB200B619AD /* SceneDelegate.swift in Sources */,
+				0BF25AC62B8B73E600B0C8CE /* RunningMapMobel.swift in Sources */,
+				0BF25AC82B8BA87900B0C8CE /* AmenitiesViewController.swift in Sources */,
+				C879CD032B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift in Sources */,
 				C82CEDE02B86FD5100B619AD /* BookmarkViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
