@@ -35,6 +35,9 @@ import UIKit
 import Firebase
 import FirebaseAuth
 import FirebaseCore
+import KakaoSDKCommon
+import KakaoSDKAuth
+import KakaoSDKUser
 
 class SignUpViewController: UIViewController
 {
@@ -138,6 +141,22 @@ class SignUpViewController: UIViewController
         return lineView
     }()
     
+    let kakaoLoginButton: UIButton =
+    {
+        let button = UIButton()
+        button.setImage(UIImage(named: "KakaoLogin"), for: .normal)
+        button.addTarget(self, action: #selector(touchedKakaoLoginButton), for: .touchUpInside)
+        return button
+    }()
+    
+    let appleLoginButton: UIButton =
+    {
+        let button = UIButton()
+        button.setImage(UIImage(named: "AppleLogin"), for: .normal)
+        button.addTarget(self, action: #selector(touchedAppleLoginButton), for: .touchUpInside)
+        return button
+    }()
+    
     let signUpButton: UIButton =
     {
         let button = UIButton()
@@ -186,6 +205,8 @@ class SignUpViewController: UIViewController
         view.addSubview(leftLine)
         view.addSubview(rightLine)
         view.addSubview(signUpButton)
+        view.addSubview(kakaoLoginButton)
+        view.addSubview(appleLoginButton)
         
         view.addSubview(id_pwLabel)
     }
@@ -260,6 +281,22 @@ class SignUpViewController: UIViewController
             make.height.equalTo(1)
         }
         
+        kakaoLoginButton.snp.makeConstraints
+        {   make in
+            make.top.equalTo(socialSignUpLabel.snp.bottom).offset(20)
+            make.centerX.equalTo(view.snp.centerX).offset(-35)
+            make.width.equalTo(40)
+            make.height.equalTo(40)
+        }
+        
+        appleLoginButton.snp.makeConstraints
+        {   make in
+            make.top.equalTo(socialSignUpLabel.snp.bottom).offset(20)
+            make.centerX.equalTo(view.snp.centerX).offset(35)
+            make.width.equalTo(40)
+            make.height.equalTo(40)
+        }
+        
         signUpButton.snp.makeConstraints
         {   make in
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
@@ -286,6 +323,16 @@ class SignUpViewController: UIViewController
     @objc func touchedSignUpButton()
     {
         createUser()
+    }
+    
+    @objc func touchedKakaoLoginButton()
+    {
+        
+    }
+    
+    @objc func touchedAppleLoginButton()
+    {
+        
     }
     
     @objc func keyboardExit()
