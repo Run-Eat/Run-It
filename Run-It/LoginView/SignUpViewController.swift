@@ -5,35 +5,38 @@
 //  Created by 석진 on 2/26/24.
 //
 
-//#if DEBUG
-//import SwiftUI
-//struct Preview: UIViewControllerRepresentable {
-//    
-//    // 여기 ViewController를 변경해주세요
-//    func makeUIViewController(context: Context) -> UIViewController {
-//        SignUpViewController()
-//    }
-//    
-//    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-//        // leave this empty
-//    }
-//}
-//
-//struct ViewController_PreviewProvider: PreviewProvider {
-//    static var previews: some View {
-//        Group {
-//            Preview()
-//                .edgesIgnoringSafeArea(.all)
-//                .previewDisplayName("Preview")
-//                .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro"))
-//        }
-//    }
-//}
-//#endif
+#if DEBUG
+import SwiftUI
+struct Preview: UIViewControllerRepresentable {
+    
+    // 여기 ViewController를 변경해주세요
+    func makeUIViewController(context: Context) -> UIViewController {
+        SignUpViewController()
+    }
+    
+    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+        // leave this empty
+    }
+}
+
+struct ViewController_PreviewProvider: PreviewProvider {
+    static var previews: some View {
+        Group {
+            Preview()
+                .edgesIgnoringSafeArea(.all)
+                .previewDisplayName("Preview")
+                .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro"))
+        }
+    }
+}
+#endif
 
 import UIKit
+import Firebase
+import FirebaseAuth
+import FirebaseCore
 
-class SignUpViewController: UIViewController 
+class SignUpViewController: UIViewController
 {
     var idValue = ""
     var pwValue = ""
@@ -66,7 +69,7 @@ class SignUpViewController: UIViewController
         return label
     }()
     
-    let idTextField: UITextField =
+    let emailTextfield: UITextField =
     {
         let textfield = UITextField()
         textfield.placeholder = "RUNIT@xxxxx.com"
@@ -135,7 +138,15 @@ class SignUpViewController: UIViewController
         return lineView
     }()
     
-    
+    let signUpButton: UIButton =
+    {
+        let button = UIButton()
+        button.setTitle("회원가입", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .systemBlue
+        button.addTarget(self, action: #selector(touchedSignUpButton), for: .touchUpInside)
+        return button
+    }()
     
     
     let id_pwLabel: UILabel =
@@ -156,7 +167,7 @@ class SignUpViewController: UIViewController
         addSubView()
         setLayout()
         
-        idTextField.delegate = self
+        emailTextfield.delegate = self
         pwTextField.delegate = self
        
     }
@@ -167,13 +178,14 @@ class SignUpViewController: UIViewController
         view.addSubview(cancelButton)
         view.addSubview(titleLabel)
         view.addSubview(explainLabel)
-        view.addSubview(idTextField)
+        view.addSubview(emailTextfield)
         view.addSubview(idExplainLabel)
         view.addSubview(pwTextField)
         view.addSubview(pwExplainLabel)
         view.addSubview(socialSignUpLabel)
         view.addSubview(leftLine)
         view.addSubview(rightLine)
+        view.addSubview(signUpButton)
         
         view.addSubview(id_pwLabel)
     }
@@ -182,13 +194,13 @@ class SignUpViewController: UIViewController
     {
         cancelButton.snp.makeConstraints
         {   make in
-            make.top.equalTo(view.snp.top).inset(70)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.trailing.equalTo(view.snp.trailing).inset(10)
         }
         
         titleLabel.snp.makeConstraints
         {   make in
-            make.top.equalTo(view.snp.top).inset(75)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).inset(10)
             make.centerX.equalTo(view.snp.centerX)
         }
         
@@ -198,7 +210,7 @@ class SignUpViewController: UIViewController
             make.leading.equalTo(view.snp.leading).inset(20)
         }
         
-        idTextField.snp.makeConstraints
+        emailTextfield.snp.makeConstraints
         {   make in
             make.top.equalTo(explainLabel.snp.bottom).offset(40)
             make.centerX.equalTo(view.snp.centerX)
@@ -208,7 +220,7 @@ class SignUpViewController: UIViewController
         
         idExplainLabel.snp.makeConstraints
         {   make in
-            make.top.equalTo(idTextField.snp.bottom).offset(7)
+            make.top.equalTo(emailTextfield.snp.bottom).offset(7)
             make.leading.equalTo(view.snp.leading).inset(25)
         }
         
@@ -248,9 +260,16 @@ class SignUpViewController: UIViewController
             make.height.equalTo(1)
         }
         
+        signUpButton.snp.makeConstraints
+        {   make in
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+            make.width.equalTo(view.snp.width)
+            make.height.equalTo(50)
+        }
+        
         id_pwLabel.snp.makeConstraints
         {   make in
-            make.top.equalTo(idTextField.snp.bottom).offset(300)
+            make.top.equalTo(emailTextfield.snp.bottom).offset(300)
             make.centerX.equalTo(view.snp.centerX)
             
         }
@@ -264,9 +283,35 @@ class SignUpViewController: UIViewController
         
     }
     
+    @objc func touchedSignUpButton()
+    {
+        createUser()
+    }
+    
     @objc func keyboardExit()
     {
         self.view.endEditing(true)
+    }
+    
+// MARK: - Firebase 유저 생성
+    func createUser()
+    {
+        guard let email = emailTextfield.text else { return }
+        guard let password = pwTextField.text else { return }
+        
+        Auth.auth().createUser(withEmail: email, password: password)
+        {   result,error in
+            
+            if let error = error
+            {
+                print(error)
+            }
+            
+            if let result = result
+            {
+                print(result)
+            }
+        }
     }
 }
 
@@ -280,7 +325,7 @@ extension SignUpViewController: UITextFieldDelegate
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool
     {
-        if textField == idTextField 
+        if textField == emailTextfield 
         {
             pwTextField.becomeFirstResponder()
         }
@@ -295,7 +340,7 @@ extension SignUpViewController: UITextFieldDelegate
     
     func textFieldDidEndEditing(_ textField: UITextField) 
     {
-        if textField == idTextField
+        if textField == emailTextfield
         {
             if let id = textField.text
             {
@@ -312,25 +357,8 @@ extension SignUpViewController: UITextFieldDelegate
         }
         
         id_pwLabel.text = "ID : \(idValue)\nPW : \(pwValue)"
-        print(idValue, pwValue)
     }
     
-    func creatToolbarExitButton(textFieldName: UITextField)
-    {
-        let toolbar = UIToolbar()
-        let exitButton = UIBarButtonItem()
-        
-        exitButton.title = "완료"
-        exitButton.target = self
-        exitButton.action = #selector(keyboardExit)
-        
-        toolbar.tintColor = .blue
-        toolbar.frame = CGRect(x: 0, y: 0, width: 0, height: 35)
-        toolbar.setItems([exitButton], animated: true)
-        
-        textFieldName.inputAccessoryView = toolbar
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        toolbar.setItems([flexSpace, exitButton], animated: true)
-    }
+    
     
 }
