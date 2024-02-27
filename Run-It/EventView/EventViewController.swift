@@ -38,7 +38,7 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
     // MARK: - UI Setup
     func setupUI() {
         view.backgroundColor = UIColor.white
-
+        
         navigationItem.title = "Event"
         
         tableView.register(EventViewCell.self, forCellReuseIdentifier: "EventCell")
