@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-
+		2B9888242B8B76A300B2BC74 /* EventViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888232B8B76A300B2BC74 /* EventViewCell.swift */; };
 		0BF25AC42B8B65A600B0C8CE /* RunningMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC32B8B65A600B0C8CE /* RunningMapView.swift */; };
 		0BF25AC62B8B73E600B0C8CE /* RunningMapMobel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC52B8B73E600B0C8CE /* RunningMapMobel.swift */; };
 		0BF25AC82B8BA87900B0C8CE /* AmenitiesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC72B8BA87900B0C8CE /* AmenitiesViewController.swift */; };
@@ -39,6 +39,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2B9888232B8B76A300B2BC74 /* EventViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewCell.swift; sourceTree = "<group>"; };
 		0BF25AC32B8B65A600B0C8CE /* RunningMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningMapView.swift; sourceTree = "<group>"; };
 		0BF25AC52B8B73E600B0C8CE /* RunningMapMobel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningMapMobel.swift; sourceTree = "<group>"; };
 		0BF25AC72B8BA87900B0C8CE /* AmenitiesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmenitiesViewController.swift; sourceTree = "<group>"; };
@@ -162,6 +163,7 @@
 			isa = PBXGroup;
 			children = (
 				C82CEDEA2B86FDF700B619AD /* EventViewController.swift */,
+				2B9888232B8B76A300B2BC74 /* EventViewCell.swift */,
 			);
 			path = EventView;
 			sourceTree = "<group>";
@@ -259,6 +261,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C82CEDE92B86FDE800B619AD /* RunningTimerViewController.swift in Sources */,
+				2B9888242B8B76A300B2BC74 /* EventViewCell.swift in Sources */,
 				C82CEDD32B86FCB200B619AD /* Run_It.xcdatamodeld in Sources */,
 				C879CD072B8AA9B400DBFB82 /* StartRunningViewController.swift in Sources */,
 				C879CD052B8880F200DBFB82 /* HalfModal.swift in Sources */,
