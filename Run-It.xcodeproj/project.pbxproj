@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-
 		0BF25AC42B8B65A600B0C8CE /* RunningMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC32B8B65A600B0C8CE /* RunningMapView.swift */; };
 		0BF25AC62B8B73E600B0C8CE /* RunningMapMobel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC52B8B73E600B0C8CE /* RunningMapMobel.swift */; };
 		0BF25AC82B8BA87900B0C8CE /* AmenitiesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC72B8BA87900B0C8CE /* AmenitiesViewController.swift */; };
-		0BF25ACC2B8C724600B0C8CE /* DistanceCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25ACB2B8C724600B0C8CE /* DistanceCollectionViewCell.swift */; };
+		0BF25ACE2B8DC1BA00B0C8CE /* DistanceCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25ACD2B8DC1BA00B0C8CE /* DistanceCollectionViewCell.swift */; };
+		0BF25AD22B8DF2AF00B0C8CE /* AmenitiesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AD12B8DF2AE00B0C8CE /* AmenitiesCollectionViewCell.swift */; };
 		2B98882A2B8C770900B2BC74 /* RecordViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888292B8C770900B2BC74 /* RecordViewCell.swift */; };
 		C82CEDC92B86FCB200B619AD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDC82B86FCB200B619AD /* AppDelegate.swift */; };
 		C82CEDCB2B86FCB200B619AD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDCA2B86FCB200B619AD /* SceneDelegate.swift */; };
@@ -42,7 +42,8 @@
 		0BF25AC32B8B65A600B0C8CE /* RunningMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningMapView.swift; sourceTree = "<group>"; };
 		0BF25AC52B8B73E600B0C8CE /* RunningMapMobel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningMapMobel.swift; sourceTree = "<group>"; };
 		0BF25AC72B8BA87900B0C8CE /* AmenitiesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmenitiesViewController.swift; sourceTree = "<group>"; };
-		0BF25ACB2B8C724600B0C8CE /* DistanceCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceCollectionViewCell.swift; sourceTree = "<group>"; };
+		0BF25ACD2B8DC1BA00B0C8CE /* DistanceCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceCollectionViewCell.swift; sourceTree = "<group>"; };
+		0BF25AD12B8DF2AE00B0C8CE /* AmenitiesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmenitiesCollectionViewCell.swift; sourceTree = "<group>"; };
 		2B9888292B8C770900B2BC74 /* RecordViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordViewCell.swift; sourceTree = "<group>"; };
 		C82CEDC52B86FCB200B619AD /* Run-It.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Run-It.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C82CEDC82B86FCB200B619AD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -133,7 +134,8 @@
 				0BF25AC32B8B65A600B0C8CE /* RunningMapView.swift */,
 				0BF25AC52B8B73E600B0C8CE /* RunningMapMobel.swift */,
 				0BF25AC72B8BA87900B0C8CE /* AmenitiesViewController.swift */,
-				0BF25ACB2B8C724600B0C8CE /* DistanceCollectionViewCell.swift */,
+				0BF25ACD2B8DC1BA00B0C8CE /* DistanceCollectionViewCell.swift */,
+				0BF25AD12B8DF2AE00B0C8CE /* AmenitiesCollectionViewCell.swift */,
 			);
 			path = RunningMapView;
 			sourceTree = "<group>";
@@ -258,6 +260,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0BF25AD22B8DF2AF00B0C8CE /* AmenitiesCollectionViewCell.swift in Sources */,
 				C82CEDE92B86FDE800B619AD /* RunningTimerViewController.swift in Sources */,
 				C82CEDD32B86FCB200B619AD /* Run_It.xcdatamodeld in Sources */,
 				C879CD072B8AA9B400DBFB82 /* StartRunningViewController.swift in Sources */,
@@ -270,9 +273,9 @@
 				0BF25AC42B8B65A600B0C8CE /* RunningMapView.swift in Sources */,
 				C82CEDEB2B86FDF700B619AD /* EventViewController.swift in Sources */,
 				C82CEDE42B86FD8800B619AD /* ProfileViewController.swift in Sources */,
-				0BF25ACC2B8C724600B0C8CE /* DistanceCollectionViewCell.swift in Sources */,
 				C82CEDCB2B86FCB200B619AD /* SceneDelegate.swift in Sources */,
 				0BF25AC62B8B73E600B0C8CE /* RunningMapMobel.swift in Sources */,
+				0BF25ACE2B8DC1BA00B0C8CE /* DistanceCollectionViewCell.swift in Sources */,
 				0BF25AC82B8BA87900B0C8CE /* AmenitiesViewController.swift in Sources */,
 				C879CD032B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift in Sources */,
 				C82CEDE02B86FD5100B619AD /* BookmarkViewController.swift in Sources */,

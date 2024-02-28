@@ -20,6 +20,11 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate{
     
     var runningButton: UIButton = {
         let button = UIButton()
+        var config = UIButton.Configuration.filled()
+        config.baseBackgroundColor = .black
+        config.cornerStyle = .capsule
+        config.image = UIImage(systemName: "figure.run")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .medium))
+        button.configuration = config
         button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 45
         
@@ -112,7 +117,6 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate{
     @objc func writeButtonAction() {
             
         let vc = AmenitiesViewController()
-        vc.view.backgroundColor = .white
         
         vc.modalPresentationStyle = .pageSheet
             
