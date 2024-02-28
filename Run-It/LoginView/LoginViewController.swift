@@ -315,25 +315,40 @@ class LoginViewController: UIViewController
         guard let email = emailTextField.text   else { return }
         guard let pw = pwTextField.text   else { return }
         
-        Auth.auth().signIn(withEmail: email, password: pw)
-        {   [self] authResult, error in
-            if authResult == nil
-            {
-                print("로그인 실패")
-                if let error = error
+        if email == "" || pw == ""
+        {
+            let alertController = UIAlertController(title: "로그인 실패", message: "이메일 또는 비밀번호를 입력해주세요.", preferredStyle: .alert)
+            let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
+            alertController.addAction(confirm)
+            self.present(alertController, animated: true, completion: nil)
+        }
+        
+        else
+        {
+            Auth.auth().signIn(withEmail: email, password: pw)
+            {   [self] authResult, error in
+                if authResult == nil
                 {
-                    print(error)
+                    print("로그인 실패")
+                    if let error = error
+                    {
+                        print(error)
+                        let alertController = UIAlertController(title: "로그인 실패", message: "이메일 또는 비밀번호가 올바르지 않습니다.", preferredStyle: .alert)
+                        let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
+                        alertController.addAction(confirm)
+                        self.present(alertController, animated: true, completion: nil)
+                    }
                 }
-            }
-            else if authResult != nil
-            {
-                print("로그인 성공")
-                
-                let VC = MainTabBarViewController()
-                VC.selectedIndex = 1
-                
-                VC.modalPresentationStyle = .fullScreen
-                present(VC, animated: true, completion: nil)
+                else if authResult != nil
+                {
+                    print("로그인 성공")
+                    
+                    let VC = MainTabBarViewController()
+                    VC.selectedIndex = 1
+                    
+                    VC.modalPresentationStyle = .fullScreen
+                    present(VC, animated: true, completion: nil)
+                }
             }
         }
     }
