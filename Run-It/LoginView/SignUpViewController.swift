@@ -74,16 +74,17 @@ class SignUpViewController: UIViewController
     
     let emailTextfield: UITextField =
     {
-        let textfield = UITextField()
-        textfield.placeholder = "RUNIT@xxxxx.com"
-        textfield.borderStyle = .roundedRect
-        textfield.keyboardType = .emailAddress
-        textfield.returnKeyType = .continue
-        textfield.isUserInteractionEnabled = true
-        textfield.isEnabled = true
-        textfield.autocorrectionType = .no
-        textfield.spellCheckingType = .no
-        return textfield
+        let textField = UITextField()
+        textField.placeholder = "RUNIT@xxxxx.com"
+        textField.borderStyle = .roundedRect
+        textField.keyboardType = .emailAddress
+        textField.returnKeyType = .continue
+        textField.isUserInteractionEnabled = true
+        textField.isEnabled = true
+        textField.autocapitalizationType = .none
+        textField.autocorrectionType = .no
+        textField.spellCheckingType = .no
+        return textField
     }()
     
     let idExplainLabel: UILabel =
@@ -97,16 +98,17 @@ class SignUpViewController: UIViewController
     
     let pwTextField: UITextField =
     {
-        let textfield = UITextField()
-        textfield.placeholder = "비밀번호 설정"
-        textfield.borderStyle = .roundedRect
-        textfield.keyboardType = .default
-        textfield.returnKeyType = .go
-        textfield.isUserInteractionEnabled = true
-        textfield.isEnabled = true
-        textfield.autocorrectionType = .no
-        textfield.spellCheckingType = .no
-        return textfield
+        let textField = UITextField()
+        textField.placeholder = "비밀번호 설정"
+        textField.borderStyle = .roundedRect
+        textField.keyboardType = .default
+        textField.returnKeyType = .go
+        textField.isUserInteractionEnabled = true
+        textField.isEnabled = true
+        textField.autocapitalizationType = .none
+        textField.autocorrectionType = .no
+        textField.spellCheckingType = .no
+        return textField
     }()
     
     let pwExplainLabel: UILabel =
@@ -116,6 +118,17 @@ class SignUpViewController: UIViewController
         label.font = UIFont.systemFont(ofSize: CGFloat(15))
         
         return label
+    }()
+    
+    let signUpButton: UIButton =
+    {
+        let button = UIButton()
+        button.setTitle("회원가입", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .systemTeal
+        button.layer.cornerRadius = 10
+        button.addTarget(self, action: #selector(touchedSignUpButton), for: .touchUpInside)
+        return button
     }()
     
     let socialSignUpLabel: UILabel =
@@ -157,15 +170,6 @@ class SignUpViewController: UIViewController
         return button
     }()
     
-    let signUpButton: UIButton =
-    {
-        let button = UIButton()
-        button.setTitle("회원가입", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .systemBlue
-        button.addTarget(self, action: #selector(touchedSignUpButton), for: .touchUpInside)
-        return button
-    }()
     
     
     let id_pwLabel: UILabel =
@@ -201,10 +205,10 @@ class SignUpViewController: UIViewController
         view.addSubview(idExplainLabel)
         view.addSubview(pwTextField)
         view.addSubview(pwExplainLabel)
+        view.addSubview(signUpButton)
         view.addSubview(socialSignUpLabel)
         view.addSubview(leftLine)
         view.addSubview(rightLine)
-        view.addSubview(signUpButton)
         view.addSubview(kakaoLoginButton)
         view.addSubview(appleLoginButton)
         
@@ -259,9 +263,17 @@ class SignUpViewController: UIViewController
             make.leading.equalTo(view.snp.leading).inset(25)
         }
         
-        socialSignUpLabel.snp.makeConstraints
+        signUpButton.snp.makeConstraints
         {   make in
             make.top.equalTo(pwExplainLabel.snp.bottom).offset(40)
+            make.centerX.equalTo(view.snp.centerX)
+            make.width.equalTo(250)
+            make.height.equalTo(40)
+        }
+        
+        socialSignUpLabel.snp.makeConstraints
+        {   make in
+            make.top.equalTo(signUpButton.snp.bottom).offset(40)
             make.centerX.equalTo(view.snp.centerX)
         }
         
@@ -297,13 +309,6 @@ class SignUpViewController: UIViewController
             make.height.equalTo(40)
         }
         
-        signUpButton.snp.makeConstraints
-        {   make in
-            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
-            make.width.equalTo(view.snp.width)
-            make.height.equalTo(50)
-        }
-        
         id_pwLabel.snp.makeConstraints
         {   make in
             make.top.equalTo(emailTextfield.snp.bottom).offset(300)
@@ -327,7 +332,21 @@ class SignUpViewController: UIViewController
     
     @objc func touchedKakaoLoginButton()
     {
+        if AuthApi.hasToken() {
+            UserApi.shared.accessTokenInfo { accessTokenInfo, error in
+                if let error = error {
+                    print("DEBUG: 카카오톡 토큰 가져오기 에러 \(error.localizedDescription)")
+                    self.kakaoLogin()
+                } else {
+                    // 토큰 유효성 체크 성공 (필요 시 토큰 갱신됨)
+                }
+            }
+        } 
         
+        else {
+            // 토큰이 없는 상태 로그인 필요
+            kakaoLogin()
+        }
     }
     
     @objc func touchedAppleLoginButton()
@@ -351,15 +370,101 @@ class SignUpViewController: UIViewController
             
             if let error = error
             {
+                print("사용자 생성 실패")
                 print(error)
             }
             
             if let result = result
             {
+                print("사용자 생성 성공")
                 print(result)
             }
         }
+        dismiss(animated: true)
     }
+    
+    func kakaoLogin()
+    {
+        if UserApi.isKakaoTalkLoginAvailable()
+        {
+            kakaoLoginInApp()
+        }
+        
+        else
+        {
+            kakaoLoginInWeb()
+        }
+    }
+    
+    func kakaoLoginInApp()
+    {
+        UserApi.shared.loginWithKakaoTalk
+        {   oauthToken, error in
+            if let error = error
+            {
+                print("카카오톡 로그인 실패")
+            }
+            
+            else
+            {
+                print("카카오톡 로그인 실패")
+                if let token = oauthToken
+                {
+                    self.createUserByKakao()
+                }
+            }
+        }
+    }
+    
+    func kakaoLoginInWeb()
+    {
+        UserApi.shared.loginWithKakaoAccount
+        {   oauthToken, error in
+            if let error = error
+            {
+                print("카카오톡 로그인 실패")
+            }
+            
+            else
+            {
+                if let token = oauthToken
+                {
+                    self.createUserByKakao()
+                }
+            }
+        }
+    }
+    
+    func createUserByKakao()
+    {
+        UserApi.shared.me()
+        {   user, error in
+            if let error = error
+            {
+                print("카카오 사용자 정보 가져오기 실패")
+            }
+            
+            else
+            {
+                print("카카오 사용자 정보 가져오기 성공")
+                Auth.auth().createUser(withEmail: (user?.kakaoAccount?.email)!, password: "\(String(describing: user?.id))")
+                {   result, error in
+                    if let error = error
+                    {
+                        print("사용자 생성 실패")
+                    }
+                    if let result = result
+                    {
+                        print("사용자 생성 성공")
+                        self.dismiss(animated: true)
+                    }
+                    
+                }
+            }
+        }
+    }
+        
+    
 }
 
 
