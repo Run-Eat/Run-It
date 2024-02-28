@@ -43,7 +43,7 @@ class LoginViewController: UIViewController
     
     let loginLogo = UIImageView(image: UIImage(named: "LoginLogo"))
     
-    let emailTextfield: UITextField =
+    let emailTextField: UITextField =
     {
         let textField = UITextField()
         textField.placeholder = "이메일 주소"
@@ -183,7 +183,7 @@ class LoginViewController: UIViewController
     func addSubView()
     {
         view.addSubview(loginLogo)
-        view.addSubview(emailTextfield)
+        view.addSubview(emailTextField)
         view.addSubview(pwTextField)
         view.addSubview(loginButton)
         view.addSubview(findEmailButton)
@@ -208,7 +208,7 @@ class LoginViewController: UIViewController
             make.height.equalTo(60)
         }
         
-        emailTextfield.snp.makeConstraints
+        emailTextField.snp.makeConstraints
         {   make in
             make.top.equalTo(loginLogo.snp.bottom).offset(40)
             make.centerX.equalTo(view.snp.centerX)
@@ -218,7 +218,7 @@ class LoginViewController: UIViewController
         
         pwTextField.snp.makeConstraints
         {   make in
-            make.top.equalTo(emailTextfield.snp.bottom).offset(20)
+            make.top.equalTo(emailTextField.snp.bottom).offset(20)
             make.centerX.equalTo(view.snp.centerX)
             make.width.equalTo(350)
             make.height.equalTo(40)
@@ -312,7 +312,7 @@ class LoginViewController: UIViewController
 // MARK: - Firebase 로그인
     func signInUser()
     {
-        guard let email = emailTextfield.text   else { return }
+        guard let email = emailTextField.text   else { return }
         guard let pw = pwTextField.text   else { return }
         
         Auth.auth().signIn(withEmail: email, password: pw)
@@ -330,6 +330,7 @@ class LoginViewController: UIViewController
                 print("로그인 성공")
                 
                 let VC = MainTabBarViewController()
+                VC.selectedIndex = 1
                 
                 VC.modalPresentationStyle = .fullScreen
                 present(VC, animated: true, completion: nil)
@@ -377,6 +378,73 @@ class LoginViewController: UIViewController
         
         VC.modalPresentationStyle = .fullScreen
         present(VC, animated: true, completion: nil)
+    }
+
+}
+
+
+// MARK: - TextFieldDelegate extension
+extension LoginViewController: UITextFieldDelegate
+{
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool
+    {
+        return true
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool
+    {
+        //  키보드 done 버튼 터치 시
+        if textField == emailTextField
+        {
+            pwTextField.becomeFirstResponder()
+        }
+        
+        else
+        {
+            textField.resignFirstResponder()
+        }
+        
+        return true
+    }
+    
+    //  키보드 바깥 터치 시
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?)
+    {
+        view.endEditing(true)
+    }
+    
+    //  키보드 툴 바
+    func addInputAccessoryForTextFields()
+    {
+        let toolbar = UIToolbar()
+        toolbar.barStyle = .default
+        toolbar.sizeToFit()
+        
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped))
+        let prevButton = UIBarButtonItem(title: "이전", style: .plain, target: self, action: #selector(prevButtonTapped))
+        let nextButton = UIBarButtonItem(title: "다음", style: .plain, target: self, action: #selector(nextButtonTapped))
+        
+        toolbar.items = [prevButton, nextButton, flexibleSpace, doneButton]
+        
+        emailTextField.inputAccessoryView = toolbar
+        pwTextField.inputAccessoryView = toolbar
+    }
+    
+    // 키보드 툴 바 버튼 함수
+    @objc func doneButtonTapped()
+    {
+        view.endEditing(true)
+    }
+        
+        @objc func prevButtonTapped()
+    {
+        emailTextField.becomeFirstResponder()
+    }
+        
+        @objc func nextButtonTapped()
+    {
+        pwTextField.becomeFirstResponder()
     }
 
 }

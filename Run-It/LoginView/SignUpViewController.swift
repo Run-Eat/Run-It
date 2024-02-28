@@ -72,7 +72,7 @@ class SignUpViewController: UIViewController
         return label
     }()
     
-    let emailTextfield: UITextField =
+    let emailTextField: UITextField =
     {
         let textField = UITextField()
         textField.placeholder = "RUNIT@xxxxx.com"
@@ -190,9 +190,10 @@ class SignUpViewController: UIViewController
         addSubView()
         setLayout()
         
-        emailTextfield.delegate = self
+        emailTextField.delegate = self
         pwTextField.delegate = self
        
+        addInputAccessoryForTextFields()
     }
 
 // MARK: - 레이아웃 지정
@@ -201,7 +202,7 @@ class SignUpViewController: UIViewController
         view.addSubview(cancelButton)
         view.addSubview(titleLabel)
         view.addSubview(explainLabel)
-        view.addSubview(emailTextfield)
+        view.addSubview(emailTextField)
         view.addSubview(idExplainLabel)
         view.addSubview(pwTextField)
         view.addSubview(pwExplainLabel)
@@ -235,7 +236,7 @@ class SignUpViewController: UIViewController
             make.leading.equalTo(view.snp.leading).inset(20)
         }
         
-        emailTextfield.snp.makeConstraints
+        emailTextField.snp.makeConstraints
         {   make in
             make.top.equalTo(explainLabel.snp.bottom).offset(40)
             make.centerX.equalTo(view.snp.centerX)
@@ -245,7 +246,7 @@ class SignUpViewController: UIViewController
         
         idExplainLabel.snp.makeConstraints
         {   make in
-            make.top.equalTo(emailTextfield.snp.bottom).offset(7)
+            make.top.equalTo(emailTextField.snp.bottom).offset(7)
             make.leading.equalTo(view.snp.leading).inset(25)
         }
         
@@ -311,7 +312,7 @@ class SignUpViewController: UIViewController
         
         id_pwLabel.snp.makeConstraints
         {   make in
-            make.top.equalTo(emailTextfield.snp.bottom).offset(300)
+            make.top.equalTo(appleLoginButton.snp.bottom).offset(50)
             make.centerX.equalTo(view.snp.centerX)
             
         }
@@ -362,7 +363,7 @@ class SignUpViewController: UIViewController
 // MARK: - Firebase 유저 생성
     func createUser()
     {
-        guard let email = emailTextfield.text else { return }
+        guard let email = emailTextField.text else { return }
         guard let password = pwTextField.text else { return }
         
         Auth.auth().createUser(withEmail: email, password: password)
@@ -467,7 +468,7 @@ class SignUpViewController: UIViewController
     
 }
 
-
+// MARK: - TextFieldDelegate extension
 extension SignUpViewController: UITextFieldDelegate
 {
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool 
@@ -477,7 +478,8 @@ extension SignUpViewController: UITextFieldDelegate
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool
     {
-        if textField == emailTextfield 
+        //  키보드 done 버튼 터치 시
+        if textField == emailTextField
         {
             pwTextField.becomeFirstResponder()
         }
@@ -490,9 +492,49 @@ extension SignUpViewController: UITextFieldDelegate
         return true
     }
     
+    //  키보드 바깥 터치 시
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?)
+    {
+        view.endEditing(true)
+    }
+    
+    //  키보드 툴 바
+    func addInputAccessoryForTextFields()
+    {
+        let toolbar = UIToolbar()
+        toolbar.barStyle = .default
+        toolbar.sizeToFit()
+        
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped))
+        let prevButton = UIBarButtonItem(title: "이전", style: .plain, target: self, action: #selector(prevButtonTapped))
+        let nextButton = UIBarButtonItem(title: "다음", style: .plain, target: self, action: #selector(nextButtonTapped))
+        
+        toolbar.items = [prevButton, nextButton, flexibleSpace, doneButton]
+        
+        emailTextField.inputAccessoryView = toolbar
+        pwTextField.inputAccessoryView = toolbar
+    }
+    
+    // 키보드 툴 바 버튼 함수
+    @objc func doneButtonTapped()
+    {
+        view.endEditing(true)
+    }
+        
+        @objc func prevButtonTapped()
+    {
+        emailTextField.becomeFirstResponder()
+    }
+        
+        @objc func nextButtonTapped()
+    {
+        pwTextField.becomeFirstResponder()
+    }
+    
     func textFieldDidEndEditing(_ textField: UITextField) 
     {
-        if textField == emailTextfield
+        if textField == emailTextField
         {
             if let id = textField.text
             {
@@ -510,7 +552,5 @@ extension SignUpViewController: UITextFieldDelegate
         
         id_pwLabel.text = "ID : \(idValue)\nPW : \(pwValue)"
     }
-    
-    
-    
+
 }
