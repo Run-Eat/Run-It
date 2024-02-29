@@ -60,7 +60,7 @@ class LoginViewController: UIViewController
         return textField
     }()
     
-    let pwTextField: UITextField =
+    let passwordTextField: UITextField =
     {
         let textField = UITextField()
         textField.placeholder = "비밀번호"
@@ -135,7 +135,6 @@ class LoginViewController: UIViewController
         let label = UILabel()
         label.text = "또는 소셜 계정으로 로그인"
         label.font = UIFont.systemFont(ofSize: CGFloat(14))
-        
         return label
     }()
     
@@ -186,7 +185,7 @@ class LoginViewController: UIViewController
     {
         view.addSubview(loginLogo)
         view.addSubview(emailTextField)
-        view.addSubview(pwTextField)
+        view.addSubview(passwordTextField)
         view.addSubview(loginButton)
         view.addSubview(findEmailButton)
         view.addSubview(resetPasswordButton)
@@ -218,7 +217,7 @@ class LoginViewController: UIViewController
             make.height.equalTo(40)
         }
         
-        pwTextField.snp.makeConstraints
+        passwordTextField.snp.makeConstraints
         {   make in
             make.top.equalTo(emailTextField.snp.bottom).offset(20)
             make.centerX.equalTo(view.snp.centerX)
@@ -228,7 +227,7 @@ class LoginViewController: UIViewController
         
         loginButton.snp.makeConstraints
         {   make in
-            make.top.equalTo(pwTextField.snp.bottom).offset(40)
+            make.top.equalTo(passwordTextField.snp.bottom).offset(40)
             make.centerX.equalTo(view.snp.centerX)
             make.width.equalTo(250)
             make.height.equalTo(40)
@@ -315,7 +314,7 @@ class LoginViewController: UIViewController
     @objc func touchedLoginButton()
     {
         guard let email = emailTextField.text   else { return }
-        guard let password = pwTextField.text   else { return }
+        guard let password = passwordTextField.text   else { return }
         signInUser(email: email, password: password)
     }
     
@@ -381,13 +380,15 @@ class LoginViewController: UIViewController
             self.present(alertController, animated: true, completion: nil)
         }
         
-        else if result == "succesLogin"
+        else if result == "successLogin"
         {
             let VC = MainTabBarViewController()
             VC.selectedIndex = 1
             
             VC.modalPresentationStyle = .fullScreen
             self.present(VC, animated: true, completion: nil)
+            emailTextField.text = ""
+            passwordTextField.text = ""
         }
     }
 }
@@ -405,7 +406,7 @@ extension LoginViewController: UITextFieldDelegate
         //  키보드 done 버튼 터치 시
         if textField == emailTextField
         {
-            pwTextField.becomeFirstResponder()
+            passwordTextField.becomeFirstResponder()
         }
         
         else
@@ -437,7 +438,7 @@ extension LoginViewController: UITextFieldDelegate
         toolbar.items = [prevButton, nextButton, flexibleSpace, doneButton]
         
         emailTextField.inputAccessoryView = toolbar
-        pwTextField.inputAccessoryView = toolbar
+        passwordTextField.inputAccessoryView = toolbar
     }
     
     // 키보드 툴 바 버튼 함수
@@ -453,7 +454,7 @@ extension LoginViewController: UITextFieldDelegate
         
         @objc func nextButtonTapped()
     {
-        pwTextField.becomeFirstResponder()
+        passwordTextField.becomeFirstResponder()
     }
 
 }

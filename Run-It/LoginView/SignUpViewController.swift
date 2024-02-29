@@ -41,8 +41,6 @@ import KakaoSDKUser
 
 class SignUpViewController: UIViewController
 {
-    var idValue = ""
-    var pwValue = ""
     
 // MARK: - UI 구성
     let cancelButton: UIButton =
@@ -92,11 +90,10 @@ class SignUpViewController: UIViewController
         let label = UILabel()
         label.text = "정확한 이메일을 입력해주세요"
         label.font = UIFont.systemFont(ofSize: CGFloat(15))
-        
         return label
     }()
     
-    let pwTextField: UITextField =
+    let passwordTextField: UITextField =
     {
         let textField = UITextField()
         textField.placeholder = "비밀번호 설정"
@@ -116,7 +113,6 @@ class SignUpViewController: UIViewController
         let label = UILabel()
         label.text = "비밀번호는 8 - 20자 이내로 입력해주세요"
         label.font = UIFont.systemFont(ofSize: CGFloat(15))
-        
         return label
     }()
     
@@ -136,7 +132,6 @@ class SignUpViewController: UIViewController
         let label = UILabel()
         label.text = "또는 소셜 계정으로 가입"
         label.font = UIFont.systemFont(ofSize: CGFloat(14))
-        
         return label
     }()
     
@@ -178,11 +173,10 @@ class SignUpViewController: UIViewController
         
         addSubView()
         setLayout()
+        addInputAccessoryForTextFields()
         
         emailTextField.delegate = self
-        pwTextField.delegate = self
-       
-        addInputAccessoryForTextFields()
+        passwordTextField.delegate = self
     }
 
 // MARK: - 레이아웃 지정
@@ -193,7 +187,7 @@ class SignUpViewController: UIViewController
         view.addSubview(explainLabel)
         view.addSubview(emailTextField)
         view.addSubview(idExplainLabel)
-        view.addSubview(pwTextField)
+        view.addSubview(passwordTextField)
         view.addSubview(pwExplainLabel)
         view.addSubview(signUpButton)
         view.addSubview(socialSignUpLabel)
@@ -237,7 +231,7 @@ class SignUpViewController: UIViewController
             make.leading.equalTo(view.snp.leading).inset(25)
         }
         
-        pwTextField.snp.makeConstraints
+        passwordTextField.snp.makeConstraints
         {   make in
             make.top.equalTo(idExplainLabel.snp.bottom).offset(20)
             make.centerX.equalTo(view.snp.centerX)
@@ -247,7 +241,7 @@ class SignUpViewController: UIViewController
         
         pwExplainLabel.snp.makeConstraints
         {   make in
-            make.top.equalTo(pwTextField.snp.bottom).offset(7)
+            make.top.equalTo(passwordTextField.snp.bottom).offset(7)
             make.leading.equalTo(view.snp.leading).inset(25)
         }
         
@@ -312,7 +306,7 @@ class SignUpViewController: UIViewController
     @objc func touchedSignUpButton()
     {
         guard let email = emailTextField.text else { return }
-        guard let password = pwTextField.text else { return }
+        guard let password = passwordTextField.text else { return }
         createUser(email: email, password: password)
 
         let alertController = UIAlertController(title: "알림", message: "회원가입이 완료되었습니다", preferredStyle: .alert)
@@ -367,7 +361,7 @@ extension SignUpViewController: UITextFieldDelegate
         //  키보드 done 버튼 터치 시
         if textField == emailTextField
         {
-            pwTextField.becomeFirstResponder()
+            passwordTextField.becomeFirstResponder()
         }
         
         else
@@ -399,7 +393,7 @@ extension SignUpViewController: UITextFieldDelegate
         toolbar.items = [prevButton, nextButton, flexibleSpace, doneButton]
         
         emailTextField.inputAccessoryView = toolbar
-        pwTextField.inputAccessoryView = toolbar
+        passwordTextField.inputAccessoryView = toolbar
     }
     
     // 키보드 툴 바 버튼 함수
@@ -415,27 +409,6 @@ extension SignUpViewController: UITextFieldDelegate
         
         @objc func nextButtonTapped()
     {
-        pwTextField.becomeFirstResponder()
+        passwordTextField.becomeFirstResponder()
     }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) 
-    {
-        if textField == emailTextField
-        {
-            if let id = textField.text
-            {
-                self.idValue = id
-            }
-        }
-        
-        else if textField == pwTextField
-        {
-            if let pw = textField.text
-            {
-                self.pwValue = pw
-            }
-        }
-        
-    }
-
 }

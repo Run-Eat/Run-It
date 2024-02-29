@@ -37,7 +37,7 @@ func signInUser(email: String, password: String)
                 else if authResult != nil
                 {
                     print("로그인 성공")
-                    sendTask(task: "succesLogin")
+                    sendTask(task: "successLogin")
                 }
             }
         }
@@ -147,7 +147,7 @@ func signInUser(email: String, password: String)
                 else if authResult != nil
                 {
                     print("로그인 성공")
-                    sendTask(task: "succesLogin")
+                    sendTask(task: "successLogin")
                 }
             }
         }
