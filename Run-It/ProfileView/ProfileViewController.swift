@@ -482,8 +482,8 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         return 120
     }
 
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        let recordVC = RunningRecordViewController()
-//        navigationController?.pushViewController(recordVC, animated: true)
-//    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let recordVC = RunningRecordViewController()
+        navigationController?.pushViewController(recordVC, animated: true)
+    }
 }
