@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import KakaoSDKAuth
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -20,8 +21,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowsScene)
         let tabBarController = UITabBarController()
         tabBarController.viewControllers = [BookmarkViewController(), RunningMapViewController(), ProfileViewController()]
-        window?.rootViewController = MainTabBarViewController()  // 코드작업 간 자신의 ViewController로 변경하되, github commit 간에는 unstaged 처리
+        window?.rootViewController = LoginViewController()  // 코드작업 간 자신의 ViewController로 변경하되, github commit 간에는 unstaged 처리
         window?.makeKeyAndVisible()
+    }
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) 
+    {
+        if let url = URLContexts.first?.url
+        {
+            if (AuthApi.isKakaoTalkLoginUrl(url))
+            {
+                _ = AuthController.handleOpenUrl(url: url)
+            }
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

@@ -7,32 +7,36 @@
 
 import UIKit
 import SnapKit
+import FirebaseAuth
+import FirebaseCore
+import KakaoSDKAuth
+import KakaoSDKUser
 
-#if DEBUG
-import SwiftUI
-struct Preview: UIViewControllerRepresentable {
-    
-    // 여기 ViewController를 변경해주세요
-    func makeUIViewController(context: Context) -> UIViewController {
-        ProfileViewController()
-    }
-    
-    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-        // leave this empty
-    }
-}
-
-struct ViewController_PreviewProvider: PreviewProvider {
-    static var previews: some View {
-        Group {
-            Preview()
-                .edgesIgnoringSafeArea(.all)
-                .previewDisplayName("Preview")
-                .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro"))
-        }
-    }
-}
-#endif
+//#if DEBUG
+//import SwiftUI
+//struct Preview: UIViewControllerRepresentable {
+//    
+//    // 여기 ViewController를 변경해주세요
+//    func makeUIViewController(context: Context) -> UIViewController {
+//        ProfileViewController()
+//    }
+//    
+//    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+//        // leave this empty
+//    }
+//}
+//
+//struct ViewController_PreviewProvider: PreviewProvider {
+//    static var previews: some View {
+//        Group {
+//            Preview()
+//                .edgesIgnoringSafeArea(.all)
+//                .previewDisplayName("Preview")
+//                .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro"))
+//        }
+//    }
+//}
+//#endif
 
 class ProfileViewController: UIViewController
 {
@@ -75,6 +79,19 @@ class ProfileViewController: UIViewController
         button.addTarget(self, action: #selector(noticeButtonTapped), for: .touchUpInside)
         
         return button
+    }()
+    
+    let logoutButton: UIButton =
+    {
+            let button = UIButton()
+            button.setTitle("로그아웃", for: .normal)
+            button.setTitleColor(.black, for: .normal)
+            button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
+            
+            button.addTarget(self, action: #selector(touchedLogoutButton), for: .touchUpInside)
+            button.translatesAutoresizingMaskIntoConstraints = false
+            
+            return button
     }()
     
     lazy var titleLabel = createLabel("내 정보", 35)
@@ -180,6 +197,7 @@ class ProfileViewController: UIViewController
     func addScrollView()
     {
         scrollView.addSubview(noticeButton)
+        scrollView.addSubview(logoutButton)
         scrollView.addSubview(titleLabel)
         scrollView.addSubview(profileImageView)
         scrollView.addSubview(imageSettingButton)
@@ -221,6 +239,13 @@ class ProfileViewController: UIViewController
             make.top.equalTo(scrollView.snp.top).inset(0)
             make.trailing.equalTo(view.snp.trailing).inset(20)
             make.width.equalTo(90)
+        }
+        
+        logoutButton.snp.makeConstraints
+        {   make in
+            make.centerY.equalTo(noticeButton.snp.centerY)
+            make.leading.equalTo(view.snp.leading).inset(20)
+            make.width.equalTo(80)
         }
         
         titleLabel.snp.makeConstraints
@@ -370,13 +395,50 @@ class ProfileViewController: UIViewController
         return label
     }
     
-    // MARK: - 버튼 함수
+// MARK: - 로그아웃 함수
+    func kakaoLogout()
+    {
+        // 사용자 액세스 토큰과 리프레시 토큰을 모두 만료시켜, 더 이상 해당 사용자 정보로 카카오 API를 호출할 수 없도록 합니다.
+        UserApi.shared.logout {(error) in
+            if let error = error
+            {
+                print(error)
+            }
+            else
+            {
+                print("logout() success.")
+            }
+        }
+    }
+    
+    func emailLogout()
+    {
+        let firebaseAuth = Auth.auth()
+        do
+        {
+            try firebaseAuth.signOut()
+            print("로그아웃 완료")
+        }
+        catch let signOutError as NSError
+        {
+            print("로그아웃 에러")
+        }
+    }
+    
+// MARK: - 버튼 함수
     @objc func selectImage()
     {
         let imagePickerController = UIImagePickerController()
         imagePickerController.delegate = self
         imagePickerController.sourceType = .photoLibrary
         present(imagePickerController, animated: true, completion: nil)
+    }
+    
+    @objc func touchedLogoutButton()
+    {
+        kakaoLogout()
+        emailLogout()
+        dismiss(animated: true)
     }
     
     @objc func touchedWeeklyButton()
@@ -483,7 +545,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let recordVC = RunningRecordViewController()
-        navigationController?.pushViewController(recordVC, animated: true)
+//        let recordVC = RunningRecordViewController()
+//        navigationController?.pushViewController(recordVC, animated: true)
     }
 }
