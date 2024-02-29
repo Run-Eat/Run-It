@@ -13,6 +13,8 @@
 		0BF25ACC2B8C724600B0C8CE /* DistanceCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25ACB2B8C724600B0C8CE /* DistanceCollectionViewCell.swift */; };
 		2B9888242B8B76A300B2BC74 /* EventViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888232B8B76A300B2BC74 /* EventViewCell.swift */; };
 		2B98882A2B8C770900B2BC74 /* RecordViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888292B8C770900B2BC74 /* RecordViewCell.swift */; };
+		2B9888472B904D8500B2BC74 /* RunningRecordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888462B904D8500B2BC74 /* RunningRecordViewController.swift */; };
+		2B9888552B90C7AC00B2BC74 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888542B90C7AC00B2BC74 /* CoreDataManager.swift */; };
 		6C7A43E32B8C903100A14291 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7A43E22B8C903100A14291 /* LoginViewController.swift */; };
 		6C7A43E52B8C904500A14291 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7A43E42B8C904500A14291 /* SignUpViewController.swift */; };
 		6C7A43E82B8DA63A00A14291 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6C7A43E72B8DA63A00A14291 /* GoogleService-Info.plist */; };
@@ -45,7 +47,6 @@
 		6CBBE2D52B8DB7C100F909EE /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 6CBBE2D42B8DB7C100F909EE /* FirebaseStorageCombine-Community */; };
 		6CF4D5FE2B90669A0069A9B2 /* SignupVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CF4D5FD2B9066990069A9B2 /* SignupVM.swift */; };
 		6CF4D6002B9073A10069A9B2 /* LoginVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CF4D5FF2B9073A10069A9B2 /* LoginVM.swift */; };
-		2B9888472B904D8500B2BC74 /* RunningRecordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888462B904D8500B2BC74 /* RunningRecordViewController.swift */; };
 		C82CEDC92B86FCB200B619AD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDC82B86FCB200B619AD /* AppDelegate.swift */; };
 		C82CEDCB2B86FCB200B619AD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDCA2B86FCB200B619AD /* SceneDelegate.swift */; };
 		C82CEDCD2B86FCB200B619AD /* MainTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDCC2B86FCB200B619AD /* MainTabBarViewController.swift */; };
@@ -78,12 +79,13 @@
 		0BF25ACB2B8C724600B0C8CE /* DistanceCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceCollectionViewCell.swift; sourceTree = "<group>"; };
 		2B9888232B8B76A300B2BC74 /* EventViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewCell.swift; sourceTree = "<group>"; };
 		2B9888292B8C770900B2BC74 /* RecordViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordViewCell.swift; sourceTree = "<group>"; };
+		2B9888462B904D8500B2BC74 /* RunningRecordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningRecordViewController.swift; sourceTree = "<group>"; };
+		2B9888542B90C7AC00B2BC74 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		6C7A43E22B8C903100A14291 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		6C7A43E42B8C904500A14291 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		6C7A43E72B8DA63A00A14291 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6CF4D5FD2B9066990069A9B2 /* SignupVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupVM.swift; sourceTree = "<group>"; };
 		6CF4D5FF2B9073A10069A9B2 /* LoginVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVM.swift; sourceTree = "<group>"; };
-		2B9888462B904D8500B2BC74 /* RunningRecordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningRecordViewController.swift; sourceTree = "<group>"; };
 		C82CEDC52B86FCB200B619AD /* Run-It.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Run-It.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C82CEDC82B86FCB200B619AD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C82CEDCA2B86FCB200B619AD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -193,6 +195,7 @@
 				C82CEDED2B86FE1A00B619AD /* EventView */,
 				C82CEDD62B86FCB300B619AD /* LaunchScreen.storyboard */,
 				C82CEDD12B86FCB200B619AD /* Run_It.xcdatamodeld */,
+				2B9888542B90C7AC00B2BC74 /* CoreDataManager.swift */,
 			);
 			path = "Run-It";
 			sourceTree = "<group>";
@@ -375,6 +378,7 @@
 				C82CEDD32B86FCB200B619AD /* Run_It.xcdatamodeld in Sources */,
 				C879CD072B8AA9B400DBFB82 /* StartRunningViewController.swift in Sources */,
 				C879CD052B8880F200DBFB82 /* HalfModal.swift in Sources */,
+				2B9888552B90C7AC00B2BC74 /* CoreDataManager.swift in Sources */,
 				C82CEDCD2B86FCB200B619AD /* MainTabBarViewController.swift in Sources */,
 				2B98882A2B8C770900B2BC74 /* RecordViewCell.swift in Sources */,
 				C82CEDC92B86FCB200B619AD /* AppDelegate.swift in Sources */,
