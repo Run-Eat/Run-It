@@ -5,31 +5,31 @@
 //  Created by 석진 on 2/26/24.
 //
 
-#if DEBUG
-import SwiftUI
-struct Preview: UIViewControllerRepresentable {
-    
-    // 여기 ViewController를 변경해주세요
-    func makeUIViewController(context: Context) -> UIViewController {
-        SignUpViewController()
-    }
-    
-    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-        // leave this empty
-    }
-}
-
-struct ViewController_PreviewProvider: PreviewProvider {
-    static var previews: some View {
-        Group {
-            Preview()
-                .edgesIgnoringSafeArea(.all)
-                .previewDisplayName("Preview")
-                .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro"))
-        }
-    }
-}
-#endif
+//#if DEBUG
+//import SwiftUI
+//struct Preview: UIViewControllerRepresentable {
+//    
+//    // 여기 ViewController를 변경해주세요
+//    func makeUIViewController(context: Context) -> UIViewController {
+//        SignUpViewController()
+//    }
+//    
+//    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+//        // leave this empty
+//    }
+//}
+//
+//struct ViewController_PreviewProvider: PreviewProvider {
+//    static var previews: some View {
+//        Group {
+//            Preview()
+//                .edgesIgnoringSafeArea(.all)
+//                .previewDisplayName("Preview")
+//                .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro"))
+//        }
+//    }
+//}
+//#endif
 
 import UIKit
 import Firebase
@@ -169,8 +169,6 @@ class SignUpViewController: UIViewController
         button.addTarget(self, action: #selector(touchedAppleLoginButton), for: .touchUpInside)
         return button
     }()
-    
-    
     
     let id_pwLabel: UILabel =
     {
@@ -321,9 +319,12 @@ class SignUpViewController: UIViewController
 // MARK: - 버튼 함수
     @objc func cancelSignUp()
     {
-        
-        dismiss(animated: true)
-        
+        let alertController = UIAlertController(title: "알림", message: "회원가입을 중단하시겠습니까?", preferredStyle: .alert)
+        let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
+        let confirm = UIAlertAction(title: "확인", style: .default) { _ in self.dismiss(animated: true) }
+        alertController.addAction(cancel)
+        alertController.addAction(confirm)
+        self.present(alertController, animated: true, completion: nil)
     }
     
     @objc func touchedSignUpButton()
@@ -333,18 +334,25 @@ class SignUpViewController: UIViewController
     
     @objc func touchedKakaoLoginButton()
     {
-        if AuthApi.hasToken() {
-            UserApi.shared.accessTokenInfo { accessTokenInfo, error in
-                if let error = error {
+        if AuthApi.hasToken() 
+        {
+            UserApi.shared.accessTokenInfo
+            {   accessTokenInfo, error in
+                if let error = error
+                {
                     print("DEBUG: 카카오톡 토큰 가져오기 에러 \(error.localizedDescription)")
                     self.kakaoLogin()
-                } else {
+                } 
+                
+                else
+                {
                     // 토큰 유효성 체크 성공 (필요 시 토큰 갱신됨)
                 }
             }
         } 
         
-        else {
+        else 
+        {
             // 토큰이 없는 상태 로그인 필요
             kakaoLogin()
         }
@@ -352,7 +360,7 @@ class SignUpViewController: UIViewController
     
     @objc func touchedAppleLoginButton()
     {
-        
+        // 추후 애플 로그인 구현
     }
     
     @objc func keyboardExit()
@@ -382,9 +390,14 @@ class SignUpViewController: UIViewController
             }
         }
         dismiss(animated: true)
+        
+        let VC = SignUpViewController()
+        
+        VC.modalPresentationStyle = .fullScreen
+        present(VC, animated: true, completion: nil)
     }
     
-    func kakaoLogin()
+    func kakaoLogin()   // 카카오 로그인
     {
         if UserApi.isKakaoTalkLoginAvailable()
         {
@@ -397,7 +410,7 @@ class SignUpViewController: UIViewController
         }
     }
     
-    func kakaoLoginInApp()
+    func kakaoLoginInApp()  // 카카오톡 앱이 설치되어있을 경우
     {
         UserApi.shared.loginWithKakaoTalk
         {   oauthToken, error in
@@ -417,7 +430,7 @@ class SignUpViewController: UIViewController
         }
     }
     
-    func kakaoLoginInWeb()
+    func kakaoLoginInWeb()  // 카카오톡 앱이 설치되어있지 않거나 열수 없는 경우
     {
         UserApi.shared.loginWithKakaoAccount
         {   oauthToken, error in
@@ -445,10 +458,15 @@ class SignUpViewController: UIViewController
                 print("카카오 사용자 정보 가져오기 실패")
             }
             
+            
             else
             {
                 print("카카오 사용자 정보 가져오기 성공")
-                Auth.auth().createUser(withEmail: (user?.kakaoAccount?.email)!, password: "\(String(describing: user?.id))")
+                
+                guard let email = user?.kakaoAccount?.email else { return }
+                guard let pw = user?.id else { return }
+                
+                Auth.auth().createUser(withEmail: email, password: "\(pw)")
                 {   result, error in
                     if let error = error
                     {
@@ -457,6 +475,7 @@ class SignUpViewController: UIViewController
                     if let result = result
                     {
                         print("사용자 생성 성공")
+                        
                         self.dismiss(animated: true)
                     }
                     
@@ -465,7 +484,6 @@ class SignUpViewController: UIViewController
         }
     }
         
-    
 }
 
 // MARK: - TextFieldDelegate extension
@@ -550,7 +568,6 @@ extension SignUpViewController: UITextFieldDelegate
             }
         }
         
-        id_pwLabel.text = "ID : \(idValue)\nPW : \(pwValue)"
     }
 
 }

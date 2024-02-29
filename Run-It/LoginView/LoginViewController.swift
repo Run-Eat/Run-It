@@ -37,6 +37,8 @@ import UIKit
 import SnapKit
 import FirebaseAuth
 import FirebaseCore
+import KakaoSDKAuth
+import KakaoSDKUser
 
 class LoginViewController: UIViewController
 {
@@ -175,7 +177,7 @@ class LoginViewController: UIViewController
         
         addSubView()
         setLayout()
-
+        addInputAccessoryForTextFields()
        
     }
 
@@ -353,6 +355,125 @@ class LoginViewController: UIViewController
         }
     }
     
+    func kakaoLogin()
+    {
+        if AuthApi.hasToken()
+        {
+            UserApi.shared.accessTokenInfo
+            {   _, error in
+                if let error = error    // 토큰이 유효하지 않은 경우
+                {
+                    self.openKakaoService()
+                }
+                
+                else    // 토큰이 유효한 경우
+                {
+                    self.bringKakaoInfo()
+                }
+                
+            }
+        }
+        
+        else    // 토큰이 만료된 경우
+        {
+            self.openKakaoService()
+        }
+    }
+    
+    func openKakaoService()   // 카카오 서비스 열기
+    {
+        if UserApi.isKakaoTalkLoginAvailable()
+        {
+            kakaoLoginInApp()
+        }
+        
+        else
+        {
+            kakaoLoginInWeb()
+            bringKakaoInfo()
+        }
+    }
+    
+    func kakaoLoginInApp()  // 카카오톡 앱이 설치되어있을 경우
+    {
+        UserApi.shared.loginWithKakaoTalk
+        {   oauthToken, error in
+            if let error = error
+            {
+                print("카카오톡 로그인 실패")
+            }
+            
+            else
+            {
+                if let token = oauthToken
+                {
+                    self.bringKakaoInfo()
+                }
+            }
+        }
+    }
+    
+    func kakaoLoginInWeb()  // 카카오톡 앱이 설치되어있지 않거나 열수 없는 경우
+    {
+        UserApi.shared.loginWithKakaoAccount
+        {   oauthToken, error in
+            if let error = error
+            {
+                print("카카오톡 로그인 실패")
+            }
+            
+            else
+            {
+                if let token = oauthToken
+                {
+                    self.bringKakaoInfo()
+                }
+            }
+        }
+    }
+    
+    func bringKakaoInfo()
+    {
+        UserApi.shared.me
+        {   user, error in
+            if let error = error
+            {
+                print("카카오 사용자 정보 불러오기 실패")
+                return
+            }
+            
+            guard let email = user?.kakaoAccount?.email else { return }
+            guard let pw = user?.id else { return }
+            
+            Auth.auth().signIn(withEmail: email, password: "\(pw)")
+            {   [self] authResult, error in
+                if authResult == nil
+                {
+                    print("로그인 실패")
+                    if let error = error
+                    {
+                        print(error)
+                        let alertController = UIAlertController(title: "로그인 실패", message: "이메일 또는 비밀번호가 올바르지 않습니다.", preferredStyle: .alert)
+                        let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
+                        alertController.addAction(confirm)
+                        self.present(alertController, animated: true, completion: nil)
+                    }
+                }
+                
+                else if authResult != nil
+                {
+                    print("로그인 성공")
+                    
+                    let VC = MainTabBarViewController()
+                    VC.selectedIndex = 1
+                    
+                    VC.modalPresentationStyle = .fullScreen
+                    present(VC, animated: true, completion: nil)
+                }
+            }
+        }
+    }
+    
 // MARK: - 버튼 함수
     @objc func touchedLoginButton()
     {
@@ -361,12 +482,12 @@ class LoginViewController: UIViewController
     
     @objc func touchedKakaoLoginButton()
     {
-        
+        kakaoLogin()
     }
     
     @objc func touchedAppleLoginButton()
     {
-        
+        // 추후 애플로그인 구현
     }
     
     @objc func touchedFindEmailButton()
