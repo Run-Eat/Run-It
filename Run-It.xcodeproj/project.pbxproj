@@ -7,12 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2B9888242B8B76A300B2BC74 /* EventViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888232B8B76A300B2BC74 /* EventViewCell.swift */; };
 		0BF25AC42B8B65A600B0C8CE /* RunningMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC32B8B65A600B0C8CE /* RunningMapView.swift */; };
 		0BF25AC62B8B73E600B0C8CE /* RunningMapMobel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC52B8B73E600B0C8CE /* RunningMapMobel.swift */; };
 		0BF25AC82B8BA87900B0C8CE /* AmenitiesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC72B8BA87900B0C8CE /* AmenitiesViewController.swift */; };
 		0BF25ACC2B8C724600B0C8CE /* DistanceCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25ACB2B8C724600B0C8CE /* DistanceCollectionViewCell.swift */; };
+		2B9888242B8B76A300B2BC74 /* EventViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888232B8B76A300B2BC74 /* EventViewCell.swift */; };
 		2B98882A2B8C770900B2BC74 /* RecordViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888292B8C770900B2BC74 /* RecordViewCell.swift */; };
+		2B9888472B904D8500B2BC74 /* RunningRecordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888462B904D8500B2BC74 /* RunningRecordViewController.swift */; };
 		C82CEDC92B86FCB200B619AD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDC82B86FCB200B619AD /* AppDelegate.swift */; };
 		C82CEDCB2B86FCB200B619AD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDCA2B86FCB200B619AD /* SceneDelegate.swift */; };
 		C82CEDCD2B86FCB200B619AD /* MainTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDCC2B86FCB200B619AD /* MainTabBarViewController.swift */; };
@@ -39,12 +40,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		2B9888232B8B76A300B2BC74 /* EventViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewCell.swift; sourceTree = "<group>"; };
 		0BF25AC32B8B65A600B0C8CE /* RunningMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningMapView.swift; sourceTree = "<group>"; };
 		0BF25AC52B8B73E600B0C8CE /* RunningMapMobel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningMapMobel.swift; sourceTree = "<group>"; };
 		0BF25AC72B8BA87900B0C8CE /* AmenitiesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmenitiesViewController.swift; sourceTree = "<group>"; };
 		0BF25ACB2B8C724600B0C8CE /* DistanceCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceCollectionViewCell.swift; sourceTree = "<group>"; };
+		2B9888232B8B76A300B2BC74 /* EventViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewCell.swift; sourceTree = "<group>"; };
 		2B9888292B8C770900B2BC74 /* RecordViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordViewCell.swift; sourceTree = "<group>"; };
+		2B9888462B904D8500B2BC74 /* RunningRecordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningRecordViewController.swift; sourceTree = "<group>"; };
 		C82CEDC52B86FCB200B619AD /* Run-It.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Run-It.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C82CEDC82B86FCB200B619AD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C82CEDCA2B86FCB200B619AD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -123,6 +125,7 @@
 			children = (
 				C82CEDE32B86FD8800B619AD /* ProfileViewController.swift */,
 				2B9888292B8C770900B2BC74 /* RecordViewCell.swift */,
+				2B9888462B904D8500B2BC74 /* RunningRecordViewController.swift */,
 			);
 			path = ProfileView;
 			sourceTree = "<group>";
@@ -277,6 +280,7 @@
 				C82CEDCB2B86FCB200B619AD /* SceneDelegate.swift in Sources */,
 				0BF25AC62B8B73E600B0C8CE /* RunningMapMobel.swift in Sources */,
 				0BF25AC82B8BA87900B0C8CE /* AmenitiesViewController.swift in Sources */,
+				2B9888472B904D8500B2BC74 /* RunningRecordViewController.swift in Sources */,
 				C879CD032B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift in Sources */,
 				C82CEDE02B86FD5100B619AD /* BookmarkViewController.swift in Sources */,
 			);
