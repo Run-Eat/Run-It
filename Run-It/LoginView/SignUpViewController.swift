@@ -154,29 +154,20 @@ class SignUpViewController: UIViewController
         return lineView
     }()
     
-    let kakaoLoginButton: UIButton =
+    let kakaoSignupButton: UIButton =
     {
         let button = UIButton()
         button.setImage(UIImage(named: "KakaoLogin"), for: .normal)
-        button.addTarget(self, action: #selector(touchedKakaoLoginButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(touchedKakaoSignupButton), for: .touchUpInside)
         return button
     }()
     
-    let appleLoginButton: UIButton =
+    let appleSignupButton: UIButton =
     {
         let button = UIButton()
         button.setImage(UIImage(named: "AppleLogin"), for: .normal)
-        button.addTarget(self, action: #selector(touchedAppleLoginButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(touchedAppleSignupButton), for: .touchUpInside)
         return button
-    }()
-    
-    let id_pwLabel: UILabel =
-    {
-        let label = UILabel()
-        label.text = ""
-        label.font = UIFont.systemFont(ofSize: CGFloat(21))
-        label.numberOfLines = 2
-        return label
     }()
 
 // MARK: - Life Cycle
@@ -208,10 +199,8 @@ class SignUpViewController: UIViewController
         view.addSubview(socialSignUpLabel)
         view.addSubview(leftLine)
         view.addSubview(rightLine)
-        view.addSubview(kakaoLoginButton)
-        view.addSubview(appleLoginButton)
-        
-        view.addSubview(id_pwLabel)
+        view.addSubview(kakaoSignupButton)
+        view.addSubview(appleSignupButton)
     }
     
     func setLayout()
@@ -292,7 +281,7 @@ class SignUpViewController: UIViewController
             make.height.equalTo(1)
         }
         
-        kakaoLoginButton.snp.makeConstraints
+        kakaoSignupButton.snp.makeConstraints
         {   make in
             make.top.equalTo(socialSignUpLabel.snp.bottom).offset(20)
             make.centerX.equalTo(view.snp.centerX).offset(-35)
@@ -300,19 +289,12 @@ class SignUpViewController: UIViewController
             make.height.equalTo(40)
         }
         
-        appleLoginButton.snp.makeConstraints
+        appleSignupButton.snp.makeConstraints
         {   make in
             make.top.equalTo(socialSignUpLabel.snp.bottom).offset(20)
             make.centerX.equalTo(view.snp.centerX).offset(35)
             make.width.equalTo(40)
             make.height.equalTo(40)
-        }
-        
-        id_pwLabel.snp.makeConstraints
-        {   make in
-            make.top.equalTo(appleLoginButton.snp.bottom).offset(50)
-            make.centerX.equalTo(view.snp.centerX)
-            
         }
     }
     
@@ -329,10 +311,17 @@ class SignUpViewController: UIViewController
     
     @objc func touchedSignUpButton()
     {
-        createUser()
+        guard let email = emailTextField.text else { return }
+        guard let password = pwTextField.text else { return }
+        createUser(email: email, password: password)
+
+        let alertController = UIAlertController(title: "알림", message: "회원가입이 완료되었습니다", preferredStyle: .alert)
+        let confirm = UIAlertAction(title: "확인", style: .default) { _ in self.dismiss(animated: true) }
+        alertController.addAction(confirm)
+        self.present(alertController, animated: true, completion: nil)
     }
     
-    @objc func touchedKakaoLoginButton()
+    @objc func touchedKakaoSignupButton()
     {
         if AuthApi.hasToken() 
         {
@@ -341,8 +330,8 @@ class SignUpViewController: UIViewController
                 if let error = error
                 {
                     print("DEBUG: 카카오톡 토큰 가져오기 에러 \(error.localizedDescription)")
-                    self.kakaoLogin()
-                } 
+                    kakaoSignup()
+                }
                 
                 else
                 {
@@ -354,142 +343,21 @@ class SignUpViewController: UIViewController
         else 
         {
             // 토큰이 없는 상태 로그인 필요
-            kakaoLogin()
+            kakaoSignup()
         }
     }
     
-    @objc func touchedAppleLoginButton()
+    @objc func touchedAppleSignupButton()
     {
         // 추후 애플 로그인 구현
     }
     
-    @objc func keyboardExit()
-    {
-        self.view.endEditing(true)
-    }
-    
-// MARK: - Firebase 유저 생성
-    func createUser()
-    {
-        guard let email = emailTextField.text else { return }
-        guard let password = pwTextField.text else { return }
-        
-        Auth.auth().createUser(withEmail: email, password: password)
-        {   result,error in
-            
-            if let error = error
-            {
-                print("사용자 생성 실패")
-                print(error)
-            }
-            
-            if let result = result
-            {
-                print("사용자 생성 성공")
-                print(result)
-            }
-        }
-        dismiss(animated: true)
-        
-        let VC = SignUpViewController()
-        
-        VC.modalPresentationStyle = .fullScreen
-        present(VC, animated: true, completion: nil)
-    }
-    
-    func kakaoLogin()   // 카카오 로그인
-    {
-        if UserApi.isKakaoTalkLoginAvailable()
-        {
-            kakaoLoginInApp()
-        }
-        
-        else
-        {
-            kakaoLoginInWeb()
-        }
-    }
-    
-    func kakaoLoginInApp()  // 카카오톡 앱이 설치되어있을 경우
-    {
-        UserApi.shared.loginWithKakaoTalk
-        {   oauthToken, error in
-            if let error = error
-            {
-                print("카카오톡 로그인 실패")
-            }
-            
-            else
-            {
-                print("카카오톡 로그인 실패")
-                if let token = oauthToken
-                {
-                    self.createUserByKakao()
-                }
-            }
-        }
-    }
-    
-    func kakaoLoginInWeb()  // 카카오톡 앱이 설치되어있지 않거나 열수 없는 경우
-    {
-        UserApi.shared.loginWithKakaoAccount
-        {   oauthToken, error in
-            if let error = error
-            {
-                print("카카오톡 로그인 실패")
-            }
-            
-            else
-            {
-                if let token = oauthToken
-                {
-                    self.createUserByKakao()
-                }
-            }
-        }
-    }
-    
-    func createUserByKakao()
-    {
-        UserApi.shared.me()
-        {   user, error in
-            if let error = error
-            {
-                print("카카오 사용자 정보 가져오기 실패")
-            }
-            
-            
-            else
-            {
-                print("카카오 사용자 정보 가져오기 성공")
-                
-                guard let email = user?.kakaoAccount?.email else { return }
-                guard let pw = user?.id else { return }
-                
-                Auth.auth().createUser(withEmail: email, password: "\(pw)")
-                {   result, error in
-                    if let error = error
-                    {
-                        print("사용자 생성 실패")
-                    }
-                    if let result = result
-                    {
-                        print("사용자 생성 성공")
-                        
-                        self.dismiss(animated: true)
-                    }
-                    
-                }
-            }
-        }
-    }
-        
 }
 
 // MARK: - TextFieldDelegate extension
 extension SignUpViewController: UITextFieldDelegate
 {
-    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool 
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool
     {
         return true
     }

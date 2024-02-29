@@ -177,8 +177,8 @@ class LoginViewController: UIViewController
         
         addSubView()
         setLayout()
+        registerObserver()
         addInputAccessoryForTextFields()
-       
     }
 
 // MARK: - 레이아웃 설정
@@ -311,173 +311,12 @@ class LoginViewController: UIViewController
         
     }
     
-// MARK: - Firebase 로그인
-    func signInUser()
-    {
-        guard let email = emailTextField.text   else { return }
-        guard let pw = pwTextField.text   else { return }
-        
-        if email == "" || pw == ""
-        {
-            let alertController = UIAlertController(title: "로그인 실패", message: "이메일 또는 비밀번호를 입력해주세요.", preferredStyle: .alert)
-            let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
-            alertController.addAction(confirm)
-            self.present(alertController, animated: true, completion: nil)
-        }
-        
-        else
-        {
-            Auth.auth().signIn(withEmail: email, password: pw)
-            {   [self] authResult, error in
-                if authResult == nil
-                {
-                    print("로그인 실패")
-                    if let error = error
-                    {
-                        print(error)
-                        let alertController = UIAlertController(title: "로그인 실패", message: "이메일 또는 비밀번호가 올바르지 않습니다.", preferredStyle: .alert)
-                        let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
-                        alertController.addAction(confirm)
-                        self.present(alertController, animated: true, completion: nil)
-                    }
-                }
-                else if authResult != nil
-                {
-                    print("로그인 성공")
-                    
-                    let VC = MainTabBarViewController()
-                    VC.selectedIndex = 1
-                    
-                    VC.modalPresentationStyle = .fullScreen
-                    present(VC, animated: true, completion: nil)
-                }
-            }
-        }
-    }
-    
-    func kakaoLogin()
-    {
-        if AuthApi.hasToken()
-        {
-            UserApi.shared.accessTokenInfo
-            {   _, error in
-                if let error = error    // 토큰이 유효하지 않은 경우
-                {
-                    self.openKakaoService()
-                }
-                
-                else    // 토큰이 유효한 경우
-                {
-                    self.bringKakaoInfo()
-                }
-                
-            }
-        }
-        
-        else    // 토큰이 만료된 경우
-        {
-            self.openKakaoService()
-        }
-    }
-    
-    func openKakaoService()   // 카카오 서비스 열기
-    {
-        if UserApi.isKakaoTalkLoginAvailable()
-        {
-            kakaoLoginInApp()
-        }
-        
-        else
-        {
-            kakaoLoginInWeb()
-            bringKakaoInfo()
-        }
-    }
-    
-    func kakaoLoginInApp()  // 카카오톡 앱이 설치되어있을 경우
-    {
-        UserApi.shared.loginWithKakaoTalk
-        {   oauthToken, error in
-            if let error = error
-            {
-                print("카카오톡 로그인 실패")
-            }
-            
-            else
-            {
-                if let token = oauthToken
-                {
-                    self.bringKakaoInfo()
-                }
-            }
-        }
-    }
-    
-    func kakaoLoginInWeb()  // 카카오톡 앱이 설치되어있지 않거나 열수 없는 경우
-    {
-        UserApi.shared.loginWithKakaoAccount
-        {   oauthToken, error in
-            if let error = error
-            {
-                print("카카오톡 로그인 실패")
-            }
-            
-            else
-            {
-                if let token = oauthToken
-                {
-                    self.bringKakaoInfo()
-                }
-            }
-        }
-    }
-    
-    func bringKakaoInfo()
-    {
-        UserApi.shared.me
-        {   user, error in
-            if let error = error
-            {
-                print("카카오 사용자 정보 불러오기 실패")
-                return
-            }
-            
-            guard let email = user?.kakaoAccount?.email else { return }
-            guard let pw = user?.id else { return }
-            
-            Auth.auth().signIn(withEmail: email, password: "\(pw)")
-            {   [self] authResult, error in
-                if authResult == nil
-                {
-                    print("로그인 실패")
-                    if let error = error
-                    {
-                        print(error)
-                        let alertController = UIAlertController(title: "로그인 실패", message: "이메일 또는 비밀번호가 올바르지 않습니다.", preferredStyle: .alert)
-                        let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
-                        alertController.addAction(confirm)
-                        self.present(alertController, animated: true, completion: nil)
-                    }
-                }
-                
-                else if authResult != nil
-                {
-                    print("로그인 성공")
-                    
-                    let VC = MainTabBarViewController()
-                    VC.selectedIndex = 1
-                    
-                    VC.modalPresentationStyle = .fullScreen
-                    present(VC, animated: true, completion: nil)
-                }
-            }
-        }
-    }
-    
 // MARK: - 버튼 함수
     @objc func touchedLoginButton()
     {
-        signInUser()
+        guard let email = emailTextField.text   else { return }
+        guard let password = pwTextField.text   else { return }
+        signInUser(email: email, password: password)
     }
     
     @objc func touchedKakaoLoginButton()
@@ -516,8 +355,42 @@ class LoginViewController: UIViewController
         present(VC, animated: true, completion: nil)
     }
 
+// MARK: - Notification
+    func registerObserver()
+    {
+        NotificationCenter.default.addObserver(self, selector: #selector(loginTask), name: NSNotification.Name("loginTask"), object: nil)
+    }
+    
+    @objc func loginTask(notification: NSNotification)
+    {
+        let result = notification.object as? String
+        
+        if result == "emptyEmailOrPassword"
+        {
+            let alertController = UIAlertController(title: "로그인 실패", message: "이메일 또는 비밀번호를 입력해주세요.", preferredStyle: .alert)
+            let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
+            alertController.addAction(confirm)
+            self.present(alertController, animated: true, completion: nil)
+        }
+        
+        else if result == "wrongEmailOrPassword"
+        {
+            let alertController = UIAlertController(title: "로그인 실패", message: "이메일 또는 비밀번호가 올바르지 않습니다.", preferredStyle: .alert)
+            let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
+            alertController.addAction(confirm)
+            self.present(alertController, animated: true, completion: nil)
+        }
+        
+        else if result == "succesLogin"
+        {
+            let VC = MainTabBarViewController()
+            VC.selectedIndex = 1
+            
+            VC.modalPresentationStyle = .fullScreen
+            self.present(VC, animated: true, completion: nil)
+        }
+    }
 }
-
 
 // MARK: - TextFieldDelegate extension
 extension LoginViewController: UITextFieldDelegate
