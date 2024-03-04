@@ -18,12 +18,31 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate{
         return mapView
     }()
     
-    var runningButton: UIButton = {
+    lazy var startRunningButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = .systemBlue
-        button.layer.cornerRadius = 45
+        button.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
+        button.tintColor = .white
+        let configuration = UIImage.SymbolConfiguration(pointSize: 50)
+        if let image = UIImage(systemName: "figure.run", withConfiguration: configuration) {
+            button.setImage(image, for: .normal)
+        }
+        button.backgroundColor = .systemIndigo
+        button.layer.cornerRadius = 50
+        button.clipsToBounds = true
         
+        button.addTarget(self, action: #selector(TappedstartRunningButton), for: .touchUpInside)
         return button
+    }()
+    
+    var countdownTimer: Timer?
+    var countdownSeconds = 3
+    
+    lazy var timerCounterView: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 100)
+        label.textAlignment = .center
+        label.isHidden = true
+        return label
     }()
     
     var currentLocationButton: UIButton = {
@@ -47,7 +66,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate{
         button.layer.cornerRadius = 25
         button.layer.shadowRadius = 10
         button.layer.shadowOpacity = 0.3
-        button.addTarget(self, action: #selector(didTapFloatingButton), for: .touchUpInside)
+        button.addTarget(RunningMapViewController.self, action: #selector(didTapFloatingButton), for: .touchUpInside)
         return button
     }()
     
@@ -78,7 +97,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate{
         return manager
     }()
     
-    // MARK: 라이프사이클
+    // MARK: - 라이프사이클
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -92,10 +111,14 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate{
         self.locationManager.stopUpdatingLocation()
     }
     
-    // MARK: 기능
+    // MARK: - 기능
     
-    func runButtonAction() {
-        
+    @objc private func TappedstartRunningButton() {
+        print("TappedstartRunningButton()")
+        let startRunningViewController =  StartRunningViewController()
+        startRunningViewController.modalPresentationStyle = .fullScreen
+        self.present(startRunningViewController, animated: true)
+
     }
     
     @objc func currentLocationButtonAction() {
@@ -142,7 +165,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate{
             $0.top.leading.trailing.equalToSuperview()
             $0.bottom.equalToSuperview().offset(-90)
         }
-        runningButton.snp.makeConstraints {
+        startRunningButton.snp.makeConstraints {
             $0.width.height.equalTo(90)
             $0.centerX.equalToSuperview()
             $0.bottom.equalToSuperview().offset(-120)
@@ -167,7 +190,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate{
     func addSubview() {
         view.addSubview(mapView)
         mapView.mapType = .standard
-        view.addSubview(runningButton)
+        view.addSubview(startRunningButton)
         view.addSubview(currentLocationButton)
         view.addSubview(amenitiesButton)
         view.addSubview(writeButton)
@@ -263,8 +286,3 @@ extension RunningMapViewController: UISheetPresentationControllerDelegate {
         print(sheetPresentationController.selectedDetentIdentifier == .large ? "large" : "medium")
     }
 }
-    
-
-
-
-

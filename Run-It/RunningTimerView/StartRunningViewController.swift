@@ -13,22 +13,6 @@ import SnapKit
 class StartRunningViewController: UIViewController {
     //MARK: - UI properties
     
-    lazy var startRunningButton: UIButton = {
-        let button = UIButton()
-        button.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
-        button.tintColor = .black
-        let configuration = UIImage.SymbolConfiguration(pointSize: 50)
-        if let image = UIImage(systemName: "figure.run", withConfiguration: configuration) {
-            button.setImage(image, for: .normal)
-        }
-        button.backgroundColor = .systemBlue
-        button.layer.cornerRadius = 50
-        button.clipsToBounds = true
-        
-        button.addTarget(self, action: #selector(TappedstartRunningButton), for: .touchUpInside)
-        return button
-    }()
-    
     var countdownTimer: Timer?
     var countdownSeconds = 3
     
@@ -56,10 +40,6 @@ class StartRunningViewController: UIViewController {
     // MARK: - @objc
     @objc private func TappedstartRunningButton() {
         print("TappedstartRunningButton()")
-//        let runningTimerViewController =  RunningTimerViewController()
-//        runningTimerViewController.modalPresentationStyle = .fullScreen
-//        self.present(runningTimerViewController, animated: true)
-        startRunningButton.isHidden = true
         timerCounterView.isHidden = false // 타이머 뷰를 보여줍니다
         startCountdownTimer()
     }
@@ -70,20 +50,14 @@ class StartRunningViewController: UIViewController {
 extension StartRunningViewController {
     
     private func addSubview() {
-        view.addSubview(startRunningButton)
+
         view.addSubview(timerCounterView)
 
     }
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemIndigo
     }
     private func setLayout() {
-        
-        startRunningButton.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.equalTo(100)
-            make.height.equalTo(100)
-        }
         
         timerCounterView.snp.makeConstraints { make in
             make.center.equalToSuperview()
