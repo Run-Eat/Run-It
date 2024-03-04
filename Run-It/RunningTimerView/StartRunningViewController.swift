@@ -30,7 +30,7 @@ class StartRunningViewController: UIViewController {
         addSubview()
         setupUI()
         setLayout()
-
+        TappedstartRunningButton()
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)

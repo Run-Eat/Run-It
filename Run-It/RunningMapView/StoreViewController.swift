@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class AmenitiesViewController: UIViewController {
+class StoreViewController: UIViewController {
     
 //    var distanceCell = "distanceCell"
 //    
@@ -21,18 +21,19 @@ class AmenitiesViewController: UIViewController {
 //        return collection
 //    }
 //    
-////    var amenities: UITableView {
-////        let table = UITableView()
-////        return table
-////    }
-//    
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
+//    var amenities: UITableView {
+//        let table = UITableView()
+//        return table
+//    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.view.backgroundColor = .white
 //        addSubviews()
 //        setupDelegate()
 //        configure()
-//    }
-//    
+    }
+    
 //    func setupDelegate() {
 //        distance.register(DistanceCollectionViewCell.self, forCellWithReuseIdentifier: distanceCell)
 //        distance.delegate = self
@@ -45,11 +46,11 @@ class AmenitiesViewController: UIViewController {
 //    
 //    func configure() {
 //        distance.snp.makeConstraints {
-//            $0.centerX.centerY.equalToSuperview()
+//            $0.top.equalToSuperview().offset(25)
 //            $0.height.equalTo(50)
 //        }
 //    }
-//    
+    
 }
 
 //extension AmenitiesViewController: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -59,11 +60,11 @@ class AmenitiesViewController: UIViewController {
 //    
 //    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 //        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: distanceCell, for: indexPath) as? DistanceCollectionViewCell else { return UICollectionViewCell() }
-//
+//        
 //        return cell
 //    }
 //}
-
+//
 //extension AmenitiesViewController: UICollectionViewDelegateFlowLayout {
 //    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 //        return CGSize(width: 320, height: collectionView.frame.height)
