@@ -12,31 +12,31 @@ import FirebaseCore
 import KakaoSDKAuth
 import KakaoSDKUser
 
-//#if DEBUG
-//import SwiftUI
-//struct Preview: UIViewControllerRepresentable {
-//    
-//    // 여기 ViewController를 변경해주세요
-//    func makeUIViewController(context: Context) -> UIViewController {
-//        ProfileViewController()
-//    }
-//    
-//    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-//        // leave this empty
-//    }
-//}
-//
-//struct ViewController_PreviewProvider: PreviewProvider {
-//    static var previews: some View {
-//        Group {
-//            Preview()
-//                .edgesIgnoringSafeArea(.all)
-//                .previewDisplayName("Preview")
-//                .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro"))
-//        }
-//    }
-//}
-//#endif
+#if DEBUG
+import SwiftUI
+struct Preview: UIViewControllerRepresentable {
+    
+    // 여기 ViewController를 변경해주세요
+    func makeUIViewController(context: Context) -> UIViewController {
+        ProfileViewController()
+    }
+    
+    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+        // leave this empty
+    }
+}
+
+struct ViewController_PreviewProvider: PreviewProvider {
+    static var previews: some View {
+        Group {
+            Preview()
+                .edgesIgnoringSafeArea(.all)
+                .previewDisplayName("Preview")
+                .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro"))
+        }
+    }
+}
+#endif
 
 class ProfileViewController: UIViewController
 {
@@ -63,19 +63,18 @@ class ProfileViewController: UIViewController
     let scrollView: UIScrollView =
     {
         let scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
         
         return scrollView
     }()
+    
     lazy var noticeButton: UIButton =
     {
         var configuration = UIButton.Configuration.plain()
             configuration.title = "알림"
             configuration.image = UIImage(named: "NoticeIcon")
             configuration.imagePadding = 10 // 이미지와 제목 간격 조정
+        
         let button = UIButton(configuration: configuration)
-        button.setTitleColor(UIColor.black, for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(noticeButtonTapped), for: .touchUpInside)
         
         return button
@@ -87,9 +86,7 @@ class ProfileViewController: UIViewController
             button.setTitle("로그아웃", for: .normal)
             button.setTitleColor(.black, for: .normal)
             button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
-            
             button.addTarget(self, action: #selector(touchedLogoutButton), for: .touchUpInside)
-            button.translatesAutoresizingMaskIntoConstraints = false
             
             return button
     }()
@@ -105,7 +102,6 @@ class ProfileViewController: UIViewController
         imageView.layer.cornerRadius = 75
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
         
         return imageView
     }()
@@ -116,9 +112,7 @@ class ProfileViewController: UIViewController
         let config = UIImage.SymbolConfiguration(pointSize: 70, weight: .bold, scale: .medium)
         button.setImage(UIImage(systemName: "camera.circle",withConfiguration: config), for: .normal)
         button.tintColor = .darkGray
-        
         button.addTarget(self, action: #selector(selectImage), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
         
         return button
     }()
@@ -144,9 +138,7 @@ class ProfileViewController: UIViewController
         button.setTitle("매 주", for: .normal)
         button.setTitleColor(.black, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
-        
         button.addTarget(self, action: #selector(touchedWeeklyButton), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
         
         return button
     }()
@@ -157,12 +149,11 @@ class ProfileViewController: UIViewController
         button.setTitle("매 달", for: .normal)
         button.setTitleColor(.black, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
-        
         button.addTarget(self, action: #selector(touchedMonthlyButton), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
         
         return button
     }()
+    
     lazy var thisWeek_MonthLabel = createLabel("이번 주", 15)
     lazy var lastWeek_MonthLabel = createLabel("지난 주", 15)
     
@@ -219,7 +210,6 @@ class ProfileViewController: UIViewController
         scrollView.addSubview(runningCountTextLabel)
         scrollView.addSubview(thisWeek_MonthRunningCountLabel)
         scrollView.addSubview(lastWeek_MonthRunningCountLabel)
-        
     }
     
 // MARK: - 레이아웃
@@ -381,7 +371,6 @@ class ProfileViewController: UIViewController
             make.top.equalTo(thisWeek_MonthPaceLabel.snp.bottom).offset(30)
             make.leading.equalTo(thisWeek_MonthRunningCountLabel.snp.leading).offset(120)
         }
-        
     }
     
 // MARK: - 레이블 생성 함수
@@ -468,7 +457,8 @@ class ProfileViewController: UIViewController
         lastWeek_MonthRunningCountLabel.text = "지난 달"
     }
     
-    @objc func noticeButtonTapped(){
+    @objc func noticeButtonTapped()
+    {
         let eventVC = EventViewController()
         self.navigationController?.pushViewController(eventVC, animated: true)
     }
@@ -480,13 +470,12 @@ class ProfileViewController: UIViewController
 // MARK: - ImageView extension
 extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate
 {
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any])
+    internal func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any])
     {
         if let selectedImage = info[.originalImage] as? UIImage
         {
-            profileImageView.image = selectedImage
-            profileImageView.contentMode = .scaleAspectFit
-            profileImageView.sizeToFit()
+            let image = makeRoundedImage(from: selectedImage)
+            profileImageView.image = image
         }
         picker.dismiss(animated: true, completion: nil)
     }
@@ -496,6 +485,30 @@ extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationCo
         picker.dismiss(animated: true, completion: nil)
     }
 }
+
+func makeRoundedImage(from image: UIImage) -> UIImage? 
+{
+    // 이미지를 정사각형으로 만듭니다.
+        let imageSize = min(image.size.width, image.size.height)
+        let imageOrigin = CGPoint(x: (image.size.width - imageSize) / 2.0, y: (image.size.height - imageSize) / 2.0)
+        let imageRect = CGRect(origin: imageOrigin, size: CGSize(width: imageSize, height: imageSize))
+        let croppedImage = image.cgImage?.cropping(to: imageRect)
+        
+        // 정사각형 이미지를 원으로 만듭니다.
+        let imageView = UIImageView(image: UIImage(cgImage: croppedImage!, scale: image.scale, orientation: image.imageOrientation))
+        imageView.layer.cornerRadius = imageSize / 2.0
+        imageView.layer.masksToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        
+        UIGraphicsBeginImageContextWithOptions(imageView.bounds.size, false, image.scale)
+        defer { UIGraphicsEndImageContext() }
+        
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        imageView.layer.render(in: context)
+        
+        return UIGraphicsGetImageFromCurrentImageContext()
+}
+
 
 extension ProfileViewController {
     // MARK: - UI Setup
