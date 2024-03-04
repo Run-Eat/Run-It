@@ -79,5 +79,43 @@ class CoreDataManager {
     // Add functions for managing place information
     
     // MARK: - RunningRecord Operations
-    // Add functions for managing running records
+    func createRunningRecord(time: Int, distance: Double, pace: Double) -> RunningRecord? {
+        let context = persistentContainer.viewContext
+        guard let entity = NSEntityDescription.entity(forEntityName: "RunningRecord", in: context) else {
+            print("Failed to create entity description for RunningRecord")
+            return nil
+        }
+
+        let record = RunningRecord(entity: entity, insertInto: context)
+//        record.recordId = UUID()
+        record.id =  UUID()
+        record.time = Int32(time)
+        record.distance = distance
+        record.pace = pace
+//        record.createdAt = Date()
+        print("CoreData id: \(String(describing: record.id)) Time: \(record.time), Distance: \(record.distance), Pace: \(record.pace)")
+        
+        do {
+            try context.save()
+            return record
+        } catch {
+            print("Failed to create running record: \(error)")
+            return nil
+        }
+    }
+
+    
+    // MARK: - RunningRecord Operations
+    func fetchRunningRecords() -> [RunningRecord] {
+        let context = persistentContainer.viewContext
+        let fetchRequest: NSFetchRequest<RunningRecord> = RunningRecord.fetchRequest()
+
+        do {
+            let records = try context.fetch(fetchRequest)
+            return records
+        } catch {
+            print("Failed to fetch running records: \(error)")
+            return []
+        }
+    }
 }
