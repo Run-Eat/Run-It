@@ -176,9 +176,9 @@ class PauseRunningHalfModalViewController: UIViewController {
 //            for record in records {
 //                print("CoreData Time: \(record.time), Distance: \(record.distance), Pace: \(record.pace)")
 //            }
-            let startRunningViewController =  StartRunningViewController()
-            startRunningViewController.modalPresentationStyle = .fullScreen
-            self.present(startRunningViewController, animated: true)
+            let mainTabBarViewController =  MainTabBarViewController()
+            mainTabBarViewController.modalPresentationStyle = .fullScreen
+            self.present(mainTabBarViewController, animated: true)
         }))
         
         alert.addAction(UIAlertAction(title: "취소하기", style: .destructive, handler: nil))
