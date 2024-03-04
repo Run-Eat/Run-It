@@ -11,6 +11,23 @@ import KakaoSDKAuth
 import KakaoSDKUser
 
 
+func isValidEmail(_ email: String) -> Bool      // 이메일 유효성 검사
+{
+    // 이메일 정규 표현식
+    let emailRegex = "^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+    let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
+    return emailPredicate.evaluate(with: email)
+}
+    
+   
+func isValidPassword(_ password: String) -> Bool    // 비밀번호 유효성 검사
+{
+    // 비밀번호 정규 표현식
+    let passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,20}$"
+    let passwordPredicate = NSPredicate(format: "SELF MATCHES %@", passwordRegex)
+    return passwordPredicate.evaluate(with: password)
+}
+
 // MARK: - Firebase 유저 생성
 func createUser(email: String, password: String)
     {
