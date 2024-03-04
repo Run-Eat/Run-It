@@ -9,15 +9,15 @@ import UIKit
 
 import SnapKit
 
-class RunningTimerViewController: UIViewController {
-    
+class RunningTimerViewController: UIViewController, PauseRunningHalfModalViewControllerDelegate {
+
+    let runningTimer = RunningTimer()
     //MARK: - UI properties
     
     var distance: Double = 0
     var time: Int = 0
     var pace: Double = 0
 
-    var timer: Timer?
     
     let statusBarView = UIView()
     
@@ -113,10 +113,6 @@ class RunningTimerViewController: UIViewController {
         button.clipsToBounds = true
         
         button.addTarget(self, action: #selector(pauseRunning), for: .touchUpInside)
-        
-        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPresspauseRunning))
-        longPressGesture.minimumPressDuration = 3
-        button.addGestureRecognizer(longPressGesture)
 
         return button
     }()
@@ -130,61 +126,53 @@ class RunningTimerViewController: UIViewController {
         setupUI()
         setLayout()
         
+        runningTimer.updateUI = { [weak self] in
+            self?.time = self?.runningTimer.time ?? 0
+            self?.distance = self?.runningTimer.distance ?? 0.0
+            self?.pace = self?.runningTimer.pace ?? 0.0
+            self?.updateTimerUI()
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        recordRunning()
+//        self.runningTimer.start()
+        if runningTimer.state == .suspended {
+            runningTimer.start()
+        } else if runningTimer.state == .background {
+            runningTimer.timerEnterBackground()
+        } else if runningTimer.state == .foreground {
+            runningTimer.timerWillEnterForeground()
+        }
+
     }
     
     // MARK: - @objc
     @objc private func pauseRunning() {
         print("TappedButton - pauseRunning()")
-        timer?.invalidate()
-        let pauseRunningViewController = PauseRunningHalfModalViewController()
-        pauseRunningViewController.time = self.time
-        pauseRunningViewController.distance = self.distance
-        pauseRunningViewController.pace = self.pace
+        self.runningTimer.pause()
         
-        showMyViewControllerInACustomizedSheet(pauseRunningViewController)
+        let pauseRunningHalfModalViewController = PauseRunningHalfModalViewController()
+        pauseRunningHalfModalViewController.time = self.time
+        pauseRunningHalfModalViewController.distance = self.distance
+        pauseRunningHalfModalViewController.pace = self.pace
+        pauseRunningHalfModalViewController.delegate = self
+
+        
+        showMyViewControllerInACustomizedSheet(pauseRunningHalfModalViewController)
     }
     
-    @objc func longPresspauseRunning(_ sender: UILongPressGestureRecognizer) {
-        if sender.state == .began {
-            UIView.animate(withDuration: 0.3, animations: {
-                self.pauseRunningButton.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
-            }) { _ in
-                self.pauseRunning()
-            }
-        } else if sender.state == .ended || sender.state == .cancelled {
-            UIView.animate(withDuration: 0.3, animations: {
-                self.pauseRunningButton.transform = CGAffineTransform.identity
-            })
-        }
+    func didDismissPauseRunningHalfModalViewController() {
+        runningTimer.restart()
     }
-    
     
 }
 
 extension RunningTimerViewController {
     
-    // MARK: - Running Timer Method
-    private func recordRunning() {
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            DispatchQueue.global(qos: .background).async {
-                self.time += 1
-                self.distance += 0.01 // RunningTimerManager과 연계해서 변경 필요
-                // 거리가 0.05km, 즉 50m 이상일 때만 페이스를 계산
-                self.pace = self.distance >= 0.05 ? Double(self.time) / self.distance : 0
-                
-                DispatchQueue.main.async {
-                    self.updateTimerUI()
-                }
-            }
-        }
-    }
+    // MARK: - Running Timer UI Update
 
-    private func updateTimerUI() {
+    func updateTimerUI() {
         let hours = time / 3600
         let minutes = (time % 3600) / 60
         let seconds = (time % 3600) % 60
@@ -201,9 +189,6 @@ extension RunningTimerViewController {
         
         distanceNumberLabel.text = String(format: "%.2f", distance)
     }
-
-
-
 
     // MARK: - setupUI
     
