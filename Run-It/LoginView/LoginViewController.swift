@@ -47,45 +47,6 @@ class LoginViewController: UIViewController
         (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer
     }
     
-    func checkData(loginType: String)
-    {
-        guard let context = self.persistentContainer?.viewContext else { return }
-        
-        let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
-        fetchRequest.predicate = NSPredicate(value: true)
-        
-        do
-        {
-            let results = try context.fetch(fetchRequest)
-            
-            if results.isEmpty
-            {
-                createUser()
-                print("데이터 비어있음")
-            }
-            
-            else
-            {
-                print("데이터 존재")
-                let user = results[0]
-                user.loginType = loginType
-                print(user.loginType as Any)
-                try context.save()
-            }
-        }
-        catch
-        {
-            print("error")
-        }
-    }
-    
-    func createUser()
-    {
-        guard let context = self.persistentContainer?.viewContext else { return }
-        let userInfo = User(context: context)
-        userInfo.userId = UUID()
-    }
-    
     let loginLogo = UIImageView(image: UIImage(named: "LoginLogo"))
     
     let emailTextField: UITextField =
@@ -353,19 +314,79 @@ class LoginViewController: UIViewController
         
     }
     
+// MARK: - CoreData 데이터 확인 후 수정
+    func checkData(loginType: String, email: String)
+    {
+        guard let context = self.persistentContainer?.viewContext else { return }
+        
+        let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
+        fetchRequest.predicate = NSPredicate(value: true)
+        
+        do
+        {
+            let results = try context.fetch(fetchRequest)
+            
+            if results.isEmpty
+            {
+                createUser()
+                print("데이터 비어있음")
+            }
+            
+            else
+            {
+                print("데이터 존재")
+                let user = results[0]
+                user.loginType = loginType
+                user.email = email
+                print(user.loginType as Any)
+                try context.save()
+            }
+        }
+        catch
+        {
+            print("error")
+        }
+    }
+    
+// MARK: - 데이터 생성
+    func createUser()
+    {
+        guard let context = self.persistentContainer?.viewContext else { return }
+        let userInfo = User(context: context)
+        userInfo.userId = UUID()
+    }
+    
 // MARK: - 버튼 함수
     @objc func touchedLoginButton()
     {
         guard let email = emailTextField.text   else { return }
         guard let password = passwordTextField.text   else { return }
         signInUser(email: email, password: password)
-        checkData(loginType: "Email")
+        checkData(loginType: "Email", email: email)
     }
     
     @objc func touchedKakaoLoginButton()
     {
+        UserApi.shared.me
+        {   user, error in
+            guard let email = user?.kakaoAccount?.email else { return }
+            
+            if user == nil
+            {
+                print("이메일 가져오기 실패")
+                if let error = error
+                {
+                    print(error)
+                }
+            }
+            
+            else if user != nil
+            {
+                print("이메일 가져오기 성공")
+                self.checkData(loginType: "Kakao", email: email)
+            }
+        }
         kakaoLogin()
-        checkData(loginType: "Kakao")
     }
     
     @objc func touchedAppleLoginButton()
