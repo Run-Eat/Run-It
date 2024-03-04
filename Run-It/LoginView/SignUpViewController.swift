@@ -82,14 +82,15 @@ class SignUpViewController: UIViewController
         textField.autocapitalizationType = .none
         textField.autocorrectionType = .no
         textField.spellCheckingType = .no
+        textField.layer.borderWidth = 0.7
         return textField
     }()
     
-    let idExplainLabel: UILabel =
+    let emailExplainLabel: UILabel =
     {
         let label = UILabel()
         label.text = "정확한 이메일을 입력해주세요"
-        label.font = UIFont.systemFont(ofSize: CGFloat(15))
+        label.font = UIFont.systemFont(ofSize: CGFloat(12))
         return label
     }()
     
@@ -105,14 +106,16 @@ class SignUpViewController: UIViewController
         textField.autocapitalizationType = .none
         textField.autocorrectionType = .no
         textField.spellCheckingType = .no
+        textField.layer.borderWidth = 0.7
         return textField
     }()
     
-    let pwExplainLabel: UILabel =
+    let passwordExplainLabel: UILabel =
     {
         let label = UILabel()
-        label.text = "비밀번호는 8 - 20자 이내로 입력해주세요"
-        label.font = UIFont.systemFont(ofSize: CGFloat(15))
+        label.text = "비밀번호는 영문, 숫자, 특수문자를 포함해 8 - 20자 이내로 입력해주세요"
+        label.font = UIFont.systemFont(ofSize: CGFloat(12))
+        label.numberOfLines = 2
         return label
     }()
     
@@ -121,7 +124,7 @@ class SignUpViewController: UIViewController
         let button = UIButton()
         button.setTitle("회원가입", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .systemTeal
+        button.backgroundColor = .systemGray
         button.layer.cornerRadius = 10
         button.addTarget(self, action: #selector(touchedSignUpButton), for: .touchUpInside)
         return button
@@ -152,7 +155,7 @@ class SignUpViewController: UIViewController
     let kakaoSignupButton: UIButton =
     {
         let button = UIButton()
-        button.setImage(UIImage(named: "KakaoLogin"), for: .normal)
+        button.setImage(UIImage(named: "KakaoLogo"), for: .normal)
         button.addTarget(self, action: #selector(touchedKakaoSignupButton), for: .touchUpInside)
         return button
     }()
@@ -160,7 +163,7 @@ class SignUpViewController: UIViewController
     let appleSignupButton: UIButton =
     {
         let button = UIButton()
-        button.setImage(UIImage(named: "AppleLogin"), for: .normal)
+        button.setImage(UIImage(named: "AppleLogo"), for: .normal)
         button.addTarget(self, action: #selector(touchedAppleSignupButton), for: .touchUpInside)
         return button
     }()
@@ -186,9 +189,9 @@ class SignUpViewController: UIViewController
         view.addSubview(titleLabel)
         view.addSubview(explainLabel)
         view.addSubview(emailTextField)
-        view.addSubview(idExplainLabel)
+        view.addSubview(emailExplainLabel)
         view.addSubview(passwordTextField)
-        view.addSubview(pwExplainLabel)
+        view.addSubview(passwordExplainLabel)
         view.addSubview(signUpButton)
         view.addSubview(socialSignUpLabel)
         view.addSubview(leftLine)
@@ -225,7 +228,7 @@ class SignUpViewController: UIViewController
             make.height.equalTo(40)
         }
         
-        idExplainLabel.snp.makeConstraints
+        emailExplainLabel.snp.makeConstraints
         {   make in
             make.top.equalTo(emailTextField.snp.bottom).offset(7)
             make.leading.equalTo(view.snp.leading).inset(25)
@@ -233,13 +236,13 @@ class SignUpViewController: UIViewController
         
         passwordTextField.snp.makeConstraints
         {   make in
-            make.top.equalTo(idExplainLabel.snp.bottom).offset(20)
+            make.top.equalTo(emailExplainLabel.snp.bottom).offset(20)
             make.centerX.equalTo(view.snp.centerX)
             make.width.equalTo(350)
             make.height.equalTo(40)
         }
         
-        pwExplainLabel.snp.makeConstraints
+        passwordExplainLabel.snp.makeConstraints
         {   make in
             make.top.equalTo(passwordTextField.snp.bottom).offset(7)
             make.leading.equalTo(view.snp.leading).inset(25)
@@ -247,7 +250,7 @@ class SignUpViewController: UIViewController
         
         signUpButton.snp.makeConstraints
         {   make in
-            make.top.equalTo(pwExplainLabel.snp.bottom).offset(40)
+            make.top.equalTo(passwordExplainLabel.snp.bottom).offset(40)
             make.centerX.equalTo(view.snp.centerX)
             make.width.equalTo(250)
             make.height.equalTo(40)
@@ -376,6 +379,44 @@ extension SignUpViewController: UITextFieldDelegate
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?)
     {
         view.endEditing(true)
+    }
+    
+    func textFieldDidChangeSelection(_ textField: UITextField)
+    {
+        let isEmailValid = isValidEmail(emailTextField.text ?? "")
+        let isPasswordValid = isValidPassword(passwordTextField.text ?? "")
+        
+        if textField == emailTextField
+        {
+            if isEmailValid
+            {
+                emailTextField.layer.borderColor = UIColor.green.cgColor
+                emailExplainLabel.text = "이메일 주소가 올바릅니다."
+            } 
+            else
+            {
+                emailTextField.layer.borderColor = UIColor.red.cgColor
+                emailExplainLabel.text = "올바른 이메일을 입력했는지 확인하세요."
+            }
+        } 
+        
+        else if textField == passwordTextField
+        {
+            if isPasswordValid 
+            {
+                
+                passwordTextField.layer.borderColor = UIColor.green.cgColor
+                passwordExplainLabel.text = "비밀번호가 올바릅니다."
+            } 
+            else
+            {
+                passwordTextField.layer.borderColor = UIColor.red.cgColor
+                passwordExplainLabel.text = "비밀번호가 조건에 맞지 않습니다."
+            }
+        }
+
+        signUpButton.isEnabled = isEmailValid && isPasswordValid
+        signUpButton.backgroundColor = ((emailTextField.text != "" && passwordTextField.text != "") && (isEmailValid && isPasswordValid)) ? .systemTeal : .systemGray
     }
     
     //  키보드 툴 바
