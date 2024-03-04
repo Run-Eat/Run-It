@@ -22,8 +22,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowsScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowsScene)
         let tabBarController = UITabBarController()
-        tabBarController.viewControllers = [BookmarkViewController(), RunningMapViewController(), ProfileViewController()]
-        window?.rootViewController = LoginViewController()  // 코드작업 간 자신의 ViewController로 변경하되, github commit 간에는 unstaged 처리
+        tabBarController.viewControllers = [RunningMapViewController(), BookmarkViewController(), ProfileViewController()]
+        window?.rootViewController = MainTabBarViewController()  // 코드작업 간 자신의 ViewController로 변경하되, github commit 간에는 unstaged 처리
         window?.makeKeyAndVisible()
     }
     

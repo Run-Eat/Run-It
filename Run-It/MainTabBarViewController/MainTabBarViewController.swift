@@ -12,20 +12,19 @@ class MainTabBarViewController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let profileVC = ProfileViewController()
-        let profileViewNavigationController = UINavigationController(rootViewController: profileVC)
-        profileViewNavigationController.tabBarItem = UITabBarItem(title: "프로필", image: UIImage(systemName: "person.crop.circle"), tag: 0)
-        
         let runningMapVC = RunningMapViewController()
         let runningMapViewNavigationController = UINavigationController(rootViewController: runningMapVC)
-        runningMapViewNavigationController.tabBarItem = UITabBarItem(title: "러닝", image: UIImage(systemName: "figure.run"), tag: 1)
-        
+        runningMapViewNavigationController.tabBarItem = UITabBarItem(title: "러닝", image: UIImage(systemName: "figure.run"), tag: 0)
         
         let bookmarkVC = BookmarkViewController()
         let BookmarkViewNavigationController = UINavigationController(rootViewController: bookmarkVC)
-        BookmarkViewNavigationController.tabBarItem = UITabBarItem(title: "즐겨찾기", image: UIImage(systemName: "star.fill"), tag: 2)
+        BookmarkViewNavigationController.tabBarItem = UITabBarItem(title: "즐겨찾기", image: UIImage(systemName: "star.fill"), tag: 1)
         
-        viewControllers = [profileViewNavigationController, runningMapViewNavigationController,  BookmarkViewNavigationController]
+        let profileVC = ProfileViewController()
+        let profileViewNavigationController = UINavigationController(rootViewController: profileVC)
+        profileViewNavigationController.tabBarItem = UITabBarItem(title: "프로필", image: UIImage(systemName: "person.crop.circle"), tag: 2)
+
+        viewControllers = [runningMapViewNavigationController, BookmarkViewNavigationController, profileViewNavigationController]
 
     }
 
