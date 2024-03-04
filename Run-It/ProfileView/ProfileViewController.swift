@@ -7,39 +7,44 @@
 
 import UIKit
 import SnapKit
+import CoreData
 import FirebaseAuth
 import FirebaseCore
 import KakaoSDKAuth
 import KakaoSDKUser
 
-#if DEBUG
-import SwiftUI
-struct Preview: UIViewControllerRepresentable {
-    
-    // 여기 ViewController를 변경해주세요
-    func makeUIViewController(context: Context) -> UIViewController {
-        ProfileViewController()
-    }
-    
-    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-        // leave this empty
-    }
-}
-
-struct ViewController_PreviewProvider: PreviewProvider {
-    static var previews: some View {
-        Group {
-            Preview()
-                .edgesIgnoringSafeArea(.all)
-                .previewDisplayName("Preview")
-                .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro"))
-        }
-    }
-}
-#endif
+//#if DEBUG
+//import SwiftUI
+//struct Preview: UIViewControllerRepresentable {
+//    
+//    // 여기 ViewController를 변경해주세요
+//    func makeUIViewController(context: Context) -> UIViewController {
+//        ProfileViewController()
+//    }
+//    
+//    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+//        // leave this empty
+//    }
+//}
+//
+//struct ViewController_PreviewProvider: PreviewProvider {
+//    static var previews: some View {
+//        Group {
+//            Preview()
+//                .edgesIgnoringSafeArea(.all)
+//                .previewDisplayName("Preview")
+//                .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro"))
+//        }
+//    }
+//}
+//#endif
 
 class ProfileViewController: UIViewController
 {
+    
+    var persistentContainer: NSPersistentContainer? {
+        (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer
+    }
     
     let totalDistance = 9999.99
     
@@ -80,12 +85,16 @@ class ProfileViewController: UIViewController
         return button
     }()
     
+    lazy var imageName = setImage()
+    
+    lazy var loginTypeIcon = UIImageView(image: UIImage(named: imageName + "Logo"))
+    
     let logoutButton: UIButton =
     {
             let button = UIButton()
             button.setTitle("로그아웃", for: .normal)
             button.setTitleColor(.black, for: .normal)
-            button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
+            button.titleLabel?.font = UIFont.systemFont(ofSize: 17)
             button.addTarget(self, action: #selector(touchedLogoutButton), for: .touchUpInside)
             
             return button
@@ -188,6 +197,7 @@ class ProfileViewController: UIViewController
     func addScrollView()
     {
         scrollView.addSubview(noticeButton)
+        scrollView.addSubview(loginTypeIcon)
         scrollView.addSubview(logoutButton)
         scrollView.addSubview(titleLabel)
         scrollView.addSubview(profileImageView)
@@ -231,10 +241,18 @@ class ProfileViewController: UIViewController
             make.width.equalTo(90)
         }
         
-        logoutButton.snp.makeConstraints
+        loginTypeIcon.snp.makeConstraints
         {   make in
             make.centerY.equalTo(noticeButton.snp.centerY)
             make.leading.equalTo(view.snp.leading).inset(20)
+            make.width.equalTo(20)
+            make.height.equalTo(20)
+        }
+        
+        logoutButton.snp.makeConstraints
+        {   make in
+            make.centerY.equalTo(loginTypeIcon.snp.centerY)
+            make.leading.equalTo(loginTypeIcon.snp.leading).offset(15)
             make.width.equalTo(80)
         }
         
@@ -262,15 +280,15 @@ class ProfileViewController: UIViewController
         
         pointImage.snp.makeConstraints
         {   make in
-            make.top.equalTo(profileImageView.snp.bottom).offset(20)
+            make.top.equalTo(profileImageView.snp.bottom).offset(25)
             make.trailing.equalTo(view.snp.trailing).inset(100)
-            make.width.equalTo(25)
-            make.height.equalTo(25)
+            make.width.equalTo(22)
+            make.height.equalTo(22)
         }
         
         pointLabel.snp.makeConstraints
         {   make in
-            make.top.equalTo(pointImage.snp.top).offset(2)
+            make.centerY.equalTo(pointImage.snp.centerY)
             make.trailing.equalTo(pointImage.snp.trailing).offset(60)
         }
         
@@ -382,6 +400,26 @@ class ProfileViewController: UIViewController
         label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
+    }
+    
+// MARK: - 로그인 방식 가져오기
+    func setImage() -> String
+    {
+        guard let context = self.persistentContainer?.viewContext else { return "" }
+        let request: NSFetchRequest<User> = User.fetchRequest()
+        
+        do
+        {
+            let data = try context.fetch(request)
+            let user = data.first!
+            
+            return user.loginType ?? ""
+        }
+        catch
+        {
+            print("데이터 가져오기 에러")
+            return ""
+        }
     }
     
 // MARK: - 로그아웃 함수

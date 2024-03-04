@@ -35,6 +35,7 @@
 
 import UIKit
 import SnapKit
+import CoreData
 import FirebaseAuth
 import FirebaseCore
 import KakaoSDKAuth
@@ -42,6 +43,48 @@ import KakaoSDKUser
 
 class LoginViewController: UIViewController
 {
+    var persistentContainer: NSPersistentContainer? {
+        (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer
+    }
+    
+    func checkData(loginType: String)
+    {
+        guard let context = self.persistentContainer?.viewContext else { return }
+        
+        let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
+        fetchRequest.predicate = NSPredicate(value: true)
+        
+        do
+        {
+            let results = try context.fetch(fetchRequest)
+            
+            if results.isEmpty
+            {
+                createUser()
+                print("데이터 비어있음")
+            }
+            
+            else
+            {
+                print("데이터 존재")
+                let user = results[0]
+                user.loginType = loginType
+                print(user.loginType as Any)
+                try context.save()
+            }
+        }
+        catch
+        {
+            print("error")
+        }
+    }
+    
+    func createUser()
+    {
+        guard let context = self.persistentContainer?.viewContext else { return }
+        let userInfo = User(context: context)
+        userInfo.userId = UUID()
+    }
     
     let loginLogo = UIImageView(image: UIImage(named: "LoginLogo"))
     
@@ -155,7 +198,7 @@ class LoginViewController: UIViewController
     let kakaoLoginButton: UIButton =
     {
         let button = UIButton()
-        button.setImage(UIImage(named: "KakaoLogin"), for: .normal)
+        button.setImage(UIImage(named: "KakaoLogo"), for: .normal)
         button.addTarget(self, action: #selector(touchedKakaoLoginButton), for: .touchUpInside)
         return button
     }()
@@ -163,7 +206,7 @@ class LoginViewController: UIViewController
     let appleLoginButton: UIButton =
     {
         let button = UIButton()
-        button.setImage(UIImage(named: "AppleLogin"), for: .normal)
+        button.setImage(UIImage(named: "AppleLogo"), for: .normal)
         button.addTarget(self, action: #selector(touchedAppleLoginButton), for: .touchUpInside)
         return button
     }()
@@ -316,11 +359,13 @@ class LoginViewController: UIViewController
         guard let email = emailTextField.text   else { return }
         guard let password = passwordTextField.text   else { return }
         signInUser(email: email, password: password)
+        checkData(loginType: "Email")
     }
     
     @objc func touchedKakaoLoginButton()
     {
         kakaoLogin()
+        checkData(loginType: "Kakao")
     }
     
     @objc func touchedAppleLoginButton()

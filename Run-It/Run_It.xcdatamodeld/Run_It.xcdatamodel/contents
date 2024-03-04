@@ -35,6 +35,7 @@
     <entity name="User" representedClassName="User" syncable="YES" codeGenerationType="class">
         <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="loginType" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="profilePhoto" optional="YES" attributeType="Binary"/>
         <attribute name="userId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>

@@ -152,7 +152,7 @@ class SignUpViewController: UIViewController
     let kakaoSignupButton: UIButton =
     {
         let button = UIButton()
-        button.setImage(UIImage(named: "KakaoLogin"), for: .normal)
+        button.setImage(UIImage(named: "KakaoLogo"), for: .normal)
         button.addTarget(self, action: #selector(touchedKakaoSignupButton), for: .touchUpInside)
         return button
     }()
@@ -160,7 +160,7 @@ class SignUpViewController: UIViewController
     let appleSignupButton: UIButton =
     {
         let button = UIButton()
-        button.setImage(UIImage(named: "AppleLogin"), for: .normal)
+        button.setImage(UIImage(named: "AppleLogo"), for: .normal)
         button.addTarget(self, action: #selector(touchedAppleSignupButton), for: .touchUpInside)
         return button
     }()
