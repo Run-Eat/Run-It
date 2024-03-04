@@ -61,6 +61,7 @@ class LoginViewController: UIViewController
         textField.autocapitalizationType = .none
         textField.autocorrectionType = .no
         textField.spellCheckingType = .no
+        textField.layer.borderWidth = 0.7
         return textField
     }()
     
@@ -76,6 +77,7 @@ class LoginViewController: UIViewController
         textField.autocapitalizationType = .none
         textField.autocorrectionType = .no
         textField.spellCheckingType = .no
+        textField.layer.borderWidth = 0.7
         return textField
     }()
     

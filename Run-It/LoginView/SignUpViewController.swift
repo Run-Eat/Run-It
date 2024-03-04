@@ -82,6 +82,7 @@ class SignUpViewController: UIViewController
         textField.autocapitalizationType = .none
         textField.autocorrectionType = .no
         textField.spellCheckingType = .no
+        textField.layer.borderWidth = 0.7
         return textField
     }()
     
@@ -89,7 +90,7 @@ class SignUpViewController: UIViewController
     {
         let label = UILabel()
         label.text = "정확한 이메일을 입력해주세요"
-        label.font = UIFont.systemFont(ofSize: CGFloat(15))
+        label.font = UIFont.systemFont(ofSize: CGFloat(12))
         return label
     }()
     
@@ -105,6 +106,7 @@ class SignUpViewController: UIViewController
         textField.autocapitalizationType = .none
         textField.autocorrectionType = .no
         textField.spellCheckingType = .no
+        textField.layer.borderWidth = 0.7
         return textField
     }()
     
@@ -112,7 +114,8 @@ class SignUpViewController: UIViewController
     {
         let label = UILabel()
         label.text = "비밀번호는 영문, 숫자, 특수문자를 포함해 8 - 20자 이내로 입력해주세요"
-        label.font = UIFont.systemFont(ofSize: CGFloat(15))
+        label.font = UIFont.systemFont(ofSize: CGFloat(12))
+        label.numberOfLines = 2
         return label
     }()
     
@@ -378,35 +381,40 @@ extension SignUpViewController: UITextFieldDelegate
         view.endEditing(true)
     }
     
-    func textFieldDidChangeSelection(_ textField: UITextField) 
+    func textFieldDidChangeSelection(_ textField: UITextField)
     {
         let isEmailValid = isValidEmail(emailTextField.text ?? "")
         let isPasswordValid = isValidPassword(passwordTextField.text ?? "")
         
-        if isEmailValid == true
+        if textField == emailTextField
         {
-            emailTextField.layer.borderColor = UIColor.green.cgColor
-            emailExplainLabel.text = "이메일 주소가 올바릅니다."
-        }
+            if isEmailValid
+            {
+                emailTextField.layer.borderColor = UIColor.green.cgColor
+                emailExplainLabel.text = "이메일 주소가 올바릅니다."
+            } 
+            else
+            {
+                emailTextField.layer.borderColor = UIColor.red.cgColor
+                emailExplainLabel.text = "올바른 이메일을 입력했는지 확인하세요."
+            }
+        } 
         
-        else
+        else if textField == passwordTextField
         {
-            emailTextField.layer.borderColor = UIColor.red.cgColor
-            emailExplainLabel.text = "올바른 이메일을 입력했는지 확인하세요."
+            if isPasswordValid 
+            {
+                
+                passwordTextField.layer.borderColor = UIColor.green.cgColor
+                passwordExplainLabel.text = "비밀번호가 올바릅니다."
+            } 
+            else
+            {
+                passwordTextField.layer.borderColor = UIColor.red.cgColor
+                passwordExplainLabel.text = "비밀번호가 조건에 맞지 않습니다."
+            }
         }
-        
-        if isPasswordValid == true
-        {
-            passwordTextField.layer.borderColor = UIColor.green.cgColor
-            passwordExplainLabel.text = "비밀번호가 올바릅니다."
-        }
-        
-        else
-        {
-            passwordTextField.layer.borderColor = UIColor.red.cgColor
-            passwordExplainLabel.text = "비밀번호가 조건에 맞지 않습니다."
-        }
-        
+
         signUpButton.isEnabled = isEmailValid && isPasswordValid
         signUpButton.backgroundColor = ((emailTextField.text != "" && passwordTextField.text != "") && (isEmailValid && isPasswordValid)) ? .systemTeal : .systemGray
     }
