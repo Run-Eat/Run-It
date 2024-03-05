@@ -118,4 +118,43 @@ class CoreDataManager {
             return []
         }
     }
+    
+    func generateDummyRunningRecords() {
+        // 더미 데이터 배열
+        let dummyData = [
+            (time: 3600, distance: 10.0, pace: 6.0), // 1시간, 10km, 페이스 6분/km
+            (time: 1800, distance: 5.0, pace: 6.0),  // 30분, 5km, 페이스 6분/km
+            (time: 5400, distance: 15.0, pace: 6.0) // 1시간 30분, 15km, 페이스 6분/km
+        ]
+        
+        // 각 더미 데이터에 대해 RunningRecord 인스턴스 생성
+        for data in dummyData {
+            _ = createRunningRecord(time: data.time, distance: data.distance, pace: data.pace)
+        }
+        
+        // 변경 사항 저장
+        saveContext()
+    }
+    // MARK: - Delete RunningRecord in CoreDataManager
+    func deleteRunningRecord(withId id: UUID, completion: (Bool) -> Void) {
+        let context = persistentContainer.viewContext
+        let fetchRequest: NSFetchRequest<RunningRecord> = RunningRecord.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        do {
+            let records = try context.fetch(fetchRequest)
+            if let recordToDelete = records.first {
+                context.delete(recordToDelete)
+                try context.save()
+                completion(true)
+            } else {
+                print("No record found with the specified ID.")
+                completion(false)
+            }
+        } catch {
+            print("Failed to delete running record: \(error)")
+            completion(false)
+        }
+    }
+
 }
