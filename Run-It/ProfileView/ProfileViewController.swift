@@ -16,12 +16,12 @@ import KakaoSDKUser
 //#if DEBUG
 //import SwiftUI
 //struct Preview: UIViewControllerRepresentable {
-//    
+//
 //    // 여기 ViewController를 변경해주세요
 //    func makeUIViewController(context: Context) -> UIViewController {
 //        ProfileViewController()
 //    }
-//    
+//
 //    func updateUIViewController(_ uiView: UIViewController,context: Context) {
 //        // leave this empty
 //    }
@@ -41,13 +41,13 @@ import KakaoSDKUser
 
 class ProfileViewController: UIViewController
 {
-    
+    var viewModel: RunningRecordViewModel!
     var persistentContainer: NSPersistentContainer? {
         (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer
     }
     
     let totalDistance = 9999.99
-    
+    var runningRecords: [RunningRecord] = []
     var thisWeek_MonthDistance = 0
     var lastWeek_MonthDistance = 0
     var thisWeek_MonthPace = 0
@@ -63,7 +63,7 @@ class ProfileViewController: UIViewController
         label.textAlignment = .left
         return label
     }()
-// MARK: - UI 생성
+    // MARK: - UI 생성
     
     let scrollView: UIScrollView =
     {
@@ -75,9 +75,9 @@ class ProfileViewController: UIViewController
     lazy var noticeButton: UIButton =
     {
         var configuration = UIButton.Configuration.plain()
-            configuration.title = "알림"
-            configuration.image = UIImage(named: "NoticeIcon")
-            configuration.imagePadding = 10 // 이미지와 제목 간격 조정
+        configuration.title = "알림"
+        configuration.image = UIImage(named: "NoticeIcon")
+        configuration.imagePadding = 10 // 이미지와 제목 간격 조정
         
         let button = UIButton(configuration: configuration)
         button.addTarget(self, action: #selector(noticeButtonTapped), for: .touchUpInside)
@@ -91,13 +91,13 @@ class ProfileViewController: UIViewController
     
     let logoutButton: UIButton =
     {
-            let button = UIButton()
-            button.setTitle("로그아웃", for: .normal)
-            button.setTitleColor(.black, for: .normal)
-            button.titleLabel?.font = UIFont.systemFont(ofSize: 17)
-            button.addTarget(self, action: #selector(touchedLogoutButton), for: .touchUpInside)
-            
-            return button
+        let button = UIButton()
+        button.setTitle("로그아웃", for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 17)
+        button.addTarget(self, action: #selector(touchedLogoutButton), for: .touchUpInside)
+        
+        return button
     }()
     
     lazy var titleLabel = createLabel("내 정보", 35)
@@ -127,7 +127,7 @@ class ProfileViewController: UIViewController
     }()
     
     let pointImage = UIImageView(image: UIImage(named: "PointIcon"))
-
+    
     lazy var pointLabel = createLabel("포인트", 20)
     
     lazy var statsLabel = createLabel("통계", 25)
@@ -138,7 +138,7 @@ class ProfileViewController: UIViewController
         lineView.backgroundColor = UIColor.black
         return lineView
     }()
-  
+    
     lazy var totalRunningDistanceLabel = createLabel("총 거리 : \(totalDistance) (km)", 15)
     
     let weeklyButton: UIButton =
@@ -180,12 +180,14 @@ class ProfileViewController: UIViewController
     
     
     
-// MARK: - Life Cycle
+    // MARK: - Life Cycle
     override func viewDidLoad()
     {
         super.viewDidLoad()
         view.backgroundColor = .white
-        
+        let coreDataManager = CoreDataManager.shared
+        coreDataManager.generateDummyRunningRecords()
+        loadRunningRecords()
         view.addSubview(scrollView)
         scrollView.contentSize = CGSize(width: view.frame.width, height: 1500)
         addScrollView()
@@ -193,7 +195,7 @@ class ProfileViewController: UIViewController
         setupProfileUI()
     }
     
-// MARK: - addSubView
+    // MARK: - addSubView
     func addScrollView()
     {
         scrollView.addSubview(noticeButton)
@@ -222,7 +224,7 @@ class ProfileViewController: UIViewController
         scrollView.addSubview(lastWeek_MonthRunningCountLabel)
     }
     
-// MARK: - 레이아웃
+    // MARK: - 레이아웃
     func setLayout()
     {
         scrollView.snp.makeConstraints
@@ -297,7 +299,7 @@ class ProfileViewController: UIViewController
             make.top.equalTo(pointImage.snp.bottom).offset(20)
             make.leading.equalTo(view.snp.leading).inset(20)
         }
-
+        
         line.snp.makeConstraints
         {   make in
             make.top.equalTo(statsLabel.snp.bottom).offset(5)
@@ -391,7 +393,7 @@ class ProfileViewController: UIViewController
         }
     }
     
-// MARK: - 레이블 생성 함수
+    // MARK: - 레이블 생성 함수
     func createLabel(_ text: String, _ fontSize: Int) -> UILabel
     {
         let label = UILabel()
@@ -402,7 +404,7 @@ class ProfileViewController: UIViewController
         return label
     }
     
-// MARK: - 로그인 방식 가져오기
+    // MARK: - 로그인 방식 가져오기
     func setImage() -> String
     {
         guard let context = self.persistentContainer?.viewContext else { return "" }
@@ -422,7 +424,7 @@ class ProfileViewController: UIViewController
         }
     }
     
-// MARK: - 로그아웃 함수
+    // MARK: - 로그아웃 함수
     func kakaoLogout()
     {
         // 사용자 액세스 토큰과 리프레시 토큰을 모두 만료시켜, 더 이상 해당 사용자 정보로 카카오 API를 호출할 수 없도록 합니다.
@@ -452,7 +454,7 @@ class ProfileViewController: UIViewController
         }
     }
     
-// MARK: - 버튼 함수
+    // MARK: - 버튼 함수
     @objc func selectImage()
     {
         let imagePickerController = UIImagePickerController()
@@ -517,34 +519,34 @@ extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationCo
         }
         picker.dismiss(animated: true, completion: nil)
     }
-        
+    
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController)
     {
         picker.dismiss(animated: true, completion: nil)
     }
 }
 
-func makeRoundedImage(from image: UIImage) -> UIImage? 
+func makeRoundedImage(from image: UIImage) -> UIImage?
 {
     // 이미지를 정사각형으로 만듭니다.
-        let imageSize = min(image.size.width, image.size.height)
-        let imageOrigin = CGPoint(x: (image.size.width - imageSize) / 2.0, y: (image.size.height - imageSize) / 2.0)
-        let imageRect = CGRect(origin: imageOrigin, size: CGSize(width: imageSize, height: imageSize))
-        let croppedImage = image.cgImage?.cropping(to: imageRect)
-        
-        // 정사각형 이미지를 원으로 만듭니다.
-        let imageView = UIImageView(image: UIImage(cgImage: croppedImage!, scale: image.scale, orientation: image.imageOrientation))
-        imageView.layer.cornerRadius = imageSize / 2.0
-        imageView.layer.masksToBounds = true
-        imageView.contentMode = .scaleAspectFill
-        
-        UIGraphicsBeginImageContextWithOptions(imageView.bounds.size, false, image.scale)
-        defer { UIGraphicsEndImageContext() }
-        
-        guard let context = UIGraphicsGetCurrentContext() else { return nil }
-        imageView.layer.render(in: context)
-        
-        return UIGraphicsGetImageFromCurrentImageContext()
+    let imageSize = min(image.size.width, image.size.height)
+    let imageOrigin = CGPoint(x: (image.size.width - imageSize) / 2.0, y: (image.size.height - imageSize) / 2.0)
+    let imageRect = CGRect(origin: imageOrigin, size: CGSize(width: imageSize, height: imageSize))
+    let croppedImage = image.cgImage?.cropping(to: imageRect)
+    
+    // 정사각형 이미지를 원으로 만듭니다.
+    let imageView = UIImageView(image: UIImage(cgImage: croppedImage!, scale: image.scale, orientation: image.imageOrientation))
+    imageView.layer.cornerRadius = imageSize / 2.0
+    imageView.layer.masksToBounds = true
+    imageView.contentMode = .scaleAspectFill
+    
+    UIGraphicsBeginImageContextWithOptions(imageView.bounds.size, false, image.scale)
+    defer { UIGraphicsEndImageContext() }
+    
+    guard let context = UIGraphicsGetCurrentContext() else { return nil }
+    imageView.layer.render(in: context)
+    
+    return UIGraphicsGetImageFromCurrentImageContext()
 }
 
 
@@ -574,29 +576,72 @@ extension ProfileViewController {
             make.top.equalTo(userRecord.snp.bottom).offset(15)
             make.left.equalToSuperview().offset(20)
             make.right.equalToSuperview().offset(-20)
-            make.height.equalTo(4 * 120)
+            make.height.equalTo(runningRecords.count * 120)
         }
     }
 }
 extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
+    // MARK: - 데이터 로딩
+    func loadRunningRecords() {
+        runningRecords = CoreDataManager.shared.fetchRunningRecords()
+        tableView.reloadData() // Reload the tableView with the new data
+    }
+    
+    private func updateUI() {
+        // 뷰모델의 데이터로 UI 업데이트
+        thisWeek_MonthDistanceLabel.text = viewModel.distanceText
+        thisWeek_MonthPaceLabel.text = viewModel.paceText
+        // 더 많은 UI 컴포넌트 업데이트
+    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4
+        return runningRecords.count
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "RecordCell", for: indexPath) as? RecordViewCell else {
             return UITableViewCell()
         }
+        let record = runningRecords[indexPath.row]
+        let recordViewModel = RunningRecordViewModel(runningRecord: record)
+        cell.configure(with: recordViewModel)
         return cell
     }
-
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 120
     }
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        let recordVC = RunningRecordViewController()
-//        navigationController?.pushViewController(recordVC, animated: true)
+        let selectedRecord = runningRecords[indexPath.row]
+        let selectedRecordViewModel = RunningRecordViewModel(runningRecord: selectedRecord)
+        
+        let recordVC = RunningRecordViewController()
+        recordVC.viewModel = selectedRecordViewModel
+        
+        navigationController?.pushViewController(recordVC, animated: true)
+    }
+    // 선택된 레코드의 뷰모델을 생성하는 메서드
+    private func viewModelForRecord(atIndexPath indexPath: IndexPath) -> RunningRecordViewModel {
+        let selectedRecord = runningRecords[indexPath.row]
+        return RunningRecordViewModel(runningRecord: selectedRecord)
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            // Assuming `viewModel.deleteRunningRecord(at:completion:)` correctly handles deletion
+            // from both your data model and Core Data.
+            viewModel.deleteRunningRecord(at: indexPath.row) { [weak self] success in
+                guard let self = self, success else {
+                    // Handle failure: Show an error message or log the error
+                    return
+                }
+                // Proceed with UI update on the main thread
+                DispatchQueue.main.async {
+                    // Update the table view UI to reflect the deletion
+                    tableView.deleteRows(at: [indexPath], with: .fade)
+                }
+            }
+        }
     }
 }

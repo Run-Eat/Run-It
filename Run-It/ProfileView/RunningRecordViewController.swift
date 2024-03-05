@@ -36,11 +36,14 @@ struct RunningRecordViewController_PreviewProvider: PreviewProvider {
 
 class RunningRecordViewController: UIViewController, UITextFieldDelegate {
     // MARK: - Properties
-//    var viewModel: RecordViewModel!
+    var viewModel: RunningRecordViewModel! {
+        didSet {
+            updateUI()
+        }
+    }
         
     var userDate: UILabel = {
         let label = UILabel()
-        label.text = "2024. 02. 20. (화), 00:00"
         label.font = UIFont.systemFont(ofSize: 18)
         label.textAlignment = .left
         return label
@@ -60,7 +63,7 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
         editButton.contentMode = .scaleAspectFit
         editButton.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
         
-        editButton.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
+        editButton.addTarget(RunningRecordViewController.self, action: #selector(editButtonTapped), for: .touchUpInside)
         
         let rightView = UIView(frame: CGRect(x: 0, y: 0, width: 32, height: 24)) // 오른쪽 뷰 크기 설정
         rightView.addSubview(editButton)
@@ -84,8 +87,7 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
     
     var recordDistance: UILabel = {
         let label = UILabel()
-        label.text = "10.00"
-        label.font = UIFont.systemFont(ofSize: 128)
+        label.font = UIFont.systemFont(ofSize: 85)
         label.textAlignment = .left
         return label
     }()
@@ -101,7 +103,6 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
     
     var recordTime: UILabel = {
         let label = UILabel()
-        label.text = "58:42"
         label.font = UIFont.systemFont(ofSize: 45)
         label.textAlignment = .left
         return label
@@ -118,7 +119,6 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
     
     var userPace: UILabel = {
         let label = UILabel()
-        label.text = "05:52"
         label.font = UIFont.systemFont(ofSize: 45)
         label.textAlignment = .left
         return label
@@ -133,10 +133,10 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
         return label
     }()
     
-    var routeImage: UIImageView = {
-        let image = UIImageView()
-        image.backgroundColor = UIColor.systemGreen
-        return image
+    var routeImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.backgroundColor = UIColor.systemGreen
+        return imageView
     }()
     // MARK: - Life Cycle
     override func viewDidLoad() {
@@ -184,17 +184,41 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
             make.right.equalToSuperview().offset(-20)
         }
         
-        view.addSubview(routeImage)
+        view.addSubview(routeImageView)
         
-        routeImage.snp.makeConstraints{ make in
+        routeImageView.snp.makeConstraints{ make in
             make.top.equalTo(stackView.snp.bottom).offset(20)
             make.left.equalToSuperview().offset(20)
             make.right.equalToSuperview().offset(-20)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-20)
         }
     }
+    // MARK: - UI업데이트
+    private func updateUI() {
+        guard let viewModel = viewModel else { return }
+        userDate.text = viewModel.dateText
+        recordDistance.text = viewModel.distanceText
+        recordTime.text = viewModel.timeText
+        userPace.text = viewModel.paceText
+//        routeImage.image = viewModel.routeImageData.flatMap(UIImage.init)
+        if let imageData = viewModel.routeImageData {
+            routeImageView.image = UIImage(data: imageData)
+        } else {
+            routeImageView.image = nil // Or set a placeholder image
+        }
+    }
     // MARK: - UITextFieldDelegate
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        // Assume textField is recordTextField and it's editing the label
+        if let newText = textField.text, !newText.isEmpty {
+            // Update the viewModel and persist the new label
+            viewModel.updateLabelText(newLabelText: newText)
+            print("라벨 저장")
+            
+            // Optionally, refresh UI elements that depend on labelText
+            // e.g., if you have a UILabel that displays labelText
+        }
+        
         textField.resignFirstResponder()
         return true
     }

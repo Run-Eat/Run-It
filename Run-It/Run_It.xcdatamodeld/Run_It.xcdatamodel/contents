@@ -5,7 +5,7 @@
     </entity>
     <entity name="Favorite" representedClassName="Favorite" parentEntity="User" syncable="YES" codeGenerationType="class">
         <attribute name="addedDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="favorite" inverseEntity="User"/>
     </entity>
     <entity name="PlaceInfo" representedClassName="PlaceInfo" syncable="YES" codeGenerationType="class">
         <attribute name="adress" optional="YES" attributeType="String"/>
@@ -39,6 +39,6 @@
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="profilePhoto" optional="YES" attributeType="Binary"/>
         <attribute name="userId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <relationship name="favorite" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Favorite"/>
+        <relationship name="favorite" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Favorite" inverseName="user" inverseEntity="Favorite"/>
     </entity>
 </model>

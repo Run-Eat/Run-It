@@ -15,7 +15,6 @@ class RecordViewCell: UITableViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        label.text = "2024.02.23"
         label.numberOfLines = 0
         return label
     }()
@@ -24,7 +23,6 @@ class RecordViewCell: UITableViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 14)
-        label.text = "10.00 km"
         label.textAlignment = .right
         return label
     }()
@@ -33,7 +31,6 @@ class RecordViewCell: UITableViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 14)
-        label.text = "58:42 시간"
         label.textAlignment = .right
         return label
     }()
@@ -47,11 +44,6 @@ class RecordViewCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    // MARK: - Cell Configuration
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
     }
     
     private func setupUI() {
@@ -93,5 +85,14 @@ class RecordViewCell: UITableViewCell {
         backgroundView.layer.masksToBounds = true
         backgroundView.frame = self.bounds.inset(by: UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0))
         self.backgroundView = backgroundView
+    }
+}
+
+extension RecordViewCell {
+    func configure(with viewModel: RunningRecordViewModel) {
+        dateLabel.text = viewModel.dateText
+        distanceLabel.text = viewModel.distanceText
+        timeLabel.text = viewModel.timeText
+//        paceLabel.text = viewModel.paceText
     }
 }
