@@ -92,6 +92,7 @@ class CoreDataManager {
         record.distance = distance
         record.pace = pace
         record.date = Date()
+//        record.createdAt = Date()
         print("CoreData id: \(String(describing: record.id)) Time: \(record.time), Distance: \(record.distance), Pace: \(record.pace)")
         
         do {

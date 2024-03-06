@@ -5,34 +5,6 @@
 //  Created by 석진 on 2/26/24.
 //
 
-
-//#if DEBUG
-//import SwiftUI
-//struct Preview: UIViewControllerRepresentable {
-//    
-//    // 여기 ViewController를 변경해주세요
-//    func makeUIViewController(context: Context) -> UIViewController {
-//        LoginViewController()
-//    }
-//    
-//    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-//        // leave this empty
-//    }
-//}
-//
-//struct ViewController_PreviewProvider: PreviewProvider {
-//    static var previews: some View {
-//        Group {
-//            Preview()
-//                .edgesIgnoringSafeArea(.all)
-//                .previewDisplayName("Preview")
-//                .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro"))
-//        }
-//    }
-//}
-//#endif
-
-
 import UIKit
 import SnapKit
 import CoreData
@@ -40,6 +12,7 @@ import FirebaseAuth
 import FirebaseCore
 import KakaoSDKAuth
 import KakaoSDKUser
+
 
 class LoginViewController: UIViewController
 {
@@ -62,6 +35,7 @@ class LoginViewController: UIViewController
         textField.autocorrectionType = .no
         textField.spellCheckingType = .no
         textField.layer.borderWidth = 0.7
+        textField.layer.cornerRadius = 7
         return textField
     }()
     
@@ -78,6 +52,7 @@ class LoginViewController: UIViewController
         textField.autocorrectionType = .no
         textField.spellCheckingType = .no
         textField.layer.borderWidth = 0.7
+        textField.layer.cornerRadius = 7
         return textField
     }()
     
