@@ -13,7 +13,6 @@ class RecordViewCell: UITableViewCell {
     // MARK: - Properties
     lazy var dateLabel: UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         label.numberOfLines = 0
         return label
@@ -21,7 +20,6 @@ class RecordViewCell: UITableViewCell {
     
     lazy var distanceLabel: UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 14)
         label.textAlignment = .right
         return label
@@ -29,7 +27,6 @@ class RecordViewCell: UITableViewCell {
     
     lazy var timeLabel: UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 14)
         label.textAlignment = .right
         return label
@@ -90,7 +87,7 @@ class RecordViewCell: UITableViewCell {
 
 extension RecordViewCell {
     func configure(with viewModel: RunningRecordViewModel) {
-        dateLabel.text = viewModel.dateText
+        dateLabel.text = viewModel.labelText
         distanceLabel.text = viewModel.distanceText
         timeLabel.text = viewModel.timeText
 //        paceLabel.text = viewModel.paceText
