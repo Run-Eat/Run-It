@@ -28,6 +28,11 @@ class RunningTimerLocationManager: NSObject, CLLocationManagerDelegate {
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
     }
     
+    //위치사용 권한 요청
+    func getLocationUsagePermission() {
+        self.locationManager.requestWhenInUseAuthorization()
+    }
+    
     // Call this method to start updating the location
     func startUpdatingLocation() {
         locationManager.startUpdatingLocation()
@@ -36,6 +41,33 @@ class RunningTimerLocationManager: NSObject, CLLocationManagerDelegate {
     // Call this method to stop updating the location
     func stopUpdatingLocation() {
         locationManager.stopUpdatingLocation()
+    }
+    
+    //위치서비스의 권한 상태가 변경될 때 호출되는 매서드
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        switch manager.authorizationStatus {
+        case .authorizedAlways, .authorizedWhenInUse:
+            self.locationManager.startUpdatingLocation()
+            print("GPS 권한 설정됨")
+        case .denied, .restricted:
+            DispatchQueue.main.async {
+                self.locationManager.requestWhenInUseAuthorization()
+            }
+            print("GPS 권한 요청함")
+        case .notDetermined:
+            //결정이 안되었을 경우 권한 요청
+            DispatchQueue.main.async {
+                self.locationManager.requestWhenInUseAuthorization()
+            }
+            print("GPS 권한 요청함")
+        default:
+            return
+        }
+    }
+    
+    // 오류 처리
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Location Error: \(error)")
     }
     
     // CLLocationManagerDelegate 메서드
