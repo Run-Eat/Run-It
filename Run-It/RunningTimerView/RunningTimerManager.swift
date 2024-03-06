@@ -22,7 +22,7 @@ class RunningTimer {
     var state: TimerState = .suspended
     private var timer: DispatchSourceTimer?
     private var startTime = Date()
-
+    
     private var pauseTime: Date?
     private var restartTime: Date?
     private var pauseDuration: Int = 0
@@ -36,6 +36,36 @@ class RunningTimer {
     // UI 업데이트를 위한 클로져
     var updateUI: (() -> Void)?
     
+    var locationManger = RunningTimerLocationManager.shared
+    
+    init() {
+        setupLocationUpdateHandling()
+        setupLocationUpdateListener()
+    }
+    private func setupLocationUpdateHandling() {
+        locationManger.updateLocationClosure = { [weak self] location in
+            // 여기에서 위치 업데이트에 대한 처리를 정의
+            // 예: self?.distance += 계산된 거리
+        }
+    }
+    
+    private func setupLocationUpdateListener() {
+        RunningTimerLocationManager.shared.updateLocationClosure = { [weak self] newLocation in
+            guard let self = self, self.state == .resumed else { return }
+            // RunningTimerLocationManager에서 제공하는 totalDistance를 사용하여 거리 업데이트
+            self.distance = RunningTimerLocationManager.shared.totalDistance
+            
+            // 경과 시간을 기반으로 페이스 계산
+            let elapsedTime = Date().timeIntervalSince(self.startTime) - Double(self.pauseDuration)
+            self.pace = elapsedTime > 0 ? self.distance / elapsedTime : 0
+            
+            DispatchQueue.main.async {
+                // UI 업데이트 클로저 호출
+                self.updateUI?()
+            }
+        }
+    }
+    
     func start() {
         timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global(qos: .background))
         timer?.schedule(deadline: .now(), repeating: .seconds(1))
@@ -43,16 +73,16 @@ class RunningTimer {
             guard let self = self else { return }
             // Int(Date().timeIntervalSince(startTime))
             self.time = Int(Date().timeIntervalSince(startTime)) - self.pauseDuration
-            self.distance += 0.01 // RunningTimerManager와 연계해서 변경 필요
-            // 거리가 0.05km, 즉 50m 이상일 때만 페이스를 계산
-            self.pace = self.distance >= 0.05 ? Double(self.time) / self.distance : 0
+            // 이동 거리와 페이스 계산은 위치 업데이트 클로저 내에서 처리
+
+            // 로그 출력 및 UI 업데이트
             print("running properties : \(self.time), \(self.distance), \(self.pace)")
+            
             DispatchQueue.main.async {
                 // updateUI 클로져를 호출
                 self.updateUI?()
             }
         }
-//        startTime = Date()
         timer?.resume()
         state = .resumed
     }
@@ -74,11 +104,11 @@ class RunningTimer {
         }
         print(backgroundTime ?? Date())
     }
-
+    
     
     func restart() {
         if state == .suspended {
-//            timer?.activate()
+            //            timer?.activate()
             timer?.resume()
             state = .resumed
             restartTime = Date()
@@ -105,7 +135,7 @@ class RunningTimer {
             let backgroundDuration = Date().timeIntervalSince(backgroundTime ?? Date())
             print("Background Duration: \(backgroundDuration)")
             time += Int(backgroundDuration)
-
+            
             timer?.activate()
             timer?.resume()
             state = .resumed
@@ -115,7 +145,7 @@ class RunningTimer {
         }
         print("Forground properties : \(self.time), \(self.distance), \(self.pace)")
     }
-
+    
     func stop() {
         timer?.cancel()
         state = .canceled

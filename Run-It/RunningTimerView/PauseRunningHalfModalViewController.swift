@@ -203,7 +203,7 @@ extension PauseRunningHalfModalViewController {
         
         // 레이블의 텍스트를 설정
         modaltimeNumberLabel.text = String(format: "%01d:%02d:%02d", hours, minutes, seconds)
-        modaldistanceNumberLabel.text = String(format: "%.2f", distance)
+        modaldistanceNumberLabel.text = String(format: "%.2f", distance / 1000)
         modalpaceNumberLabel.text = String(format: "%02d:%02d", paceMinutes, paceSeconds)
     }
     
