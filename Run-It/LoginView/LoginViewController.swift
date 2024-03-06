@@ -5,34 +5,6 @@
 //  Created by 석진 on 2/26/24.
 //
 
-
-//#if DEBUG
-//import SwiftUI
-//struct Preview: UIViewControllerRepresentable {
-//    
-//    // 여기 ViewController를 변경해주세요
-//    func makeUIViewController(context: Context) -> UIViewController {
-//        LoginViewController()
-//    }
-//    
-//    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-//        // leave this empty
-//    }
-//}
-//
-//struct ViewController_PreviewProvider: PreviewProvider {
-//    static var previews: some View {
-//        Group {
-//            Preview()
-//                .edgesIgnoringSafeArea(.all)
-//                .previewDisplayName("Preview")
-//                .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro"))
-//        }
-//    }
-//}
-//#endif
-
-
 import UIKit
 import SnapKit
 import CoreData
@@ -40,6 +12,7 @@ import FirebaseAuth
 import FirebaseCore
 import KakaoSDKAuth
 import KakaoSDKUser
+
 
 class LoginViewController: UIViewController
 {
@@ -62,6 +35,7 @@ class LoginViewController: UIViewController
         textField.autocorrectionType = .no
         textField.spellCheckingType = .no
         textField.layer.borderWidth = 0.7
+        textField.layer.cornerRadius = 7
         return textField
     }()
     
@@ -78,10 +52,11 @@ class LoginViewController: UIViewController
         textField.autocorrectionType = .no
         textField.spellCheckingType = .no
         textField.layer.borderWidth = 0.7
+        textField.layer.cornerRadius = 7
         return textField
     }()
     
-    let loginButton: UIButton =
+    lazy var loginButton: UIButton =
     {
         let button = UIButton()
         button.setTitle("로그인", for: .normal)
@@ -92,7 +67,7 @@ class LoginViewController: UIViewController
         return button
     }()
     
-    let findEmailButton: UIButton =
+    lazy var findEmailButton: UIButton =
     {
         let button = UIButton()
         button.setTitle("이메일 찾기", for: .normal)
@@ -102,7 +77,7 @@ class LoginViewController: UIViewController
         return button
     }()
     
-    let resetPasswordButton: UIButton =
+    lazy var resetPasswordButton: UIButton =
     {
         let button = UIButton()
         button.setTitle("비밀번호 재설정", for: .normal)
@@ -112,7 +87,7 @@ class LoginViewController: UIViewController
         return button
     }()
     
-    let signUpButton: UIButton =
+    lazy var signUpButton: UIButton =
     {
         let button = UIButton()
         button.setTitle("회원가입", for: .normal)
@@ -158,7 +133,7 @@ class LoginViewController: UIViewController
         return lineView
     }()
     
-    let kakaoLoginButton: UIButton =
+    lazy var kakaoLoginButton: UIButton =
     {
         let button = UIButton()
         button.setImage(UIImage(named: "KakaoLogo"), for: .normal)
@@ -166,7 +141,7 @@ class LoginViewController: UIViewController
         return button
     }()
     
-    let appleLoginButton: UIButton =
+    lazy var appleLoginButton: UIButton =
     {
         let button = UIButton()
         button.setImage(UIImage(named: "AppleLogo"), for: .normal)

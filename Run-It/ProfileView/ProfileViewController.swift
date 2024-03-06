@@ -13,31 +13,6 @@ import FirebaseCore
 import KakaoSDKAuth
 import KakaoSDKUser
 
-//#if DEBUG
-//import SwiftUI
-//struct Preview: UIViewControllerRepresentable {
-//
-//    // 여기 ViewController를 변경해주세요
-//    func makeUIViewController(context: Context) -> UIViewController {
-//        ProfileViewController()
-//    }
-//
-//    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-//        // leave this empty
-//    }
-//}
-//
-//struct ViewController_PreviewProvider: PreviewProvider {
-//    static var previews: some View {
-//        Group {
-//            Preview()
-//                .edgesIgnoringSafeArea(.all)
-//                .previewDisplayName("Preview")
-//                .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro"))
-//        }
-//    }
-//}
-//#endif
 
 class ProfileViewController: UIViewController
 {
@@ -106,7 +81,7 @@ class ProfileViewController: UIViewController
     
     lazy var loginTypeIcon = UIImageView(image: UIImage(named: imageName + "Logo"))
     
-    let logoutButton: UIButton =
+    lazy var logoutButton: UIButton =
     {
         let button = UIButton()
         button.setTitle("로그아웃", for: .normal)
@@ -132,7 +107,7 @@ class ProfileViewController: UIViewController
         return imageView
     }()
     
-    let imageSettingButton: UIButton =
+    lazy var imageSettingButton: UIButton =
     {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 70, weight: .bold, scale: .medium)
@@ -158,7 +133,7 @@ class ProfileViewController: UIViewController
     
     lazy var totalRunningDistanceLabel = createLabel("", 15)
     
-    let weeklyButton: UIButton =
+    lazy var weeklyButton: UIButton =
     {
         let button = UIButton()
         button.setTitle("매 주", for: .normal)
@@ -169,7 +144,7 @@ class ProfileViewController: UIViewController
         return button
     }()
     
-    let monthlyButton: UIButton =
+    lazy var monthlyButton: UIButton =
     {
         let button = UIButton()
         button.setTitle("매 달", for: .normal)
@@ -480,7 +455,7 @@ class ProfileViewController: UIViewController
             try firebaseAuth.signOut()
             print("로그아웃 완료")
         }
-        catch let signOutError as NSError
+        catch _ as NSError
         {
             print("로그아웃 에러")
         }
