@@ -200,8 +200,6 @@ class ProfileViewController: UIViewController
     {
         super.viewDidLoad()
         view.backgroundColor = .white
-        let coreDataManager = CoreDataManager.shared
-        coreDataManager.generateDummyRunningRecords()
         loadRunningRecords()
         view.addSubview(scrollView)
         scrollView.contentSize = CGSize(width: view.frame.width, height: 1500)
@@ -216,11 +214,11 @@ class ProfileViewController: UIViewController
         
         totalRunningDistanceLabel.text = "총 거리 : \(String(format: "%.2f", totalRunningDistance)) (km)"
         
-        thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisWeekDistance)) km"
+        thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisWeekDistance))"
         thisWeek_MonthPaceLabel.text = String(format: "%.2f", thisWeekPace)
         thisWeek_MonthRunningCountLabel.text = "\(thisWeekRunningCount) 회"
         
-        lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", lastWeekDistance)) km"
+        lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", lastWeekDistance))"
         lastWeek_MonthPaceLabel.text = String(format: "%.2f", lastWeekPace)
         lastWeek_MonthRunningCountLabel.text = "\(lastWeekRunningCount) 회"
     }
@@ -509,12 +507,10 @@ class ProfileViewController: UIViewController
                 
                 for record in records
                 {
-                    print("11111111111111111111")
-                    print(record)
-                    //                guard let recordDate = record.date else { return }
+                    guard let recordDate = record.date else { return }
                     
-                    let recordMonth = calender.component(.month, from: record.date ?? Date())
-                    let recordWeekOfYear = calender.component(.weekOfYear, from: record.date ?? Date())
+                    let recordMonth = calender.component(.month, from: recordDate)
+                    let recordWeekOfYear = calender.component(.weekOfYear, from: recordDate)
                     
                     // 총 거리
                     totalRunningDistance += record.distance
@@ -559,7 +555,7 @@ class ProfileViewController: UIViewController
             }
             catch
             {
-                print("Error fetching running records: \(error)")
+                print("Error")
             }
         }
         
@@ -604,12 +600,12 @@ class ProfileViewController: UIViewController
     @objc func touchedWeeklyButton()
     {
         thisWeek_MonthLabel.text = "이번 주"
-        thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisWeekDistance)) km"
+        thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisWeekDistance))"
         thisWeek_MonthPaceLabel.text = String(format: "%.2f", thisWeekPace)
         thisWeek_MonthRunningCountLabel.text = "\(thisWeekRunningCount) 회"
         
         lastWeek_MonthLabel.text = "지난 주"
-        lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", lastWeekDistance)) km"
+        lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", lastWeekDistance))"
         lastWeek_MonthPaceLabel.text = String(format: "%.2f", lastWeekPace)
         lastWeek_MonthRunningCountLabel.text = "\(lastWeekRunningCount) 회"
     }
@@ -617,12 +613,12 @@ class ProfileViewController: UIViewController
     @objc func touchedMonthlyButton()
     {
         thisWeek_MonthLabel.text = "이번 달"
-        thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisMonthDistance)) km"
+        thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisMonthDistance))"
         thisWeek_MonthPaceLabel.text = String(format: "%.2f", thisMonthPace)
         thisWeek_MonthRunningCountLabel.text = "\(thisMonthRunningCount) 회"
         
         lastWeek_MonthLabel.text = "지난 달"
-        lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", lastMonthDistance)) km"
+        lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", lastMonthDistance))"
         lastWeek_MonthPaceLabel.text = String(format: "%.2f", lastMonthPace)
         lastWeek_MonthRunningCountLabel.text = "\(lastMonthRunningCount) 회"
     }

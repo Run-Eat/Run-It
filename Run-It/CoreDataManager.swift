@@ -85,12 +85,6 @@ class CoreDataManager {
             print("Failed to create entity description for RunningRecord")
             return nil
         }
-        
-        let currentDate = Date()
-        let calender = Calendar.current
-        
-        let month = calender.component(.month, from: currentDate)    // 현재 월
-        let weekOfYear = calender.component(.weekOfYear, from: currentDate)      // 현재 연 중의 주차
 
         let record = RunningRecord(entity: entity, insertInto: context)
 //        record.recordId = UUID()
