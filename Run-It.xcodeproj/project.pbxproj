@@ -8,11 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		0BF25AC42B8B65A600B0C8CE /* RunningMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC32B8B65A600B0C8CE /* RunningMapView.swift */; };
-		0BF25AC62B8B73E600B0C8CE /* RunningMapMobel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC52B8B73E600B0C8CE /* RunningMapMobel.swift */; };
+		0BF25AC62B8B73E600B0C8CE /* RunningMapModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC52B8B73E600B0C8CE /* RunningMapModel.swift */; };
 		0BF25AC82B8BA87900B0C8CE /* StoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25AC72B8BA87900B0C8CE /* StoreViewController.swift */; };
 		0BF25ACC2B8C724600B0C8CE /* DistanceCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF25ACB2B8C724600B0C8CE /* DistanceCollectionViewCell.swift */; };
 		2B03B6D32B95D54F009F237A /* FavoriteViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B03B6D22B95D54F009F237A /* FavoriteViewCell.swift */; };
 		2B4652F92B96B64F0040B146 /* RunningRecordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B4652F82B96B64F0040B146 /* RunningRecordViewModel.swift */; };
+		2B46533B2B9751A60040B146 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2B46533A2B9751A60040B146 /* GoogleService-Info.plist */; };
+		2B46533D2B97527D0040B146 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B46533C2B97527D0040B146 /* ProfileViewController.swift */; };
+		2B46533F2B9752D60040B146 /* EventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B46533E2B9752D60040B146 /* EventViewController.swift */; };
 		2B9888242B8B76A300B2BC74 /* EventViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888232B8B76A300B2BC74 /* EventViewCell.swift */; };
 		2B98882A2B8C770900B2BC74 /* RecordViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888292B8C770900B2BC74 /* RecordViewCell.swift */; };
 		2B9888472B904D8500B2BC74 /* RunningRecordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888462B904D8500B2BC74 /* RunningRecordViewController.swift */; };
@@ -56,15 +59,12 @@
 		C82CEDD82B86FCB300B619AD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C82CEDD62B86FCB300B619AD /* LaunchScreen.storyboard */; };
 		C82CEDE02B86FD5100B619AD /* BookmarkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDDF2B86FD5100B619AD /* BookmarkViewController.swift */; };
 		C82CEDE22B86FD7C00B619AD /* RunningMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDE12B86FD7C00B619AD /* RunningMapViewController.swift */; };
-		C82CEDE42B86FD8800B619AD /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDE32B86FD8800B619AD /* ProfileViewController.swift */; };
 		C82CEDE92B86FDE800B619AD /* RunningTimerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDE82B86FDE800B619AD /* RunningTimerViewController.swift */; };
-		C82CEDEB2B86FDF700B619AD /* EventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDEA2B86FDF700B619AD /* EventViewController.swift */; };
 		C879CD032B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879CD022B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift */; };
 		C879CD052B8880F200DBFB82 /* PauseViewHalfModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879CD042B8880F200DBFB82 /* PauseViewHalfModal.swift */; };
 		C879CD072B8AA9B400DBFB82 /* StartRunningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879CD062B8AA9B400DBFB82 /* StartRunningViewController.swift */; };
 		C879CD092B8B405E00DBFB82 /* RunningTimerLocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879CD082B8B405E00DBFB82 /* RunningTimerLocationManager.swift */; };
 		C893A7232B955B0E00D5466E /* RunningTimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C893A7222B955B0E00D5466E /* RunningTimerManager.swift */; };
-		C8A362FA2B95B4BE006D551E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C8A362F92B95B4BE006D551E /* GoogleService-Info.plist */; };
 		C8A362FC2B95BFB7006D551E /* StoreViewHalfModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A362FB2B95BFB7006D551E /* StoreViewHalfModal.swift */; };
 		C8D903EF2B8731870008C15E /* KakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = C8D903EE2B8731870008C15E /* KakaoSDK */; };
 		C8D903F12B8731870008C15E /* KakaoSDKAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C8D903F02B8731870008C15E /* KakaoSDKAuth */; };
@@ -78,11 +78,14 @@
 
 /* Begin PBXFileReference section */
 		0BF25AC32B8B65A600B0C8CE /* RunningMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningMapView.swift; sourceTree = "<group>"; };
-		0BF25AC52B8B73E600B0C8CE /* RunningMapMobel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningMapMobel.swift; sourceTree = "<group>"; };
+		0BF25AC52B8B73E600B0C8CE /* RunningMapModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningMapModel.swift; sourceTree = "<group>"; };
 		0BF25AC72B8BA87900B0C8CE /* StoreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreViewController.swift; sourceTree = "<group>"; };
 		0BF25ACB2B8C724600B0C8CE /* DistanceCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceCollectionViewCell.swift; sourceTree = "<group>"; };
 		2B03B6D22B95D54F009F237A /* FavoriteViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteViewCell.swift; sourceTree = "<group>"; };
 		2B4652F82B96B64F0040B146 /* RunningRecordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningRecordViewModel.swift; sourceTree = "<group>"; };
+		2B46533A2B9751A60040B146 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		2B46533C2B97527D0040B146 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		2B46533E2B9752D60040B146 /* EventViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
 		2B9888232B8B76A300B2BC74 /* EventViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewCell.swift; sourceTree = "<group>"; };
 		2B9888292B8C770900B2BC74 /* RecordViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordViewCell.swift; sourceTree = "<group>"; };
 		2B9888462B904D8500B2BC74 /* RunningRecordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningRecordViewController.swift; sourceTree = "<group>"; };
@@ -101,15 +104,12 @@
 		C82CEDD92B86FCB300B619AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C82CEDDF2B86FD5100B619AD /* BookmarkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkViewController.swift; sourceTree = "<group>"; };
 		C82CEDE12B86FD7C00B619AD /* RunningMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningMapViewController.swift; sourceTree = "<group>"; };
-		C82CEDE32B86FD8800B619AD /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		C82CEDE82B86FDE800B619AD /* RunningTimerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningTimerViewController.swift; sourceTree = "<group>"; };
-		C82CEDEA2B86FDF700B619AD /* EventViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
 		C879CD022B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseRunningHalfModalViewController.swift; sourceTree = "<group>"; };
 		C879CD042B8880F200DBFB82 /* PauseViewHalfModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseViewHalfModal.swift; sourceTree = "<group>"; };
 		C879CD062B8AA9B400DBFB82 /* StartRunningViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartRunningViewController.swift; sourceTree = "<group>"; };
 		C879CD082B8B405E00DBFB82 /* RunningTimerLocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningTimerLocationManager.swift; sourceTree = "<group>"; };
 		C893A7222B955B0E00D5466E /* RunningTimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningTimerManager.swift; sourceTree = "<group>"; };
-		C8A362F92B95B4BE006D551E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C8A362FB2B95BFB7006D551E /* StoreViewHalfModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreViewHalfModal.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -193,7 +193,7 @@
 				C82CEDCA2B86FCB200B619AD /* SceneDelegate.swift */,
 				C82CEDD42B86FCB300B619AD /* Assets.xcassets */,
 				C82CEDD92B86FCB300B619AD /* Info.plist */,
-				C8A362F92B95B4BE006D551E /* GoogleService-Info.plist */,
+				2B46533A2B9751A60040B146 /* GoogleService-Info.plist */,
 				C82CEDEE2B86FEAF00B619AD /* MainTabBarViewController */,
 				6C7A43E62B8CAB5900A14291 /* LoginView */,
 				C82CEDE52B86FDBD00B619AD /* ProfileView */,
@@ -211,7 +211,7 @@
 		C82CEDE52B86FDBD00B619AD /* ProfileView */ = {
 			isa = PBXGroup;
 			children = (
-				C82CEDE32B86FD8800B619AD /* ProfileViewController.swift */,
+				2B46533C2B97527D0040B146 /* ProfileViewController.swift */,
 				2B9888292B8C770900B2BC74 /* RecordViewCell.swift */,
 				2B9888462B904D8500B2BC74 /* RunningRecordViewController.swift */,
 				2B4652F82B96B64F0040B146 /* RunningRecordViewModel.swift */,
@@ -225,7 +225,7 @@
 				C82CEDE12B86FD7C00B619AD /* RunningMapViewController.swift */,
 				C8A362FB2B95BFB7006D551E /* StoreViewHalfModal.swift */,
 				0BF25AC32B8B65A600B0C8CE /* RunningMapView.swift */,
-				0BF25AC52B8B73E600B0C8CE /* RunningMapMobel.swift */,
+				0BF25AC52B8B73E600B0C8CE /* RunningMapModel.swift */,
 				0BF25AC72B8BA87900B0C8CE /* StoreViewController.swift */,
 				0BF25ACB2B8C724600B0C8CE /* DistanceCollectionViewCell.swift */,
 			);
@@ -257,7 +257,7 @@
 		C82CEDED2B86FE1A00B619AD /* EventView */ = {
 			isa = PBXGroup;
 			children = (
-				C82CEDEA2B86FDF700B619AD /* EventViewController.swift */,
+				2B46533E2B9752D60040B146 /* EventViewController.swift */,
 				2B9888232B8B76A300B2BC74 /* EventViewCell.swift */,
 			);
 			path = EventView;
@@ -372,7 +372,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C82CEDD82B86FCB300B619AD /* LaunchScreen.storyboard in Resources */,
-				C8A362FA2B95B4BE006D551E /* GoogleService-Info.plist in Resources */,
+				2B46533B2B9751A60040B146 /* GoogleService-Info.plist in Resources */,
 				C82CEDD52B86FCB300B619AD /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -392,21 +392,19 @@
 				C879CD052B8880F200DBFB82 /* PauseViewHalfModal.swift in Sources */,
 				2B9888552B90C7AC00B2BC74 /* CoreDataManager.swift in Sources */,
 				C82CEDCD2B86FCB200B619AD /* MainTabBarViewController.swift in Sources */,
+				2B46533F2B9752D60040B146 /* EventViewController.swift in Sources */,
 				2B98882A2B8C770900B2BC74 /* RecordViewCell.swift in Sources */,
 				C82CEDC92B86FCB200B619AD /* AppDelegate.swift in Sources */,
 				C879CD092B8B405E00DBFB82 /* RunningTimerLocationManager.swift in Sources */,
 				C82CEDE22B86FD7C00B619AD /* RunningMapViewController.swift in Sources */,
 				6C7A43E52B8C904500A14291 /* SignUpViewController.swift in Sources */,
 				C8A362FC2B95BFB7006D551E /* StoreViewHalfModal.swift in Sources */,
-				C82CEDEB2B86FDF700B619AD /* EventViewController.swift in Sources */,
-				C82CEDE42B86FD8800B619AD /* ProfileViewController.swift in Sources */,
 				6CF4D5FE2B90669A0069A9B2 /* SignupVM.swift in Sources */,
 				0BF25AC42B8B65A600B0C8CE /* RunningMapView.swift in Sources */,
-				C82CEDEB2B86FDF700B619AD /* EventViewController.swift in Sources */,
-				C82CEDE42B86FD8800B619AD /* ProfileViewController.swift in Sources */,
 				0BF25ACC2B8C724600B0C8CE /* DistanceCollectionViewCell.swift in Sources */,
 				C82CEDCB2B86FCB200B619AD /* SceneDelegate.swift in Sources */,
-				0BF25AC62B8B73E600B0C8CE /* RunningMapMobel.swift in Sources */,
+				2B46533D2B97527D0040B146 /* ProfileViewController.swift in Sources */,
+				0BF25AC62B8B73E600B0C8CE /* RunningMapModel.swift in Sources */,
 				0BF25AC82B8BA87900B0C8CE /* StoreViewController.swift in Sources */,
 				2B9888472B904D8500B2BC74 /* RunningRecordViewController.swift in Sources */,
 				2B03B6D32B95D54F009F237A /* FavoriteViewCell.swift in Sources */,

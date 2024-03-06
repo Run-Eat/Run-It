@@ -127,11 +127,17 @@ class RunningTimerViewController: UIViewController, PauseRunningHalfModalViewCon
         setLayout()
         
         runningTimer.updateUI = { [weak self] in
-            self?.time = self?.runningTimer.time ?? 0
-            self?.distance = self?.runningTimer.distance ?? 0.0
-            self?.pace = self?.runningTimer.pace ?? 0.0
-            self?.updateTimerUI()
+            // 메인 스레드에서 UI 업데이트를 보장
+            DispatchQueue.main.async {
+                self?.time = self?.runningTimer.time ?? 0
+                self?.distance = self?.runningTimer.distance ?? 0.0
+                self?.pace = self?.runningTimer.pace ?? 0.0
+                self?.updateTimerUI()
+            }
         }
+//        // 위치 업데이트 시작
+        RunningTimerLocationManager.shared.startUpdatingLocation()
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -187,7 +193,7 @@ extension RunningTimerViewController {
             paceNumberLabel.text = "--:--"
         }
         
-        distanceNumberLabel.text = String(format: "%.2f", distance)
+        distanceNumberLabel.text = String(format: "%.2f", distance / 1000)
     }
 
     // MARK: - setupUI
