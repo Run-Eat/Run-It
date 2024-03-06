@@ -30,7 +30,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
         mapView.isRotateEnabled = true
         mapView.mapType = MKMapType.standard
         mapView.showsCompass = false
-
+        
         return mapView
     }()
     
@@ -139,7 +139,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
         addSubview()
         setLayout()
         RunningTimerLocationManager.shared.getLocationUsagePermission() //viewDidLoad 되었을 때 권한요청을 할 것인지, 현재 위치를 눌렀을 때 권한요청을 할 것인지
-
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -152,11 +152,11 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
         let startRunningViewController =  StartRunningViewController()
         startRunningViewController.modalPresentationStyle = .fullScreen
         self.present(startRunningViewController, animated: true)
-
+        
     }
     
     @objc func currentLocationButtonAction() {
-//        RunningTimerLocationManager.shared.getLocationUsagePermission()  //viewDidLoad 되었을 때 권한요청을 할 것인지, 현재 위치를 눌렀을 때 권한요청을 할 것인지
+        //        RunningTimerLocationManager.shared.getLocationUsagePermission()  //viewDidLoad 되었을 때 권한요청을 할 것인지, 현재 위치를 눌렀을 때 권한요청을 할 것인지
         mapView.showsUserLocation = true
         mapView.setUserTrackingMode(.follow, animated: true)
         print("확인")
@@ -168,14 +168,14 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
     
     @objc func presentStoreAnnotationButton() {
         getAnnotationLocation()
-//        if mapView.annotations.count > 0 {
-//            removeAnnotationsFromMap()
-//
-//        } else {
-//            getAnnotationLocation()
-//        }
-//        let storeViewController = StoreViewController()
-//        showMyViewControllerInACustomizedSheet(storeViewController)
+        //        if mapView.annotations.count > 0 {
+        //            removeAnnotationsFromMap()
+        //
+        //        } else {
+        //            getAnnotationLocation()
+        //        }
+        //        let storeViewController = StoreViewController()
+        //        showMyViewControllerInACustomizedSheet(storeViewController)
     }
     
 }
@@ -220,38 +220,45 @@ extension RunningMapViewController {
         let overlaysToRemove = mapView.overlays.filter { $0 !== currentCircle }
         mapView.removeOverlays(overlaysToRemove)
     }
-
+    
 } //extension
 
 //MARK: - CLLocationManagerDelegate
 extension RunningMapViewController: CLLocationManagerDelegate {
-
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.last {
             self.currentLocation = location
-
+            
             // 이전에 추가된 원을 제거
             if let currentCircle = currentCircle {
                 mapView.removeOverlay(currentCircle)
             }
-
+            
             // 새로운 원을 추가
             let circle = MKCircle(center: location.coordinate, radius: 150)
             mapView.addOverlay(circle)
             self.currentCircle = circle
-
+            
             if let destination = destination {
                 let userLocation = location.coordinate  // 사용자의 위치에 기기의 마지막 위경도를 주입
-
+                
                 calculateAndShowRoute(from: userLocation, to: destination)
             }
         }
     }
-
+    
     // 사용자의 현재 위치를 기반으로 경로를 계산하고 지도에 표시하는 메서드
     private func calculateAndShowRoute(from userLocation: CLLocationCoordinate2D, to destination: CLLocationCoordinate2D) {
-        // 예를 들어, 사용자의 현재 위치로부터 목적지(서울역)까지의 경로를 계산
-//        let destinationCoordinate = CLLocationCoordinate2D(latitude: 37.554722, longitude: 126.970833)
+        
+        mapView.removeOverlays(mapView.overlays)
+        
+        if let startPin = startPin, let annotationToRemove = mapView.annotations.first(where: { $0.coordinate.latitude == startPin.coordinate.latitude && $0.coordinate.longitude == startPin.coordinate.longitude }) {
+            mapView.removeAnnotation(annotationToRemove)
+        }
+        if let endPin = endPin, let annotationToRemove = mapView.annotations.first(where: { $0.coordinate.latitude == endPin.coordinate.latitude && $0.coordinate.longitude == endPin.coordinate.longitude }) {
+            mapView.removeAnnotation(annotationToRemove)
+        }
         
         // MKDirectionsRequest를 사용하여 경로를 요청
         let request = MKDirections.Request()
@@ -284,13 +291,13 @@ extension RunningMapViewController: CLLocationManagerDelegate {
     private func addCustomPins(userLocation: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
         startPin = MKPointAnnotation()
         endPin = MKPointAnnotation()
-
+        
         if let startPin = startPin {
             startPin.title = "start"
             startPin.coordinate = userLocation
             mapView.addAnnotation(startPin)
         }
-
+        
         if let endPin = endPin {
             endPin.title = "end"
             endPin.coordinate = destination
@@ -302,65 +309,15 @@ extension RunningMapViewController: CLLocationManagerDelegate {
         
         if let annotation = view.annotation {
             
-            // 이전의 시작점과 도착점을 제거
-            if let previousStartPin = startPin {
-                mapView.removeAnnotation(previousStartPin)
-            }
-            if let previousEndPin = endPin {
-                mapView.removeAnnotation(previousEndPin)
-            }
-            
-            // 시작점을 사용자의 현재 위치로 설정
-            startPin = MKPointAnnotation()
-            startPin?.title = "start"
-            startPin?.coordinate = mapView.userLocation.coordinate
-            if let startPin = startPin {
-                mapView.addAnnotation(startPin)
-            }
-            
-            // 도착점을 선택한 애노테이션의 위치로 설정
-            endPin = MKPointAnnotation()
-            endPin?.title = "end"
-            endPin?.coordinate = annotation.coordinate
-            if let endPin = endPin {
-                mapView.addAnnotation(endPin)
-            }
-            
             // 사용자의 현재 위치에서 선택한 애노테이션까지의 경로를 계산하고 보여줌
             calculateAndShowRoute(from: mapView.userLocation.coordinate, to: annotation.coordinate)
-            showRouteTo(annotation: annotation)
         }
     }
     
     func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
         
     }
-
     
-    
-    func showRouteTo(annotation: MKAnnotation) {
-        
-        mapView.removeOverlays(mapView.overlays)
-        
-        let currentLocationPlacemark = MKPlacemark(coordinate: mapView.userLocation.coordinate, addressDictionary: nil)
-        let destinationPlacemark = MKPlacemark(coordinate: annotation.coordinate, addressDictionary: nil)
-        
-        let directionRequest = MKDirections.Request()
-        directionRequest.source = MKMapItem(placemark: currentLocationPlacemark)
-        directionRequest.destination = MKMapItem(placemark: destinationPlacemark)
-        directionRequest.transportType = .automobile
-
-        let directions = MKDirections(request: directionRequest)
-        directions.calculate { (response, error) in
-            guard let response = response else {
-                print("Error: \(error?.localizedDescription ?? "No error returned")")
-                return
-            }
-            
-            let route = response.routes[0]
-            self.mapView.addOverlay(route.polyline, level: .aboveRoads)
-        }
-    }
     
     // 지도에 경로 및 주변원을 표시하기 위해 MKMapViewDelegate에서 MKPolylineRenderer를 설정
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
@@ -370,7 +327,7 @@ extension RunningMapViewController: CLLocationManagerDelegate {
             renderer.lineCap = .round
             renderer.lineWidth = 5.0 // 경로의 두께를 설정합니다.
             return renderer
-        // 지도에 서클을 표시하기 위해 MKCircle를 활용
+            // 지도에 서클을 표시하기 위해 MKCircle를 활용
         } else if let circleOverlay = overlay as? MKCircle {
             let renderer = MKCircleRenderer(circle: circleOverlay)
             renderer.fillColor = UIColor.systemIndigo.withAlphaComponent(0.2)
@@ -379,6 +336,7 @@ extension RunningMapViewController: CLLocationManagerDelegate {
         return MKOverlayRenderer(overlay: overlay)
     }
     
+    //지도에 표시될 annotation 아이콘 설정 매소드
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if annotation is MKUserLocation {
             return nil
@@ -407,7 +365,7 @@ extension RunningMapViewController: CLLocationManagerDelegate {
             return nil
         }
     }
-
+    
 }
 //MARK: - PopButton setup
 extension RunningMapViewController {
