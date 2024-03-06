@@ -175,6 +175,17 @@ class ProfileViewController: UIViewController
     {
         super.viewDidLoad()
         view.backgroundColor = .white
+        //        let coreDataManager = CoreDataManager.shared
+        //        coreDataManager.generateDummyRunningRecords()
+        let uuidToDelete = UUID()
+        
+        CoreDataManager.shared.deleteRunningRecord(withId: uuidToDelete) { success in
+            if success {
+                print("Record successfully deleted.")
+            } else {
+                print("Failed to delete the record.")
+            }
+        }
         loadRunningRecords()
         view.addSubview(scrollView)
         scrollView.contentSize = CGSize(width: view.frame.width, height: 1500)
@@ -185,6 +196,8 @@ class ProfileViewController: UIViewController
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tableView.reloadData()
         statisticsManager(true)
         
         totalRunningDistanceLabel.text = "총 거리 : \(String(format: "%.2f", totalRunningDistance)) (km)"
@@ -201,8 +214,8 @@ class ProfileViewController: UIViewController
     override func viewWillDisappear(_ animated: Bool) {
         statisticsManager(false)
     }
-    
-// MARK: - addSubView
+   
+    // MARK: - addSubView
     func addScrollView()
     {
         scrollView.addSubview(noticeButton)
@@ -685,7 +698,9 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     // MARK: - 데이터 로딩
     func loadRunningRecords() {
         runningRecords = CoreDataManager.shared.fetchRunningRecords()
-        tableView.reloadData() // Reload the tableView with the new data
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
     
     private func updateUI() {
@@ -730,19 +745,26 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            // Assuming `viewModel.deleteRunningRecord(at:completion:)` correctly handles deletion
-            // from both your data model and Core Data.
-            viewModel.deleteRunningRecord(at: indexPath.row) { [weak self] success in
-                guard let self = self, success else {
-                    // Handle failure: Show an error message or log the error
+            let recordToDelete = runningRecords[indexPath.row]
+            guard let id = recordToDelete.id else {
+                // id가 nil일 경우의 처리, 예: 로그 남기기
+                print("Error: Record ID is nil. Cannot delete the record.")
+                return
+            }
+            CoreDataManager.shared.deleteRunningRecord(withId: id) { [weak self] success in
+                guard success else {
+                    // 삭제 실패에 대한 처리, 여기서는 단순 로그를 남깁니다.
+                    print("Failed to delete the record.")
                     return
                 }
-                // Proceed with UI update on the main thread
+                // 모델에서 데이터 삭제
+                self?.runningRecords.remove(at: indexPath.row)
+                // UI 업데이트
                 DispatchQueue.main.async {
-                    // Update the table view UI to reflect the deletion
                     tableView.deleteRows(at: [indexPath], with: .fade)
                 }
             }
         }
     }
+    
 }

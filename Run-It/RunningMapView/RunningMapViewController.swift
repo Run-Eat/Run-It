@@ -10,7 +10,7 @@ import SnapKit
 import MapKit
 import CoreLocation
 
-class RunningMapViewController: UIViewController, MKMapViewDelegate{
+class RunningMapViewController: UIViewController, MKMapViewDelegate {
     
     //MARK: - UI Properties
     lazy var locationManager: CLLocationManager = {
@@ -30,6 +30,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate{
         mapView.isRotateEnabled = true
         mapView.mapType = MKMapType.standard
         mapView.showsCompass = false
+
         return mapView
     }()
     
@@ -54,7 +55,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate{
         return button
     }()
     
-    var storeButton: UIButton = {
+    var storeListButton: UIButton = {
         let button = UIButton()
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = .systemIndigo
@@ -64,7 +65,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate{
         button.layer.cornerRadius = 25
         button.layer.shadowRadius = 10
         button.layer.shadowOpacity = 0.3
-        button.addTarget(self, action: #selector(didTapFloatingButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(TappedstoreListButton), for: .touchUpInside)
         return button
     }()
     
@@ -78,7 +79,21 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate{
         button.layer.shadowRadius = 10
         button.layer.shadowOpacity = 0.3
         button.alpha = 0.0
-        button.addTarget(self, action: #selector(storeHalfModalButtonAction), for: .touchUpInside)
+        button.addTarget(self, action: #selector(presentStoreAnnotationButton), for: .touchUpInside)
+        return button
+    }()
+    
+    var cafeButton: UIButton = {
+        let button = UIButton()
+        var config = UIButton.Configuration.filled()
+        config.baseBackgroundColor = .systemPink
+        config.cornerStyle = .capsule
+        config.image = UIImage(systemName: "cup.and.saucer")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .medium))
+        button.configuration = config
+        button.layer.shadowRadius = 10
+        button.layer.shadowOpacity = 0.3
+        button.alpha = 0.0
+        button.addTarget(self, action: #selector(presentStoreAnnotationButton), for: .touchUpInside)
         return button
     }()
     
@@ -106,7 +121,19 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate{
         return button
     }()
     
-    var routeLine: MKPolyline?
+    var routeLine = MKPolyline()
+    var destination: CLLocationCoordinate2D?
+    
+    var routeCoordinates: [CLLocation] = []
+    
+    
+    let currentLocation = CLLocation()
+    
+    lazy var circle: MKCircle = {
+        let circle = MKCircle(center: currentLocation.coordinate, radius: 150)
+        return circle
+    }()
+
     
     //MARK: - LifeCycle
     override func viewDidLoad() {
@@ -116,6 +143,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate{
         setLayout()
         getLocationUsagePermission()
 
+        mapView.delegate = self
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -138,101 +166,94 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate{
         print("확인")
     }
     
-    @objc private func didTapFloatingButton() {
-        isActive.toggle() //
+    @objc private func TappedstoreListButton() {
+        isActive.toggle()
     }
     
-    @objc func storeHalfModalButtonAction() {
-        let storeViewController = StoreViewController()
-        showMyViewControllerInACustomizedSheet(storeViewController)
+    @objc func presentStoreAnnotationButton() {
+        getAnnotationLocation()
+//        if mapView.annotations.count > 0 {
+//            removeAnnotationsFromMap()
+//
+//        } else {
+//            getAnnotationLocation()
+//        }
+//        let storeViewController = StoreViewController()
+//        showMyViewControllerInACustomizedSheet(storeViewController)
     }
     
-    private func showActionButtons() {
-        popButtons()
-        rotateFloatingButton()
+}
+
+//MARK: - Annotation Setup
+extension RunningMapViewController {
+ 
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation is MKUserLocation {
+            return nil
+        }
+
+        switch annotation.title {
+        case "end":
+            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "endPin")
+            if annotationView == nil {
+                annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: "endPin")
+                annotationView?.image = UIImage(systemName: "figure.run")
+            } else {
+                annotationView?.annotation = annotation
+            }
+            return annotationView
+        case "start":
+            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "startPin")
+            if annotationView == nil {
+                annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: "startPin")
+                annotationView?.image = UIImage(systemName: "figure.stand")
+            } else {
+                annotationView?.annotation = annotation
+            }
+            return annotationView
+        default:
+            return nil
+        }
     }
+
     
-    private func popButtons() {
-        if isActive {
-            convenienceStoreButton.layer.transform = CATransform3DMakeScale(0.4, 0.4, 1)
-            UIView.animate(withDuration: 0.3, delay: 0.2, usingSpringWithDamping: 0.55, initialSpringVelocity: 0.3, options: [.curveEaseInOut], animations: { [weak self] in
-                guard let self = self else { return }
-                self.convenienceStoreButton.layer.transform = CATransform3DIdentity
-                self.convenienceStoreButton.alpha = 1.0
-            })
-        } else {
-            UIView.animate(withDuration: 0.15, delay: 0.2, options: []) { [weak self] in
-                guard let self = self else { return }
-                self.convenienceStoreButton.layer.transform = CATransform3DMakeScale(0.4, 0.4, 0.1)
-                self.convenienceStoreButton.alpha = 0.0
+    private func removeAnnotationsFromMap() {
+        // mapView.annotations 배열에서 MKUserLocation 인스턴스를 제외하고 모두 제거
+        let annotationsToRemove = mapView.annotations.filter { $0 !== mapView.userLocation }
+        mapView.removeAnnotations(annotationsToRemove)
+        mapView.removeOverlays(mapView.overlays)
+    }
+
+    
+    private func getAnnotationLocation() {
+        guard let currentLocation = self.mapView.userLocation.location else {
+            print("Failed to get user location")
+            return
+        }
+        
+        let Searchrequest = MKLocalSearch.Request()
+        Searchrequest.naturalLanguageQuery = "GS25" // 원하는 POI 유형을 검색어로 지정
+        //        request.region = mapView.region // 검색 범위를 지정
+        Searchrequest.region = MKCoordinateRegion(center: currentLocation.coordinate, latitudinalMeters: 150, longitudinalMeters: 150) // 150m 범위를 지정
+        
+        let search = MKLocalSearch(request: Searchrequest)
+        search.start { (response, error) in
+            guard let response = response else {
+                print("Search error: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            for item in response.mapItems {
+                // 검색한 POI를 지도에 추가
+                let annotation = MKPointAnnotation()
+                annotation.coordinate = item.placemark.coordinate
+                annotation.title = item.name
+                self.mapView.addAnnotation(annotation)
             }
         }
     }
-        
-    private func rotateFloatingButton() {
-        let animation = CABasicAnimation(keyPath: "transform.rotation.z")
-        let fromValue = isActive ? 0 : CGFloat.pi / 4
-        let toValue = isActive ? CGFloat.pi / 4 : 0
-        animation.fromValue = fromValue
-        animation.toValue = toValue
-        animation.duration = 0.3
-        animation.fillMode = .forwards
-        animation.isRemovedOnCompletion = false
-        storeButton.layer.add(animation, forKey: nil)
-    }
-    
-
 
 }
-
-//MARK: - Layout setup
-extension RunningMapViewController {
-    private func addSubview() {
-        view.addSubview(mapView)
-        view.addSubview(compassButton)
-        view.addSubview(startRunningButton)
-        view.addSubview(currentLocationButton)
-        view.addSubview(storeButton)
-        view.addSubview(convenienceStoreButton)
-    }
-    
-    private func setLayout() {
-        mapView.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
-        }
-        
-        compassButton.snp.makeConstraints {
-            $0.width.height.equalTo(50)
-            $0.trailing.equalToSuperview().offset(-20)
-            $0.top.equalToSuperview().offset(120)
-        }
-        
-        currentLocationButton.snp.makeConstraints {
-            $0.width.height.equalTo(50)
-            $0.trailing.equalToSuperview().offset(-20)
-            $0.top.equalTo(compassButton.snp.bottom).offset(20)
-        }
-        storeButton.snp.makeConstraints {
-            $0.width.height.equalTo(50)
-            $0.trailing.equalToSuperview().offset(-20)
-            $0.top.equalTo(currentLocationButton.snp.bottom).offset(20)
-        }
-        
-        convenienceStoreButton.snp.makeConstraints {
-            $0.top.equalTo(storeButton.snp.bottom).offset(20)
-            $0.centerX.equalTo(storeButton)
-        }
-        
-        startRunningButton.snp.makeConstraints {
-            $0.width.height.equalTo(90)
-            $0.centerX.equalToSuperview()
-            $0.bottom.equalToSuperview().offset(-120)
-        }
-    }
-    
-    
-} // extension
 
 //MARK: - CLLocationManagerDelegate
 extension RunningMapViewController: CLLocationManagerDelegate {
@@ -246,22 +267,22 @@ extension RunningMapViewController: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.last {
-            print("Latitude: \(location.coordinate.latitude), Longitude: \(location.coordinate.longitude)")
-            let userLocation = location.coordinate
+        if let location = locations.last, let destination = destination {
+            let userLocation = location.coordinate  // 사용자의 위치에 기기의 마지막 위경도를 주입
             
-            calculateAndShowRoute(from: userLocation)
+            calculateAndShowRoute(from: userLocation, to: destination)
         }
     }
+    
     // 사용자의 현재 위치를 기반으로 경로를 계산하고 지도에 표시하는 메서드
-    func calculateAndShowRoute(from userLocation: CLLocationCoordinate2D) {
+    private func calculateAndShowRoute(from userLocation: CLLocationCoordinate2D, to destination: CLLocationCoordinate2D) {
         // 예를 들어, 사용자의 현재 위치로부터 목적지(서울역)까지의 경로를 계산
-        let destinationCoordinate = CLLocationCoordinate2D(latitude: 37.554722, longitude: 126.970833)
+//        let destinationCoordinate = CLLocationCoordinate2D(latitude: 37.554722, longitude: 126.970833)
         
         // MKDirectionsRequest를 사용하여 경로를 요청
         let request = MKDirections.Request()
         request.source = MKMapItem(placemark: MKPlacemark(coordinate: userLocation))
-        request.destination = MKMapItem(placemark: MKPlacemark(coordinate: destinationCoordinate))
+        request.destination = MKMapItem(placemark: MKPlacemark(coordinate: destination))
         request.transportType = .walking // 적절한 이동 수단을 선택
         
         // MKDirections를 사용하여 경로를 추적
@@ -274,12 +295,58 @@ extension RunningMapViewController: CLLocationManagerDelegate {
                 return
             }
             
-            // 경로를 지도에 추가합니다.
+            // 경로를 지도에 추가
             self.mapView.addOverlay(route.polyline)
             
-            // 경로가 모두 표시되도록 지도를 조정합니다.
+            // 경로가 모두 표시되도록 지도를 조정
             let region = MKCoordinateRegion(route.polyline.boundingMapRect)
             self.mapView.setRegion(region, animated: true)
+            
+            // 출발점과 목적지에 커스텀 애노테이션을 추가
+            self.addCustomPins(userLocation: userLocation, destination: destination)
+        }
+    }
+    
+    private func addCustomPins(userLocation: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
+        let startPin = MKPointAnnotation()
+        startPin.title = "start"
+        startPin.coordinate = userLocation
+        mapView.addAnnotation(startPin)
+
+        let endPin = MKPointAnnotation()
+        endPin.title = "end"
+        endPin.coordinate = destination
+        mapView.addAnnotation(endPin)
+    }
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        if let annotation = view.annotation {
+            showRouteTo(annotation: annotation)
+            calculateAndShowRoute(from: mapView.userLocation.coordinate, to: annotation.coordinate)
+        }
+    }
+    
+    func showRouteTo(annotation: MKAnnotation) {
+        
+        mapView.removeOverlays(mapView.overlays)
+        
+        let currentLocationPlacemark = MKPlacemark(coordinate: mapView.userLocation.coordinate, addressDictionary: nil)
+        let destinationPlacemark = MKPlacemark(coordinate: annotation.coordinate, addressDictionary: nil)
+        
+        let directionRequest = MKDirections.Request()
+        directionRequest.source = MKMapItem(placemark: currentLocationPlacemark)
+        directionRequest.destination = MKMapItem(placemark: destinationPlacemark)
+        directionRequest.transportType = .automobile
+
+        let directions = MKDirections(request: directionRequest)
+        directions.calculate { (response, error) in
+            guard let response = response else {
+                print("Error: \(error?.localizedDescription ?? "No error returned")")
+                return
+            }
+            
+            let route = response.routes[0]
+            self.mapView.addOverlay(route.polyline, level: .aboveRoads)
         }
     }
     
@@ -288,13 +355,17 @@ extension RunningMapViewController: CLLocationManagerDelegate {
         if overlay is MKPolyline {
             let renderer = MKPolylineRenderer(overlay: overlay)
             renderer.strokeColor = UIColor.systemIndigo // 경로의 색상을 설정
-            renderer.lineWidth = 3 // 경로의 두께를 설정합니다.
+            renderer.lineWidth = 5 // 경로의 두께를 설정합니다.
+            return renderer
+            
+        } else if let circleOverlay = overlay as? MKCircle {
+            let renderer = MKCircleRenderer(circle: circleOverlay)
+            renderer.fillColor = UIColor.systemIndigo.withAlphaComponent(0.5) // 반투명한 빨간색을 설정합니다.
             return renderer
         }
         return MKOverlayRenderer(overlay: overlay)
     }
 
-    
     
     // 오류 처리
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -323,10 +394,92 @@ extension RunningMapViewController: CLLocationManagerDelegate {
     
 
 }
-
-extension RunningMapViewController: UISheetPresentationControllerDelegate {
-    func sheetPresentationControllerDidChangeSelectedDetentIdentifier(_ sheetPresentationController: UISheetPresentationController) {
-        //크기 변경 됐을 경우
-        print(sheetPresentationController.selectedDetentIdentifier == .large ? "large" : "medium")
+//MARK: - Button setup
+extension RunningMapViewController {
+    private func showActionButtons() {
+        popButtons()
+        rotateFloatingButton()
+    }
+    
+    private func popButtons() {
+        if isActive {
+            convenienceStoreButton.layer.transform = CATransform3DMakeScale(0.4, 0.4, 1)
+            UIView.animate(withDuration: 0.3, delay: 0.2, usingSpringWithDamping: 0.55, initialSpringVelocity: 0.3, options: [.curveEaseInOut], animations: { [weak self] in
+                guard let self = self else { return }
+                self.convenienceStoreButton.layer.transform = CATransform3DIdentity
+                self.convenienceStoreButton.alpha = 1.0
+            })
+        } else {
+            UIView.animate(withDuration: 0.15, delay: 0.2, options: []) { [weak self] in
+                guard let self = self else { return }
+                self.convenienceStoreButton.layer.transform = CATransform3DMakeScale(0.4, 0.4, 0.1)
+                self.convenienceStoreButton.alpha = 0.0
+                removeAnnotationsFromMap()
+                
+            }
+        }
+    }
+    
+    private func rotateFloatingButton() {
+        let animation = CABasicAnimation(keyPath: "transform.rotation.z")
+        let fromValue = isActive ? 0 : CGFloat.pi / 4
+        let toValue = isActive ? CGFloat.pi / 4 : 0
+        animation.fromValue = fromValue
+        animation.toValue = toValue
+        animation.duration = 0.3
+        animation.fillMode = .forwards
+        animation.isRemovedOnCompletion = false
+        storeListButton.layer.add(animation, forKey: nil)
     }
 }
+//MARK: - Layout setup
+extension RunningMapViewController {
+    private func addSubview() {
+        view.addSubview(mapView)
+        mapView.addOverlay(routeLine)
+        view.addSubview(compassButton)
+        view.addSubview(startRunningButton)
+        view.addSubview(currentLocationButton)
+        view.addSubview(storeListButton)
+        view.addSubview(convenienceStoreButton)
+    }
+    
+    private func setLayout() {
+        mapView.snp.makeConstraints {
+            $0.top.leading.trailing.equalToSuperview()
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+        }
+        
+        compassButton.snp.makeConstraints {
+            $0.width.height.equalTo(50)
+            $0.trailing.equalToSuperview().offset(-20)
+            $0.top.equalToSuperview().offset(120)
+        }
+        
+        currentLocationButton.snp.makeConstraints {
+            $0.width.height.equalTo(50)
+            $0.trailing.equalToSuperview().offset(-20)
+            $0.top.equalTo(compassButton.snp.bottom).offset(20)
+        }
+        storeListButton.snp.makeConstraints {
+            $0.width.height.equalTo(50)
+            $0.trailing.equalToSuperview().offset(-20)
+            $0.top.equalTo(currentLocationButton.snp.bottom).offset(20)
+        }
+        
+        convenienceStoreButton.snp.makeConstraints {
+            $0.top.equalTo(storeListButton.snp.bottom).offset(20)
+            $0.centerX.equalTo(storeListButton)
+        }
+        
+        startRunningButton.snp.makeConstraints {
+            $0.width.height.equalTo(90)
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalToSuperview().offset(-120)
+        }
+    }
+    
+    
+} // extension
+
+

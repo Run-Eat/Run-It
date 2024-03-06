@@ -142,7 +142,7 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
-        recordTextField.text = userDate.text
+        recordTextField.text = viewModel.labelText
         recordTextField.delegate = self
         // 텍스트 필드 편집 상태 감지를 위한 옵저버 추가
         NotificationCenter.default.addObserver(self, selector: #selector(textFieldDidBeginEditing), name: UITextField.textDidBeginEditingNotification, object: nil)
