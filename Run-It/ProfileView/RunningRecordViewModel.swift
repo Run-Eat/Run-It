@@ -23,11 +23,11 @@ class RunningRecordViewModel {
         self.id = runningRecord.id ?? UUID()
         self.dateText = RunningRecordViewModel.dateFormatter.string(from: runningRecord.date ?? Date())
         self.labelText = runningRecord.label ?? dateText
-        self.distanceText = String(format: "%.2f km", runningRecord.distance)
+        self.distanceText = String(format: "%.2f", runningRecord.distance / 1000)
         self.timeText = RunningRecordViewModel.timeFormatter.string(from: TimeInterval(runningRecord.time)) ?? "N/A"
         let paceMinutes = Int(runningRecord.pace) / 60
         let paceSeconds = Int(runningRecord.pace) % 60
-        self.paceText = String(format: "%02d:%02d min/km", paceMinutes, paceSeconds)
+        self.paceText = String(format: "%02d:%02d", paceMinutes, paceSeconds)
         self.routeImageData = runningRecord.routeImage
     }
     
@@ -66,6 +66,7 @@ class RunningRecordViewModel {
             if let recordToUpdate = results.first {
                 recordToUpdate.label = newLabelText
                 try context.save()
+                print("Label successfully updated to '\(newLabelText)' for record ID: \(self.id)")
             }
         } catch let error as NSError {
             print("Updating label failed: \(error), \(error.userInfo)")

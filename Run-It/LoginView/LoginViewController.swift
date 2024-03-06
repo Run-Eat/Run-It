@@ -81,7 +81,7 @@ class LoginViewController: UIViewController
         return textField
     }()
     
-    let loginButton: UIButton =
+    lazy var loginButton: UIButton =
     {
         let button = UIButton()
         button.setTitle("로그인", for: .normal)
@@ -92,7 +92,7 @@ class LoginViewController: UIViewController
         return button
     }()
     
-    let findEmailButton: UIButton =
+    lazy var findEmailButton: UIButton =
     {
         let button = UIButton()
         button.setTitle("이메일 찾기", for: .normal)
@@ -102,7 +102,7 @@ class LoginViewController: UIViewController
         return button
     }()
     
-    let resetPasswordButton: UIButton =
+    lazy var resetPasswordButton: UIButton =
     {
         let button = UIButton()
         button.setTitle("비밀번호 재설정", for: .normal)
@@ -112,7 +112,7 @@ class LoginViewController: UIViewController
         return button
     }()
     
-    let signUpButton: UIButton =
+    lazy var signUpButton: UIButton =
     {
         let button = UIButton()
         button.setTitle("회원가입", for: .normal)
@@ -158,7 +158,7 @@ class LoginViewController: UIViewController
         return lineView
     }()
     
-    let kakaoLoginButton: UIButton =
+    lazy var kakaoLoginButton: UIButton =
     {
         let button = UIButton()
         button.setImage(UIImage(named: "KakaoLogo"), for: .normal)
@@ -166,7 +166,7 @@ class LoginViewController: UIViewController
         return button
     }()
     
-    let appleLoginButton: UIButton =
+    lazy var appleLoginButton: UIButton =
     {
         let button = UIButton()
         button.setImage(UIImage(named: "AppleLogo"), for: .normal)
