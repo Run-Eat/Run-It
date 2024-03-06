@@ -46,14 +46,30 @@ class ProfileViewController: UIViewController
         (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer
     }
     
-    let totalDistance = 9999.99
+    // 총 뛴 거리
+    var totalRunningDistance: Double = 0
+
+    // 이번 주 데이터
+    var thisWeekDistance: Double = 0
+    var thisWeekPace: Double = 0
+    var thisWeekRunningCount: Int = 0
+
+    // 지난 주 데이터
+    var lastWeekDistance: Double = 0
+    var lastWeekPace: Double = 0
+    var lastWeekRunningCount: Int = 0
+
+    // 이번 달 데이터
+    var thisMonthDistance: Double = 0
+    var thisMonthPace: Double = 0
+    var thisMonthRunningCount: Int = 0
+
+    // 지난 달 데이터
+    var lastMonthDistance: Double = 0
+    var lastMonthPace: Double = 0
+    var lastMonthRunningCount: Int = 0
+    
     var runningRecords: [RunningRecord] = []
-    var thisWeek_MonthDistance = 0
-    var lastWeek_MonthDistance = 0
-    var thisWeek_MonthPace = 0
-    var lastWeek_MonthPace = 0
-    var thisWeek_MonthRunningCount = 0
-    var lastWeek_MonthRunningCount = 0
     var tableView = UITableView()
     var userRecord: UILabel = {
         let label = UILabel()
@@ -63,7 +79,8 @@ class ProfileViewController: UIViewController
         label.textAlignment = .left
         return label
     }()
-    // MARK: - UI 생성
+    
+// MARK: - UI 생성
     
     let scrollView: UIScrollView =
     {
@@ -139,7 +156,7 @@ class ProfileViewController: UIViewController
         return lineView
     }()
     
-    lazy var totalRunningDistanceLabel = createLabel("총 거리 : \(totalDistance) (km)", 15)
+    lazy var totalRunningDistanceLabel = createLabel("", 15)
     
     let weeklyButton: UIButton =
     {
@@ -167,20 +184,18 @@ class ProfileViewController: UIViewController
     lazy var lastWeek_MonthLabel = createLabel("지난 주", 15)
     
     lazy var distanceTextLabel = createLabel("거리(km)", 17)
-    lazy var thisWeek_MonthDistanceLabel = createLabel("\(thisWeek_MonthDistance) km", 17)
-    lazy var lastWeek_MonthDistanceLabel = createLabel("\(lastWeek_MonthDistance) km", 17)
+    lazy var thisWeek_MonthDistanceLabel = createLabel("", 17)
+    lazy var lastWeek_MonthDistanceLabel = createLabel("", 17)
     
     lazy var paceAveragTextLabel = createLabel("평균 페이스", 17)
-    lazy var thisWeek_MonthPaceLabel = createLabel("\(thisWeek_MonthPace) (분)", 17)
-    lazy var lastWeek_MonthPaceLabel = createLabel("\(lastWeek_MonthPace) (분)", 17)
+    lazy var thisWeek_MonthPaceLabel = createLabel("", 17)
+    lazy var lastWeek_MonthPaceLabel = createLabel("", 17)
     
     lazy var runningCountTextLabel = createLabel("활동", 17)
-    lazy var thisWeek_MonthRunningCountLabel = createLabel("\(thisWeek_MonthRunningCount)회", 17)
-    lazy var lastWeek_MonthRunningCountLabel = createLabel("\(lastWeek_MonthRunningCount)회", 17)
+    lazy var thisWeek_MonthRunningCountLabel = createLabel("", 17)
+    lazy var lastWeek_MonthRunningCountLabel = createLabel("", 17)
     
-    
-    
-    // MARK: - Life Cycle
+// MARK: - Life Cycle
     override func viewDidLoad()
     {
         super.viewDidLoad()
@@ -193,9 +208,28 @@ class ProfileViewController: UIViewController
         addScrollView()
         setLayout()
         setupProfileUI()
+        
     }
     
-    // MARK: - addSubView
+    override func viewWillAppear(_ animated: Bool) {
+        statisticsManager(true)
+        
+        totalRunningDistanceLabel.text = "총 거리 : \(String(format: "%.2f", totalRunningDistance)) (km)"
+        
+        thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisWeekDistance)) km"
+        thisWeek_MonthPaceLabel.text = String(format: "%.2f", thisWeekPace)
+        thisWeek_MonthRunningCountLabel.text = "\(thisWeekRunningCount) 회"
+        
+        lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", lastWeekDistance)) km"
+        lastWeek_MonthPaceLabel.text = String(format: "%.2f", lastWeekPace)
+        lastWeek_MonthRunningCountLabel.text = "\(lastWeekRunningCount) 회"
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        statisticsManager(false)
+    }
+    
+// MARK: - addSubView
     func addScrollView()
     {
         scrollView.addSubview(noticeButton)
@@ -224,7 +258,7 @@ class ProfileViewController: UIViewController
         scrollView.addSubview(lastWeek_MonthRunningCountLabel)
     }
     
-    // MARK: - 레이아웃
+// MARK: - 레이아웃
     func setLayout()
     {
         scrollView.snp.makeConstraints
@@ -393,7 +427,7 @@ class ProfileViewController: UIViewController
         }
     }
     
-    // MARK: - 레이블 생성 함수
+// MARK: - 레이블 생성 함수
     func createLabel(_ text: String, _ fontSize: Int) -> UILabel
     {
         let label = UILabel()
@@ -404,7 +438,7 @@ class ProfileViewController: UIViewController
         return label
     }
     
-    // MARK: - 로그인 방식 가져오기
+// MARK: - 로그인 방식 가져오기
     func setImage() -> String
     {
         guard let context = self.persistentContainer?.viewContext else { return "" }
@@ -424,7 +458,7 @@ class ProfileViewController: UIViewController
         }
     }
     
-    // MARK: - 로그아웃 함수
+// MARK: - 로그아웃 함수
     func kakaoLogout()
     {
         // 사용자 액세스 토큰과 리프레시 토큰을 모두 만료시켜, 더 이상 해당 사용자 정보로 카카오 API를 호출할 수 없도록 합니다.
@@ -454,7 +488,104 @@ class ProfileViewController: UIViewController
         }
     }
     
-    // MARK: - 버튼 함수
+// MARK: - 통계 관리 메서드
+    func statisticsManager(_ task: Bool)
+    {
+        if task
+        {
+            print("통계 불러오기")
+            guard let context = persistentContainer?.viewContext else { return }
+            
+            let currentDate = Date()
+            let calender = Calendar.current
+            
+            let currentMonth = calender.component(.month, from: currentDate)    // 현재 월
+            let currentWeekOfYear = calender.component(.weekOfYear, from: currentDate)      // 현재 연 중의 주차
+            
+            let fetchRequest: NSFetchRequest<RunningRecord> = RunningRecord.fetchRequest()
+            
+            do {
+                let records = try context.fetch(fetchRequest)
+                
+                for record in records
+                {
+                    print("11111111111111111111")
+                    print(record)
+                    //                guard let recordDate = record.date else { return }
+                    
+                    let recordMonth = calender.component(.month, from: record.date ?? Date())
+                    let recordWeekOfYear = calender.component(.weekOfYear, from: record.date ?? Date())
+                    
+                    // 총 거리
+                    totalRunningDistance += record.distance
+                    
+                    // 이번 주 데이터
+                    if recordWeekOfYear == currentWeekOfYear
+                    {
+                        thisWeekDistance += record.distance
+                        thisWeekPace += record.pace
+                        thisWeekRunningCount += 1
+                    }
+                    
+                    // 지난 주 데이터
+                    else if recordWeekOfYear == currentWeekOfYear - 1
+                    {
+                        lastWeekDistance += record.distance
+                        lastWeekPace += record.pace
+                        lastWeekRunningCount += 1
+                    }
+                    
+                    // 이번 달 데이터
+                    if recordMonth == currentMonth
+                    {
+                        thisMonthDistance += record.distance
+                        thisMonthPace += record.pace
+                        thisMonthRunningCount += 1
+                    }
+                    
+                    // 지난 달 데이터
+                    else if recordMonth == currentMonth - 1
+                    {
+                        lastMonthDistance += record.distance
+                        lastMonthPace += record.pace
+                        lastMonthRunningCount += 1
+                    }
+                    
+                }
+                thisWeekPace /= Double(thisWeekRunningCount)
+                lastWeekPace /= Double(lastWeekRunningCount)
+                thisMonthPace /= Double(thisMonthRunningCount)
+                lastMonthPace /= Double(lastMonthRunningCount)
+            }
+            catch
+            {
+                print("Error fetching running records: \(error)")
+            }
+        }
+        
+        else
+        {
+            totalRunningDistance = 0
+
+            thisWeekDistance = 0
+            thisWeekPace = 0
+            thisWeekRunningCount = 0
+
+            lastWeekDistance = 0
+            lastWeekPace = 0
+            lastWeekRunningCount = 0
+
+            thisMonthDistance = 0
+            thisMonthPace = 0
+            thisMonthRunningCount = 0
+
+            lastMonthDistance = 0
+            lastMonthPace = 0
+            lastMonthRunningCount = 0
+        }
+    }
+    
+// MARK: - 버튼 함수
     @objc func selectImage()
     {
         let imagePickerController = UIImagePickerController()
@@ -473,28 +604,27 @@ class ProfileViewController: UIViewController
     @objc func touchedWeeklyButton()
     {
         thisWeek_MonthLabel.text = "이번 주"
-        thisWeek_MonthDistance = 100
-        thisWeek_MonthDistanceLabel.text = "\(thisWeek_MonthDistance) 이번 주"
-        thisWeek_MonthPaceLabel.text = "\(thisWeek_MonthPace) 이번 주"
-        thisWeek_MonthRunningCountLabel.text = "\(thisWeek_MonthRunningCount) 이번 주"
+        thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisWeekDistance)) km"
+        thisWeek_MonthPaceLabel.text = String(format: "%.2f", thisWeekPace)
+        thisWeek_MonthRunningCountLabel.text = "\(thisWeekRunningCount) 회"
         
         lastWeek_MonthLabel.text = "지난 주"
-        lastWeek_MonthDistanceLabel.text = "\(lastWeek_MonthDistance) 지난 주"
-        lastWeek_MonthPaceLabel.text = "지난 주"
-        lastWeek_MonthRunningCountLabel.text = "지난 주"
+        lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", lastWeekDistance)) km"
+        lastWeek_MonthPaceLabel.text = String(format: "%.2f", lastWeekPace)
+        lastWeek_MonthRunningCountLabel.text = "\(lastWeekRunningCount) 회"
     }
     
     @objc func touchedMonthlyButton()
     {
         thisWeek_MonthLabel.text = "이번 달"
-        thisWeek_MonthDistanceLabel.text = "이번 달"
-        thisWeek_MonthPaceLabel.text = "이번 달"
-        thisWeek_MonthRunningCountLabel.text = "이번 달"
+        thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisMonthDistance)) km"
+        thisWeek_MonthPaceLabel.text = String(format: "%.2f", thisMonthPace)
+        thisWeek_MonthRunningCountLabel.text = "\(thisMonthRunningCount) 회"
         
         lastWeek_MonthLabel.text = "지난 달"
-        lastWeek_MonthDistanceLabel.text = "지난 달"
-        lastWeek_MonthPaceLabel.text = "지난 달"
-        lastWeek_MonthRunningCountLabel.text = "지난 달"
+        lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", lastMonthDistance)) km"
+        lastWeek_MonthPaceLabel.text = String(format: "%.2f", lastMonthPace)
+        lastWeek_MonthRunningCountLabel.text = "\(lastMonthRunningCount) 회"
     }
     
     @objc func noticeButtonTapped()
