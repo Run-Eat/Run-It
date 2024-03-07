@@ -242,6 +242,7 @@ class ProfileViewController: UIViewController
         scrollView.addSubview(runningCountTextLabel)
         scrollView.addSubview(thisWeek_MonthRunningCountLabel)
         scrollView.addSubview(lastWeek_MonthRunningCountLabel)
+        scrollView.addSubview(tableView)
     }
     
 // MARK: - 레이아웃
@@ -252,7 +253,6 @@ class ProfileViewController: UIViewController
             make.top.equalTo(view.snp.top).inset(0)
             make.centerX.equalTo(view.snp.centerX)
             make.width.equalTo(view.frame.width)
-            make.height.equalTo(600)
             make.edges.equalToSuperview()
         }
         
@@ -677,7 +677,7 @@ extension ProfileViewController {
         tableView.dataSource = self
         tableView.separatorStyle = .none
         tableView.register(RecordViewCell.self, forCellReuseIdentifier: "RecordCell")
-        tableView.backgroundColor = UIColor.white
+        tableView.backgroundColor = UIColor.systemGray6
         tableView.isScrollEnabled = false
         
         userRecord.snp.makeConstraints { make in
@@ -687,9 +687,9 @@ extension ProfileViewController {
             make.height.equalTo(20)
         }
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(userRecord.snp.bottom).offset(15)
-            make.left.equalToSuperview().offset(20)
-            make.right.equalToSuperview().offset(-20)
+            make.top.equalTo(userRecord.snp.bottom)
+            make.left.equalToSuperview()
+            make.right.equalToSuperview()
             make.height.equalTo(runningRecords.count * 120)
         }
     }
