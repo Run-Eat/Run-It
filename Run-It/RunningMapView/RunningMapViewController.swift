@@ -141,11 +141,13 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
     }()
     
     //MARK: - 전역 변수 선언
-    var routeLine = MKPolyline()
     var currentCircle: MKCircle?
+    var currentPolyLine: MKPolyline?
     var currentLocation: CLLocation?
     var destination: CLLocationCoordinate2D?
     
+    var locations: [CLLocation] = []
+
     var startPin: MKPointAnnotation?
     var endPin: MKPointAnnotation?
     
@@ -154,15 +156,16 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        mapView.delegate = self
         addSubview()
         setLayout()
+        mapView.delegate = self
+        locationManager.delegate = self
         RunningTimerLocationManager.shared.getLocationUsagePermission() //viewDidLoad 되었을 때 권한요청을 할 것인지, 현재 위치를 눌렀을 때 권한요청을 할 것인지
         
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        RunningTimerLocationManager.shared.stopUpdatingLocation()  // 러닝 중에 지도가 보인다면, viewWillDisappear 할 때 stopUpdatingLocation()가 호출되면 안됨.
+//        RunningTimerLocationManager.shared.stopUpdatingLocation()  // 러닝 중에 지도가 보인다면, viewWillDisappear 할 때 stopUpdatingLocation()가 호출되면 안됨.
     }
     
     //MARK: - @objc functions
@@ -261,10 +264,19 @@ extension RunningMapViewController: CLLocationManagerDelegate {
                 mapView.removeOverlay(currentCircle)
             }
             
+            
             // 새로운 원을 추가
             let circle = MKCircle(center: location.coordinate, radius: 150)
             mapView.addOverlay(circle)
             self.currentCircle = circle
+            
+            self.locations.append(location)
+            
+            // 새로운 경로를 추가
+            let coordinates = self.locations.map { $0.coordinate }
+            let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
+            mapView.addOverlay(polyline)
+            self.currentPolyLine = polyline
             
             if let destination = destination {
                 let userLocation = location.coordinate  // 사용자의 위치에 기기의 마지막 위경도를 주입
@@ -346,7 +358,7 @@ extension RunningMapViewController: CLLocationManagerDelegate {
     }
     
     
-    // 지도에 경로 및 주변원을 표시하기 위해 MKMapViewDelegate에서 MKPolylineRenderer를 설정
+    // 지도에 경로 및 주변원을 표시하기 위한 MKMapViewDelegate에서 MKPolylineRenderer, MKCircleRenderer를 설정
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if overlay is MKPolyline {
             let renderer = MKPolylineRenderer(overlay: overlay)
@@ -436,7 +448,6 @@ extension RunningMapViewController {
 extension RunningMapViewController {
     private func addSubview() {
         view.addSubview(mapView)
-        mapView.addOverlay(routeLine)
         view.addSubview(compassButton)
         view.addSubview(startRunningButton)
         view.addSubview(backToRunningTimerViewButton)
