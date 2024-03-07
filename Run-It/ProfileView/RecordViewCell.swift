@@ -71,17 +71,19 @@ class RecordViewCell: UITableViewCell {
             make.height.equalTo(18)
         }
     }
+    
     // MARK: - Layout & Drawing
     
     override func layoutSubviews() {
         super.layoutSubviews()
         
         let backgroundView = UIView()
-        backgroundView.backgroundColor = UIColor.systemGray6
+        backgroundView.backgroundColor = UIColor.white
         backgroundView.layer.cornerRadius = 10
         backgroundView.layer.masksToBounds = true
         backgroundView.frame = self.bounds.inset(by: UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0))
         self.backgroundView = backgroundView
+        self.backgroundColor = .clear
     }
 }
 
