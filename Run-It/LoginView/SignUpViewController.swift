@@ -361,7 +361,7 @@ extension SignUpViewController: UITextFieldDelegate
     func textFieldDidChangeSelection(_ textField: UITextField)
     {
         let isEmailValid = isValidEmail(emailTextField.text ?? "")
-        let isPasswordValid = isValidPassword(passwordTextField.text ?? "")
+        let (isPasswordValid, passwordMessage) = isValidPassword(passwordTextField.text ?? "")
         
         if textField == emailTextField
         {
@@ -388,7 +388,7 @@ extension SignUpViewController: UITextFieldDelegate
             else
             {
                 passwordTextField.layer.borderColor = UIColor.red.cgColor
-                passwordExplainLabel.text = "비밀번호가 조건에 맞지 않습니다."
+                passwordExplainLabel.text = passwordMessage
             }
         }
 
