@@ -60,6 +60,7 @@
 		C82CEDE02B86FD5100B619AD /* BookmarkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDDF2B86FD5100B619AD /* BookmarkViewController.swift */; };
 		C82CEDE22B86FD7C00B619AD /* RunningMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDE12B86FD7C00B619AD /* RunningMapViewController.swift */; };
 		C82CEDE92B86FDE800B619AD /* RunningTimerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDE82B86FDE800B619AD /* RunningTimerViewController.swift */; };
+		C83F1FC02B9959EC00D309CC /* RunningTimerToMapViewPageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C83F1FBF2B9959EC00D309CC /* RunningTimerToMapViewPageController.swift */; };
 		C879CD032B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879CD022B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift */; };
 		C879CD052B8880F200DBFB82 /* PauseViewHalfModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879CD042B8880F200DBFB82 /* PauseViewHalfModal.swift */; };
 		C879CD072B8AA9B400DBFB82 /* StartRunningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879CD062B8AA9B400DBFB82 /* StartRunningViewController.swift */; };
@@ -105,6 +106,7 @@
 		C82CEDDF2B86FD5100B619AD /* BookmarkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkViewController.swift; sourceTree = "<group>"; };
 		C82CEDE12B86FD7C00B619AD /* RunningMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningMapViewController.swift; sourceTree = "<group>"; };
 		C82CEDE82B86FDE800B619AD /* RunningTimerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningTimerViewController.swift; sourceTree = "<group>"; };
+		C83F1FBF2B9959EC00D309CC /* RunningTimerToMapViewPageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningTimerToMapViewPageController.swift; sourceTree = "<group>"; };
 		C879CD022B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseRunningHalfModalViewController.swift; sourceTree = "<group>"; };
 		C879CD042B8880F200DBFB82 /* PauseViewHalfModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseViewHalfModal.swift; sourceTree = "<group>"; };
 		C879CD062B8AA9B400DBFB82 /* StartRunningViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartRunningViewController.swift; sourceTree = "<group>"; };
@@ -200,6 +202,7 @@
 				C82CEDE62B86FDC700B619AD /* RunningMapView */,
 				C82CEDE72B86FDD000B619AD /* BookmarkView */,
 				C82CEDEC2B86FE0400B619AD /* RunningTimerView */,
+				C83F1FBE2B9959C600D309CC /* PageController */,
 				C82CEDED2B86FE1A00B619AD /* EventView */,
 				C82CEDD62B86FCB300B619AD /* LaunchScreen.storyboard */,
 				C82CEDD12B86FCB200B619AD /* Run_It.xcdatamodeld */,
@@ -269,6 +272,14 @@
 				C82CEDCC2B86FCB200B619AD /* MainTabBarViewController.swift */,
 			);
 			path = MainTabBarViewController;
+			sourceTree = "<group>";
+		};
+		C83F1FBE2B9959C600D309CC /* PageController */ = {
+			isa = PBXGroup;
+			children = (
+				C83F1FBF2B9959EC00D309CC /* RunningTimerToMapViewPageController.swift */,
+			);
+			path = PageController;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -384,6 +395,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C83F1FC02B9959EC00D309CC /* RunningTimerToMapViewPageController.swift in Sources */,
 				6CF4D6002B9073A10069A9B2 /* LoginVM.swift in Sources */,
 				C82CEDE92B86FDE800B619AD /* RunningTimerViewController.swift in Sources */,
 				2B9888242B8B76A300B2BC74 /* EventViewCell.swift in Sources */,

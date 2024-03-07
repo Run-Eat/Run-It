@@ -8,6 +8,8 @@
 import UIKit
 
 class MainTabBarViewController: UITabBarController {
+    
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -15,6 +17,7 @@ class MainTabBarViewController: UITabBarController {
         let runningMapVC = RunningMapViewController()
         let runningMapViewNavigationController = UINavigationController(rootViewController: runningMapVC)
         runningMapViewNavigationController.tabBarItem = UITabBarItem(title: "러닝", image: UIImage(systemName: "figure.run"), tag: 0)
+        runningMapVC.tabBarHeight = self.tabBar.frame.height
         
         let bookmarkVC = BookmarkViewController()
         let BookmarkViewNavigationController = UINavigationController(rootViewController: bookmarkVC)

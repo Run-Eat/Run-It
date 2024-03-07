@@ -79,9 +79,9 @@ extension StartRunningViewController {
             countdownSeconds = 3 // 다음 번 카운트다운을 위해 시간을 초기화합니다
             timerCounterView.isHidden = true // 카운트다운이 끝나면 타이머 뷰를 숨깁니다
             
-            let runningTimerViewController =  RunningTimerViewController()
-            runningTimerViewController.modalPresentationStyle = .fullScreen
-            self.present(runningTimerViewController, animated: true)
+            let runningTimerToMapViewPageController =  RunningTimerToMapViewPageController()
+            runningTimerToMapViewPageController.modalPresentationStyle = .fullScreen
+            self.present(runningTimerToMapViewPageController, animated: true)
         }
     }
     

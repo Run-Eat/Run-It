@@ -11,8 +11,11 @@ import MapKit
 import CoreLocation
 
 class RunningMapViewController: UIViewController, MKMapViewDelegate {
+    weak var parentVC: RunningTimerToMapViewPageController?
     
     //MARK: - UI Properties
+    var tabBarHeight: CGFloat = .zero
+    
     lazy var locationManager: CLLocationManager = {
         let manager = CLLocationManager()
         manager.desiredAccuracy = kCLLocationAccuracyBest
@@ -121,6 +124,22 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
         return button
     }()
     
+    lazy var backToRunningTimerViewButton: UIButton = {
+        let button = UIButton()
+        button.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
+        button.tintColor = .white
+        let configuration = UIImage.SymbolConfiguration(pointSize: 50)
+        if let image = UIImage(systemName: "restart", withConfiguration: configuration) {
+            button.setImage(image, for: .normal)
+        }
+        button.backgroundColor = .systemIndigo
+        button.layer.cornerRadius = 15
+        button.clipsToBounds = true
+        button.isHidden = true
+        button.addTarget(self, action: #selector(backToRunningTimerView), for: .touchUpInside)
+        return button
+    }()
+    
     //MARK: - 전역 변수 선언
     var routeLine = MKPolyline()
     var currentCircle: MKCircle?
@@ -154,6 +173,13 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
         self.present(startRunningViewController, animated: true)
         
     }
+    
+    @objc private func backToRunningTimerView() {
+        if let firstViewController = parentVC?.viewControllers.first {
+            parentVC?.pageViewController.setViewControllers([firstViewController], direction: .reverse, animated: true, completion: nil)
+        }
+    }
+
     
     @objc func currentLocationButtonAction() {
         //        RunningTimerLocationManager.shared.getLocationUsagePermission()  //viewDidLoad 되었을 때 권한요청을 할 것인지, 현재 위치를 눌렀을 때 권한요청을 할 것인지
@@ -244,6 +270,8 @@ extension RunningMapViewController: CLLocationManagerDelegate {
                 let userLocation = location.coordinate  // 사용자의 위치에 기기의 마지막 위경도를 주입
                 
                 calculateAndShowRoute(from: userLocation, to: destination)
+                // 출발점과 목적지에 커스텀 애노테이션을 추가
+                addCustomPins(userLocation: userLocation, destination: destination)
             }
         }
     }
@@ -251,15 +279,8 @@ extension RunningMapViewController: CLLocationManagerDelegate {
     // 사용자의 현재 위치를 기반으로 경로를 계산하고 지도에 표시하는 메서드
     private func calculateAndShowRoute(from userLocation: CLLocationCoordinate2D, to destination: CLLocationCoordinate2D) {
         
+        
         mapView.removeOverlays(mapView.overlays)
-        
-        if let startPin = startPin, let annotationToRemove = mapView.annotations.first(where: { $0.coordinate.latitude == startPin.coordinate.latitude && $0.coordinate.longitude == startPin.coordinate.longitude }) {
-            mapView.removeAnnotation(annotationToRemove)
-        }
-        if let endPin = endPin, let annotationToRemove = mapView.annotations.first(where: { $0.coordinate.latitude == endPin.coordinate.latitude && $0.coordinate.longitude == endPin.coordinate.longitude }) {
-            mapView.removeAnnotation(annotationToRemove)
-        }
-        
         // MKDirectionsRequest를 사용하여 경로를 요청
         let request = MKDirections.Request()
         request.source = MKMapItem(placemark: MKPlacemark(coordinate: userLocation))
@@ -283,12 +304,18 @@ extension RunningMapViewController: CLLocationManagerDelegate {
             let region = MKCoordinateRegion(route.polyline.boundingMapRect)
             self.mapView.setRegion(region, animated: true)
             
-            // 출발점과 목적지에 커스텀 애노테이션을 추가
-            self.addCustomPins(userLocation: userLocation, destination: destination)
         }
+        addCustomPins(userLocation: userLocation, destination: destination)
     }
     
     private func addCustomPins(userLocation: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
+        if let startPin = startPin, let annotationToRemove = mapView.annotations.first(where: { $0.coordinate.latitude == startPin.coordinate.latitude && $0.coordinate.longitude == startPin.coordinate.longitude }) {
+            mapView.removeAnnotation(annotationToRemove)
+        }
+        if let endPin = endPin, let annotationToRemove = mapView.annotations.first(where: { $0.coordinate.latitude == endPin.coordinate.latitude && $0.coordinate.longitude == endPin.coordinate.longitude }) {
+            mapView.removeAnnotation(annotationToRemove)
+        }
+        
         startPin = MKPointAnnotation()
         endPin = MKPointAnnotation()
         
@@ -412,6 +439,7 @@ extension RunningMapViewController {
         mapView.addOverlay(routeLine)
         view.addSubview(compassButton)
         view.addSubview(startRunningButton)
+        view.addSubview(backToRunningTimerViewButton)
         view.addSubview(currentLocationButton)
         view.addSubview(storeListButton)
         view.addSubview(convenienceStoreButton)
@@ -420,7 +448,19 @@ extension RunningMapViewController {
     private func setLayout() {
         mapView.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+            $0.bottom.equalToSuperview().offset(-self.tabBarHeight * 1.8)
+        }
+        
+        startRunningButton.snp.makeConstraints {
+            $0.width.height.equalTo(90)
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalToSuperview().offset(-120)
+        }
+        
+        backToRunningTimerViewButton.snp.makeConstraints {
+            $0.width.height.equalTo(90)
+            $0.leading.equalToSuperview().offset(10)
+            $0.bottom.equalToSuperview().offset(-120)
         }
         
         compassButton.snp.makeConstraints {
@@ -443,12 +483,6 @@ extension RunningMapViewController {
         convenienceStoreButton.snp.makeConstraints {
             $0.top.equalTo(storeListButton.snp.bottom).offset(20)
             $0.centerX.equalTo(storeListButton)
-        }
-        
-        startRunningButton.snp.makeConstraints {
-            $0.width.height.equalTo(90)
-            $0.centerX.equalToSuperview()
-            $0.bottom.equalToSuperview().offset(-120)
         }
     }
     

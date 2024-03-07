@@ -200,9 +200,9 @@ extension RunningTimerViewController {
     
     private func setupUI() {
 
-        view.backgroundColor = .systemGreen
-        statusBarView.backgroundColor = .systemGreen
-        bottomView.backgroundColor = .systemGreen
+        view.backgroundColor = .systemTeal
+        statusBarView.backgroundColor = .systemTeal
+        bottomView.backgroundColor = .systemTeal
         
         [statusBarView, bottomView].forEach { subView in view.addSubview(subView)
         }
