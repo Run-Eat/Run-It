@@ -23,14 +23,14 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
         return manager
     }()
     
-    var mapView: MKMapView = {
+    lazy var mapView: MKMapView = {
         let mapView = MKMapView()
         mapView.showsUserLocation = true
         mapView.isZoomEnabled = true
         mapView.isRotateEnabled = true
         mapView.mapType = MKMapType.standard
         mapView.showsCompass = false
-
+        
         return mapView
     }()
     
@@ -43,7 +43,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
         return compassButton
     }()
     
-    var currentLocationButton: UIButton = {
+    lazy var currentLocationButton: UIButton = {
         let button = UIButton()
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = .systemCyan
@@ -55,7 +55,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
         return button
     }()
     
-    var storeListButton: UIButton = {
+    lazy var storeListButton: UIButton = {
         let button = UIButton()
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = .systemIndigo
@@ -69,7 +69,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
         return button
     }()
     
-    var convenienceStoreButton: UIButton = {
+    lazy var convenienceStoreButton: UIButton = {
         let button = UIButton()
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = .systemPink
@@ -83,7 +83,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
         return button
     }()
     
-    var cafeButton: UIButton = {
+    lazy var cafeButton: UIButton = {
         let button = UIButton()
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = .systemPink
@@ -121,33 +121,29 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
         return button
     }()
     
+    //MARK: - 전역 변수 선언
     var routeLine = MKPolyline()
+    var currentCircle: MKCircle?
+    var currentLocation: CLLocation?
     var destination: CLLocationCoordinate2D?
     
-    var routeCoordinates: [CLLocation] = []
+    var startPin: MKPointAnnotation?
+    var endPin: MKPointAnnotation?
     
-    
-    let currentLocation = CLLocation()
-    
-    lazy var circle: MKCircle = {
-        let circle = MKCircle(center: currentLocation.coordinate, radius: 150)
-        return circle
-    }()
-
     
     //MARK: - LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        mapView.delegate = self
         addSubview()
         setLayout()
-        getLocationUsagePermission()
-
-        mapView.delegate = self
+        RunningTimerLocationManager.shared.getLocationUsagePermission() //viewDidLoad 되었을 때 권한요청을 할 것인지, 현재 위치를 눌렀을 때 권한요청을 할 것인지
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        self.locationManager.stopUpdatingLocation()
+        RunningTimerLocationManager.shared.stopUpdatingLocation()  // 러닝 중에 지도가 보인다면, viewWillDisappear 할 때 stopUpdatingLocation()가 호출되면 안됨.
     }
     
     //MARK: - @objc functions
@@ -156,11 +152,11 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
         let startRunningViewController =  StartRunningViewController()
         startRunningViewController.modalPresentationStyle = .fullScreen
         self.present(startRunningViewController, animated: true)
-
+        
     }
     
     @objc func currentLocationButtonAction() {
-        locationManager.requestWhenInUseAuthorization()
+        //        RunningTimerLocationManager.shared.getLocationUsagePermission()  //viewDidLoad 되었을 때 권한요청을 할 것인지, 현재 위치를 눌렀을 때 권한요청을 할 것인지
         mapView.showsUserLocation = true
         mapView.setUserTrackingMode(.follow, animated: true)
         print("확인")
@@ -172,58 +168,20 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
     
     @objc func presentStoreAnnotationButton() {
         getAnnotationLocation()
-//        if mapView.annotations.count > 0 {
-//            removeAnnotationsFromMap()
-//
-//        } else {
-//            getAnnotationLocation()
-//        }
-//        let storeViewController = StoreViewController()
-//        showMyViewControllerInACustomizedSheet(storeViewController)
+        //        if mapView.annotations.count > 0 {
+        //            removeAnnotationsFromMap()
+        //
+        //        } else {
+        //            getAnnotationLocation()
+        //        }
+        //        let storeViewController = StoreViewController()
+        //        showMyViewControllerInACustomizedSheet(storeViewController)
     }
     
 }
 
 //MARK: - Annotation Setup
 extension RunningMapViewController {
- 
-    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        if annotation is MKUserLocation {
-            return nil
-        }
-
-        switch annotation.title {
-        case "end":
-            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "endPin")
-            if annotationView == nil {
-                annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: "endPin")
-                annotationView?.image = UIImage(systemName: "figure.run")
-            } else {
-                annotationView?.annotation = annotation
-            }
-            return annotationView
-        case "start":
-            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "startPin")
-            if annotationView == nil {
-                annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: "startPin")
-                annotationView?.image = UIImage(systemName: "figure.stand")
-            } else {
-                annotationView?.annotation = annotation
-            }
-            return annotationView
-        default:
-            return nil
-        }
-    }
-
-    
-    private func removeAnnotationsFromMap() {
-        // mapView.annotations 배열에서 MKUserLocation 인스턴스를 제외하고 모두 제거
-        let annotationsToRemove = mapView.annotations.filter { $0 !== mapView.userLocation }
-        mapView.removeAnnotations(annotationsToRemove)
-        mapView.removeOverlays(mapView.overlays)
-    }
-
     
     private func getAnnotationLocation() {
         guard let currentLocation = self.mapView.userLocation.location else {
@@ -252,32 +210,55 @@ extension RunningMapViewController {
             }
         }
     }
-
-}
+    
+    private func removeAnnotationsFromMap() {
+        // mapView.annotations 배열에서 MKUserLocation 인스턴스를 제외하고 모두 제거
+        let annotationsToRemove = mapView.annotations.filter { $0 !== mapView.userLocation }
+        mapView.removeAnnotations(annotationsToRemove)
+        
+        // mapView.overlays 배열에서 currentCircle를 제외하고 모두 제거
+        let overlaysToRemove = mapView.overlays.filter { $0 !== currentCircle }
+        mapView.removeOverlays(overlaysToRemove)
+    }
+    
+} //extension
 
 //MARK: - CLLocationManagerDelegate
 extension RunningMapViewController: CLLocationManagerDelegate {
-    // 사용자에게 위치 관한 요청하기
-    func getLocationUsagePermission() {
-        self.locationManager.requestWhenInUseAuthorization()
-    }
-    // 위치 정보 업데이트 받기
-    func startLocationUpdates() {
-        locationManager.startUpdatingLocation()
-    }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.last, let destination = destination {
-            let userLocation = location.coordinate  // 사용자의 위치에 기기의 마지막 위경도를 주입
+        if let location = locations.last {
+            self.currentLocation = location
             
-            calculateAndShowRoute(from: userLocation, to: destination)
+            // 이전에 추가된 원을 제거
+            if let currentCircle = currentCircle {
+                mapView.removeOverlay(currentCircle)
+            }
+            
+            // 새로운 원을 추가
+            let circle = MKCircle(center: location.coordinate, radius: 150)
+            mapView.addOverlay(circle)
+            self.currentCircle = circle
+            
+            if let destination = destination {
+                let userLocation = location.coordinate  // 사용자의 위치에 기기의 마지막 위경도를 주입
+                
+                calculateAndShowRoute(from: userLocation, to: destination)
+            }
         }
     }
     
     // 사용자의 현재 위치를 기반으로 경로를 계산하고 지도에 표시하는 메서드
     private func calculateAndShowRoute(from userLocation: CLLocationCoordinate2D, to destination: CLLocationCoordinate2D) {
-        // 예를 들어, 사용자의 현재 위치로부터 목적지(서울역)까지의 경로를 계산
-//        let destinationCoordinate = CLLocationCoordinate2D(latitude: 37.554722, longitude: 126.970833)
+        
+        mapView.removeOverlays(mapView.overlays)
+        
+        if let startPin = startPin, let annotationToRemove = mapView.annotations.first(where: { $0.coordinate.latitude == startPin.coordinate.latitude && $0.coordinate.longitude == startPin.coordinate.longitude }) {
+            mapView.removeAnnotation(annotationToRemove)
+        }
+        if let endPin = endPin, let annotationToRemove = mapView.annotations.first(where: { $0.coordinate.latitude == endPin.coordinate.latitude && $0.coordinate.longitude == endPin.coordinate.longitude }) {
+            mapView.removeAnnotation(annotationToRemove)
+        }
         
         // MKDirectionsRequest를 사용하여 경로를 요청
         let request = MKDirections.Request()
@@ -308,93 +289,85 @@ extension RunningMapViewController: CLLocationManagerDelegate {
     }
     
     private func addCustomPins(userLocation: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
-        let startPin = MKPointAnnotation()
-        startPin.title = "start"
-        startPin.coordinate = userLocation
-        mapView.addAnnotation(startPin)
-
-        let endPin = MKPointAnnotation()
-        endPin.title = "end"
-        endPin.coordinate = destination
-        mapView.addAnnotation(endPin)
+        startPin = MKPointAnnotation()
+        endPin = MKPointAnnotation()
+        
+        if let startPin = startPin {
+            startPin.title = "start"
+            startPin.coordinate = userLocation
+            mapView.addAnnotation(startPin)
+        }
+        
+        if let endPin = endPin {
+            endPin.title = "end"
+            endPin.coordinate = destination
+            mapView.addAnnotation(endPin)
+        }
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        
         if let annotation = view.annotation {
-            showRouteTo(annotation: annotation)
+            
+            // 사용자의 현재 위치에서 선택한 애노테이션까지의 경로를 계산하고 보여줌
             calculateAndShowRoute(from: mapView.userLocation.coordinate, to: annotation.coordinate)
         }
     }
     
-    func showRouteTo(annotation: MKAnnotation) {
+    func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
         
-        mapView.removeOverlays(mapView.overlays)
-        
-        let currentLocationPlacemark = MKPlacemark(coordinate: mapView.userLocation.coordinate, addressDictionary: nil)
-        let destinationPlacemark = MKPlacemark(coordinate: annotation.coordinate, addressDictionary: nil)
-        
-        let directionRequest = MKDirections.Request()
-        directionRequest.source = MKMapItem(placemark: currentLocationPlacemark)
-        directionRequest.destination = MKMapItem(placemark: destinationPlacemark)
-        directionRequest.transportType = .automobile
-
-        let directions = MKDirections(request: directionRequest)
-        directions.calculate { (response, error) in
-            guard let response = response else {
-                print("Error: \(error?.localizedDescription ?? "No error returned")")
-                return
-            }
-            
-            let route = response.routes[0]
-            self.mapView.addOverlay(route.polyline, level: .aboveRoads)
-        }
     }
     
-    // 지도에 경로를 표시하기 위해 MKMapViewDelegate에서 MKPolylineRenderer를 설정
+    
+    // 지도에 경로 및 주변원을 표시하기 위해 MKMapViewDelegate에서 MKPolylineRenderer를 설정
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if overlay is MKPolyline {
             let renderer = MKPolylineRenderer(overlay: overlay)
             renderer.strokeColor = UIColor.systemIndigo // 경로의 색상을 설정
-            renderer.lineWidth = 5 // 경로의 두께를 설정합니다.
+            renderer.lineCap = .round
+            renderer.lineWidth = 5.0 // 경로의 두께를 설정합니다.
             return renderer
-            
+            // 지도에 서클을 표시하기 위해 MKCircle를 활용
         } else if let circleOverlay = overlay as? MKCircle {
             let renderer = MKCircleRenderer(circle: circleOverlay)
-            renderer.fillColor = UIColor.systemIndigo.withAlphaComponent(0.5) // 반투명한 빨간색을 설정합니다.
+            renderer.fillColor = UIColor.systemIndigo.withAlphaComponent(0.2)
             return renderer
         }
         return MKOverlayRenderer(overlay: overlay)
     }
-
     
-    // 오류 처리
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Location Error: \(error)")
-    }
-    // 위치 관한 상태 감지
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        switch status {
-        case .authorizedAlways, .authorizedWhenInUse:
-            startLocationUpdates()
-            print("GPS 권한 설정됨")
-        case .restricted, .notDetermined:
-            print("GPS 권한 설정되지 않음")
-            DispatchQueue.main.async {
-                self.getLocationUsagePermission()
+    //지도에 표시될 annotation 아이콘 설정 매소드
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation is MKUserLocation {
+            return nil
+        }
+        
+        switch annotation.title {
+        case "end":
+            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "endPin")
+            if annotationView == nil {
+                annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: "endPin")
+                annotationView?.image = UIImage(systemName: "figure.run")
+            } else {
+                annotationView?.annotation = annotation
             }
-        case .denied:
-            print("GPS 권한 요청 거부됨")
-            DispatchQueue.main.async {
-                self.getLocationUsagePermission()
+            return annotationView
+        case "start":
+            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "startPin")
+            if annotationView == nil {
+                annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: "startPin")
+                annotationView?.image = UIImage(systemName: "figure.stand")
+            } else {
+                annotationView?.annotation = annotation
             }
+            return annotationView
         default:
-            print("GPS: Default")
+            return nil
         }
     }
     
-
 }
-//MARK: - Button setup
+//MARK: - PopButton setup
 extension RunningMapViewController {
     private func showActionButtons() {
         popButtons()
@@ -414,7 +387,7 @@ extension RunningMapViewController {
                 guard let self = self else { return }
                 self.convenienceStoreButton.layer.transform = CATransform3DMakeScale(0.4, 0.4, 0.1)
                 self.convenienceStoreButton.alpha = 0.0
-                removeAnnotationsFromMap()
+                removeAnnotationsFromMap() // 지도에 표시된 MapItem을 삭제(사용자 위치 제외)
                 
             }
         }
@@ -480,6 +453,4 @@ extension RunningMapViewController {
     }
     
     
-} // extension
-
-
+}
