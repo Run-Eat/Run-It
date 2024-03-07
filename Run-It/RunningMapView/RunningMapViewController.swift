@@ -10,6 +10,12 @@ import SnapKit
 import MapKit
 import CoreLocation
 
+class CustomAnnotation: MKPointAnnotation {
+    var mapItem: MKMapItem?
+    var startPin: MKPointAnnotation?
+    var endPin: MKPointAnnotation?
+}
+
 class RunningMapViewController: UIViewController, MKMapViewDelegate {
     weak var parentVC: RunningTimerToMapViewPageController?
     
@@ -86,6 +92,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
         return button
     }()
     
+    // cafeButton 는 추후 구현 예정
     lazy var cafeButton: UIButton = {
         let button = UIButton()
         var config = UIButton.Configuration.filled()
@@ -147,9 +154,10 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
     var destination: CLLocationCoordinate2D?
     
     var locations: [CLLocation] = []
-
-    var startPin: MKPointAnnotation?
-    var endPin: MKPointAnnotation?
+    
+    // CustomAnnotation 클래스로 초기화
+    var startPin: CustomAnnotation?
+    var endPin: CustomAnnotation?
     
     
     //MARK: - LifeCycle
@@ -197,12 +205,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
     
     @objc func presentStoreAnnotationButton() {
         getAnnotationLocation()
-        //        if mapView.annotations.count > 0 {
-        //            removeAnnotationsFromMap()
-        //
-        //        } else {
-        //            getAnnotationLocation()
-        //        }
+
         //        let storeViewController = StoreViewController()
         //        showMyViewControllerInACustomizedSheet(storeViewController)
     }
@@ -231,12 +234,23 @@ extension RunningMapViewController {
             }
             
             for item in response.mapItems {
-                // 검색한 POI를 지도에 추가
-                let annotation = MKPointAnnotation()
+                let annotation = CustomAnnotation()
                 annotation.coordinate = item.placemark.coordinate
                 annotation.title = item.name
+                annotation.mapItem = item // MKMapItem 저장
                 self.mapView.addAnnotation(annotation)
             }
+            
+//            for item in response.mapItems {
+//                // 검색한 POI를 지도에 추가
+//                let annotation = MKPointAnnotation()
+//                annotation.coordinate = item.placemark.coordinate
+//                annotation.title = item.name
+//                
+//                }
+//                
+//                self.mapView.addAnnotation(annotation)
+//            }
         }
     }
     
@@ -264,7 +278,6 @@ extension RunningMapViewController: CLLocationManagerDelegate {
                 mapView.removeOverlay(currentCircle)
             }
             
-            
             // 새로운 원을 추가
             let circle = MKCircle(center: location.coordinate, radius: 150)
             mapView.addOverlay(circle)
@@ -291,7 +304,6 @@ extension RunningMapViewController: CLLocationManagerDelegate {
     // 사용자의 현재 위치를 기반으로 경로를 계산하고 지도에 표시하는 메서드
     private func calculateAndShowRoute(from userLocation: CLLocationCoordinate2D, to destination: CLLocationCoordinate2D) {
         
-        
         mapView.removeOverlays(mapView.overlays)
         // MKDirectionsRequest를 사용하여 경로를 요청
         let request = MKDirections.Request()
@@ -316,28 +328,38 @@ extension RunningMapViewController: CLLocationManagerDelegate {
             let region = MKCoordinateRegion(route.polyline.boundingMapRect)
             self.mapView.setRegion(region, animated: true)
             
+//            let annotaionName =
+            let routeName = route.name
+            let distanceInMeters = route.distance // 미터 단위
+            let timeInSeconds = route.expectedTravelTime // 초 단위
+
+            
+            print("routeName name: \(routeName)")
+            print("Estimated Distance: \(distanceInMeters) meters")
+            print("Estimated Time: \(timeInSeconds) seconds")
+
         }
         addCustomPins(userLocation: userLocation, destination: destination)
     }
     
     private func addCustomPins(userLocation: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
-        if let startPin = startPin, let annotationToRemove = mapView.annotations.first(where: { $0.coordinate.latitude == startPin.coordinate.latitude && $0.coordinate.longitude == startPin.coordinate.longitude }) {
+        if let startPin = self.startPin, let annotationToRemove = mapView.annotations.first(where: { $0.coordinate.latitude == startPin.coordinate.latitude && $0.coordinate.longitude == startPin.coordinate.longitude }) {
             mapView.removeAnnotation(annotationToRemove)
         }
-        if let endPin = endPin, let annotationToRemove = mapView.annotations.first(where: { $0.coordinate.latitude == endPin.coordinate.latitude && $0.coordinate.longitude == endPin.coordinate.longitude }) {
+        if let endPin = self.endPin, let annotationToRemove = mapView.annotations.first(where: { $0.coordinate.latitude == endPin.coordinate.latitude && $0.coordinate.longitude == endPin.coordinate.longitude }) {
             mapView.removeAnnotation(annotationToRemove)
         }
         
-        startPin = MKPointAnnotation()
-        endPin = MKPointAnnotation()
+        self.startPin = CustomAnnotation()
+        self.endPin = CustomAnnotation()
         
-        if let startPin = startPin {
+        if let startPin = self.startPin {
             startPin.title = "start"
             startPin.coordinate = userLocation
             mapView.addAnnotation(startPin)
         }
         
-        if let endPin = endPin {
+        if let endPin = self.endPin {
             endPin.title = "end"
             endPin.coordinate = destination
             mapView.addAnnotation(endPin)
@@ -345,11 +367,26 @@ extension RunningMapViewController: CLLocationManagerDelegate {
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        
-        if let annotation = view.annotation {
-            
-            // 사용자의 현재 위치에서 선택한 애노테이션까지의 경로를 계산하고 보여줌
+        if let annotation = view.annotation as? CustomAnnotation {
             calculateAndShowRoute(from: mapView.userLocation.coordinate, to: annotation.coordinate)
+            
+            if let pointOfInterestCategory = annotation.mapItem?.pointOfInterestCategory {
+                print("pointOfInterestCategory: \(pointOfInterestCategory)")
+            }
+            print()
+            if let name = annotation.mapItem?.name {
+                print("name: \(name)")
+            }
+            print()
+            if let placemark = annotation.mapItem?.placemark {
+                print("name: \(placemark)")
+            }
+            print()
+            if let phoneNumber = annotation.mapItem?.phoneNumber {
+                print("Phone Number: \(phoneNumber)")
+            }
+            print()
+            
         }
     }
     
