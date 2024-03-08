@@ -18,6 +18,7 @@ class CustomAnnotation: MKPointAnnotation {
     var address: String?
     var distance: Int?
     var category: String?
+    let url: String = ""
 }
 
 class RunningMapViewController: UIViewController, MKMapViewDelegate {
@@ -185,6 +186,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
     //MARK: - @objc functions
     @objc private func TappedstartRunningButton() {
         print("TappedstartRunningButton()")
+        
         let startRunningViewController =  StartRunningViewController()
         startRunningViewController.modalPresentationStyle = .fullScreen
         self.present(startRunningViewController, animated: true)
@@ -305,12 +307,16 @@ extension RunningMapViewController {
                 // 거리 계산
                 let storeLocation = CLLocation(latitude: item.placemark.coordinate.latitude, longitude: item.placemark.coordinate.longitude)
                 let distanceInMeters = self.calculateDistance(to: storeLocation)
+                
+                let url = item.url?.absoluteString ?? "No URL"
+                
                 let isFavorite = self.isStoreFavorite(name: item.name ?? "", latitude: item.placemark.coordinate.latitude, longitude: item.placemark.coordinate.longitude)
 
                 let place = AnnotationInfo(
                     name: item.name ?? "Unknown",
                     category: category,
                     address: item.placemark.title ?? "No address",
+                    url: url,
                     latitude: item.placemark.coordinate.latitude,
                     longitude: item.placemark.coordinate.longitude,
                     isOpenNow: isOpenNow,
@@ -442,7 +448,6 @@ extension RunningMapViewController: CLLocationManagerDelegate {
         let annotation = CustomAnnotation()
         
         let name = mapItem.name ?? "Unknown"
-        let phoneNumber = mapItem.phoneNumber ?? "No Phone Number"
         let address = mapItem.placemark.title ?? "No Address"
         let category = "편의점" // 확장 필요
 
@@ -451,6 +456,8 @@ extension RunningMapViewController: CLLocationManagerDelegate {
         let annotationLocation = CLLocation(latitude: customAnnotation.coordinate.latitude, longitude: customAnnotation.coordinate.longitude)
         let distance = userLocation.distance(from: annotationLocation)
         
+        let url = mapItem.url?.absoluteString ?? "No URL"
+        
         let isFavorite = favoritesViewModel.isFavorite(storeName: annotation.title ?? "", latitude: annotation.coordinate.latitude, longitude: annotation.coordinate.longitude)
 
         // 예시 정보를 `AnnotationInfo`로 생성
@@ -458,13 +465,45 @@ extension RunningMapViewController: CLLocationManagerDelegate {
             name: name,
             category: category,
             address: address,
+            url: url,
             latitude: customAnnotation.coordinate.latitude,
             longitude: customAnnotation.coordinate.longitude,
             isOpenNow: true, // 로직 수정 필요
             distance: Int(distance), // 계산된 거리 정보 사용
             isFavorite: isFavorite
         )
+        
+        // 사용자 현재 위치와 선택한 어노테이션 위치 사이의 경로 계산 및 표시
+        let sourceCoordinate = mapView.userLocation.coordinate
+        let destinationCoordinate = customAnnotation.coordinate
 
+        let sourcePlacemark = MKPlacemark(coordinate: sourceCoordinate)
+        let destinationPlacemark = MKPlacemark(coordinate: destinationCoordinate)
+
+        let sourceItem = MKMapItem(placemark: sourcePlacemark)
+        let destinationItem = MKMapItem(placemark: destinationPlacemark)
+
+        let directionRequest = MKDirections.Request()
+        directionRequest.source = sourceItem
+        directionRequest.destination = destinationItem
+        directionRequest.transportType = .walking // 또는 .automobile
+
+        let directions = MKDirections(request: directionRequest)
+        directions.calculate { (response, error) in
+            guard let response = response else {
+                if let error = error {
+                    print("Error: \(error)")
+                }
+                return
+            }
+            
+            let route = response.routes[0]
+            mapView.addOverlay(route.polyline, level: .aboveRoads)
+            
+            let rect = route.polyline.boundingMapRect
+            mapView.setRegion(MKCoordinateRegion(rect), animated: true)
+        }
+        
         // StoreViewController에 정보 전달 및 표시
         let storeVC = StoreViewController()
         storeVC.stores = [info] // 단일 어노테이션 정보 전달
@@ -626,5 +665,51 @@ extension RunningMapViewController {
 extension RunningMapViewController: StoreViewControllerDelegate {
     func didCloseStoreViewController() {
         getAnnotationLocation()
+    }
+}
+
+extension RunningMapViewController: MapRouteImageDelegate {
+    func updateRouteImageWithSnapshot(routeImage: UIImage, for recordId: UUID) {
+        displayRouteAndTakeSnapshot(locations: locations, mapView: self.mapView) { capturedImage in
+            guard let capturedImage = capturedImage else {
+                print("Snapshot capture failed")
+                return
+            }
+            
+            // 코어 데이터에서 해당 recordId를 가진 레코드를 찾아 이미지를 업데이트 합니다.
+            CoreDataManager.shared.updateRunningRecordWithImage(recordId: recordId, routeImage: capturedImage) { success in
+                if success {
+                    print("Running record updated successfully with route image")
+                } else {
+                    print("Failed to update running record with route image")
+                }
+            }
+        }
+    }
+}
+
+func displayRouteAndTakeSnapshot(locations: [CLLocation], mapView: MKMapView, completion: @escaping (UIImage?) -> Void) {
+    // mapView에 경로를 추가합니다.
+    let coordinates = locations.map { $0.coordinate }
+    let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
+    mapView.addOverlay(polyline)
+    
+    // 경로가 모두 보이도록 mapView의 영역을 조정합니다.
+    let mapPadding = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+    mapView.setVisibleMapRect(polyline.boundingMapRect, edgePadding: mapPadding, animated: true)
+    
+    // mapView가 업데이트 된 후 스냅샷을 캡처합니다.
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { // Adjust delay as necessary
+        let options = MKMapSnapshotter.Options()
+        options.region = mapView.region
+        options.size = mapView.frame.size
+        let snapshotter = MKMapSnapshotter(options: options)
+        snapshotter.start { snapshot, error in
+            guard let snapshot = snapshot else {
+                completion(nil)
+                return
+            }
+            completion(snapshot.image)
+        }
     }
 }

@@ -24,13 +24,4 @@ class RunningMapViewModel {
             self?.locationDidUpdate?(newLocation)
         }
     }
-
-    // ViewModel을 사용하는 뷰 컨트롤러에서 호출할 메서드들
-    func startLocationUpdates() {
-        locationManger.startUpdatingLocation()
-    }
-
-    func stopLocationUpdates() {
-        locationManger.stopUpdatingLocation()
-    }
 }

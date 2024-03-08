@@ -13,6 +13,7 @@ struct AnnotationInfo {
     let name: String
     let category: String
     let address: String
+    let url: String
     let latitude: Double
     let longitude: Double
     let isOpenNow: Bool
@@ -112,7 +113,7 @@ extension StoreViewController: UITableViewDelegate, UITableViewDataSource{
         
         cell.storeLabel.text = store.name
         cell.storeCategoryLabel.text = store.category
-        cell.isOpenLabel.text = store.isOpenNow ? "영업 중" : "영업 종료"
+        cell.isOpenLabel.text = store.isOpenNow ? "영업 중" : "24시간 영업"
         cell.storeDistanceLabel.text = "\(store.distance) m"
         cell.storeAdressLabel.text = store.address
         cell.delegate = self

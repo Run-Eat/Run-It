@@ -8,22 +8,32 @@ protocol PauseRunningHalfModalViewControllerDelegate: AnyObject {
     func didDismissPauseRunningHalfModalViewController()
 }
 
+//protocol MapRouteImageDelegate: AnyObject {
+//    func mapViewController(_ controller: RunningMapViewController, didCaptureRouteImage routeImage: UIImage?, forLocations locations: [CLLocation])
+//}
+
+protocol MapRouteImageDelegate: AnyObject {
+    func updateRouteImageWithSnapshot(routeImage: UIImage, for recordId: UUID)
+}
+
 import UIKit
+import CoreLocation
 
 class PauseRunningHalfModalViewController: UIViewController {
     
     let runningTimer = RunningTimer()
     
     weak var delegate: PauseRunningHalfModalViewControllerDelegate?
-    
+    weak var mapDelegate: MapRouteImageDelegate?
     //MARK: - UI properties
-    
     var time: Int = 0
     var distance: Double = 0.0
     var pace: Double = 0.0
+    var routeImage: Data = Data()
+    var id: UUID = UUID()
     
     let modaltopContainer : UIView = {
-       let container = UIView()
+        let container = UIView()
         return container
     }()
     
@@ -114,7 +124,7 @@ class PauseRunningHalfModalViewController: UIViewController {
         button.clipsToBounds = true
         
         button.addTarget(self, action: #selector(restartRunning), for: .touchUpInside)
-
+        
         return button
     }()
     
@@ -139,7 +149,7 @@ class PauseRunningHalfModalViewController: UIViewController {
     //MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         addModalSubview()
         setupModalUI()
         setModalLayout()
@@ -149,7 +159,7 @@ class PauseRunningHalfModalViewController: UIViewController {
         super.viewWillAppear(animated)
         updateModalUI()
     }
-
+    
     // MARK: - @objc
     @objc private func restartRunning() {
         print("TappedButton - restartRunning()")
@@ -157,35 +167,54 @@ class PauseRunningHalfModalViewController: UIViewController {
         self.dismiss(animated: true) {
             self.delegate?.didDismissPauseRunningHalfModalViewController()
         }
-
+        
         
     }
-
+    
     
     @objc private func stopRunning() {
+        // 운동 기록 정보 출력
         print("TappedButton - stopRunning()")
-        print("stop Time: \(self.time), Distance: \(self.distance), Pace: \(self.pace)")
+        print("stop Time: \(self.time), Distance: \(self.distance), Pace: \(self.pace), routeImage: String(\(self.routeImage))")
+        
+        // 타이머와 위치 업데이트 중지
+        self.runningTimer.stop()
+        RunningTimerLocationManager.shared.stopUpdatingLocation()
+        
+        let locations = RunningTimerLocationManager.shared.getLocations()
+        
+        // 맵 스냅샷 생성
+        MapSnapshotManager.createSnapshot(for: locations) { [weak self] image in
+            guard let self = self, let image = image, let imageData = image.pngData() else {
+                print("Failed to create route image snapshot.")
+                return
+            }
+            
+            // 스냅샷 이미지 데이터와 함께 코어 데이터에 러닝 기록 저장
+            if let recordId = CoreDataManager.shared.createRunningRecord(time: self.time, distance: self.distance, pace: self.pace, routeImage: imageData) {
+                print("Running record with route saved successfully. Record ID: \(recordId)")
+            } else {
+                print("Failed to save running record with route image.")
+            }
+        }
+        
+        // 운동 완료 알림창 표시
+        presentCompletionAlert()
+    }
+    
+    func presentCompletionAlert() {
         let alert = UIAlertController(title: "운동을 완료하시겠습니까?", message: "근처 편의점에서 물 한잔 어떻신가요?", preferredStyle: .alert)
         
         alert.addAction(UIAlertAction(title: "운동 완료하기", style: .default, handler: { _ in
-            self.runningTimer.stop()
-            CoreDataManager.shared.createRunningRecord(time: self.time, distance: self.distance, pace: self.pace)
-
-
-//            let records = CoreDataManager.shared.fetchRunningRecords()
-//            for record in records {
-//                print("CoreData Time: \(record.time), Distance: \(record.distance), Pace: \(record.pace)")
-//            }
-            let mainTabBarViewController =  MainTabBarViewController()
+            let mainTabBarViewController = MainTabBarViewController()
             mainTabBarViewController.modalPresentationStyle = .fullScreen
             self.present(mainTabBarViewController, animated: true)
         }))
         
         alert.addAction(UIAlertAction(title: "취소하기", style: .destructive, handler: nil))
-
+        
         self.present(alert, animated: true, completion: nil)
     }
-    
     
 }
 
@@ -207,17 +236,17 @@ extension PauseRunningHalfModalViewController {
         modalpaceNumberLabel.text = String(format: "%02d:%02d", paceMinutes, paceSeconds)
     }
     
-
+    
     // MARK: - setupUI
     private func setupModalUI() {
         view.backgroundColor = .white
-
-
+        
+        
     }
-
+    
     // MARK: - addSubview
     private func addModalSubview() {
-
+        
         
         view.addSubview(modaltopContainer)
         modaltopContainer.addSubview(modaltimeLabel)
@@ -231,23 +260,23 @@ extension PauseRunningHalfModalViewController {
         modalpaceContainer.addSubview(modalmiddleSplitLine)
         modalpaceContainer.addSubview(modalpaceLabel)
         modalpaceContainer.addSubview(modalpaceNumberLabel)
-
+        
         view.addSubview(bottombuttonContainer)
         bottombuttonContainer.addSubview(restartbuttonContainer)
         bottombuttonContainer.addSubview(stopbuttonContainer)
         restartbuttonContainer.addSubview(restartRunningButton)
         stopbuttonContainer.addSubview(stopRunningButton)
-
+        
     }
-
+    
     // MARK: - Layout
     private func setModalLayout() {
-
+        
         modaltimeLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(25)
             make.leading.equalToSuperview().offset(10)
         }
-
+        
         modaltimeNumberLabel.snp.makeConstraints { make in
             make.top.equalTo(modaltimeLabel.snp.bottom).offset(20)
             make.leading.equalTo(modaltimeLabel)
@@ -279,27 +308,27 @@ extension PauseRunningHalfModalViewController {
             make.top.equalToSuperview().offset(15)
             make.leading.equalToSuperview().offset(10)
         }
-
+        
         modalpaceNumberLabel.snp.makeConstraints { make in
             make.top.equalTo(modalpaceLabel.snp.bottom).offset(10)
             make.leading.equalTo(modalpaceLabel.snp.leading)
         }
-    
-
+        
+        
         modaltopContainer.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
             make.width.equalTo(360)
             make.height.equalTo(150)
         }
-
+        
         modalpaceContainer.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalTo(modaltopContainer.snp.bottom)
             make.width.equalTo(360)
             make.height.equalTo(150)
         }
-
+        
         modalmiddleSplitLine.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.centerX.equalToSuperview()
@@ -342,8 +371,8 @@ extension PauseRunningHalfModalViewController {
             make.height.equalTo(100)
         }
         
-
+        
     }
     
-
+    
 }

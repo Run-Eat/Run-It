@@ -47,24 +47,21 @@ class BookmarkViewController: UIViewController, UITableViewDataSource, UITableVi
         tableView.separatorStyle = .none
         tableView.register(FavoriteViewCell.self, forCellReuseIdentifier: "FavoriteCell")
         tableView.backgroundColor = UIColor.systemGray6
-        tableView.isScrollEnabled = false
+        tableView.isScrollEnabled = true
         
         myFavorite.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(30)
             make.left.equalToSuperview().offset(20)
             make.right.equalToSuperview().offset(-20)
-            make.height.equalTo(20)
+//            make.height.equalTo(30)
         }
         tableView.snp.makeConstraints { make in
             make.top.equalTo(myFavorite.snp.bottom).offset(15)
-            make.left.equalToSuperview()
-            make.right.equalToSuperview()
-            make.height.equalTo(favoriteRecords.count * 120)
+            make.left.right.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        favoriteRecords.count
         favoriteRecords.count
     }
     
@@ -91,15 +88,6 @@ class BookmarkViewController: UIViewController, UITableViewDataSource, UITableVi
             favoritesViewModel.removeFavorite(at: indexPath) // Use the ViewModel to remove the favorite.
         }
     }
-    
-    func updateTableViewHeight() {
-        let newHeight = favoriteRecords.count * 120 // Assuming each cell's height is 120
-        tableView.snp.updateConstraints { make in
-            make.height.equalTo(newHeight)
-        }
-        // You may need to call this if your view's layout needs to be immediately updated
-        self.view.layoutIfNeeded()
-    }
 }
 extension BookmarkViewController: FavoritesViewModelDelegate {
     func favoritesDidUpdate() {
@@ -107,7 +95,6 @@ extension BookmarkViewController: FavoritesViewModelDelegate {
             print("Favorites did update. Reloading tableView.")
             self?.favoriteRecords = self?.favoritesViewModel.favorites ?? []
             self?.tableView.reloadData()
-            self?.updateTableViewHeight()
         }
     }
 }

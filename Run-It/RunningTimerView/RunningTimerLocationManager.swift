@@ -13,7 +13,7 @@ import CoreLocation
 class RunningTimerLocationManager: NSObject, CLLocationManagerDelegate {
     
     static let shared = RunningTimerLocationManager()
-    
+    var locations: [CLLocation] = []
     var locationManager: CLLocationManager = CLLocationManager()
     var previousLocation: CLLocation?
     var totalDistance: Double = 0
@@ -76,6 +76,7 @@ class RunningTimerLocationManager: NSObject, CLLocationManagerDelegate {
 
         // 현재 위치 정보 출력
         print("Current location: \(location.coordinate.latitude), \(location.coordinate.longitude)")
+        print("Locations array count: \(self.locations.count)")
 
         if let previousLocation = self.previousLocation {
             // 이전 위치와 현재 위치 사이의 거리 계산
@@ -92,9 +93,16 @@ class RunningTimerLocationManager: NSObject, CLLocationManagerDelegate {
 
         // 새 위치를 이전 위치로 업데이트
         self.previousLocation = location
+        
+        // 모든 새 위치를 self.locations 배열에 추가
+        self.locations.append(contentsOf: locations)
 
         // 위치 업데이트 클로저 호출 (새 위치 데이터 전달)
         updateLocationClosure?(location)
     }
 
+    func getLocations() -> [CLLocation] {
+        return self.locations
+    }
+    
 }
