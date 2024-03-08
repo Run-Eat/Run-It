@@ -7,66 +7,182 @@
 
 import UIKit
 import SnapKit
+import CoreData
+
+struct AnnotationInfo {
+    let name: String
+    let category: String
+    let address: String
+    let latitude: Double
+    let longitude: Double
+    let isOpenNow: Bool
+    let distance: Int
+    var isFavorite: Bool
+}
+
+protocol StoreViewControllerDelegate: AnyObject {
+    func didCloseStoreViewController()
+}
 
 class StoreViewController: UIViewController {
+    weak var delegate: StoreViewControllerDelegate?
     
-//    var distanceCell = "distanceCell"
-//    
-//    var distance: UICollectionView {
-//        let flowLayout = UICollectionViewFlowLayout()
-//        let collection = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
-//        flowLayout.scrollDirection = .horizontal
-//        flowLayout.minimumLineSpacing = 50
-//        collection.backgroundColor = .cyan
-//        return collection
-//    }
-//    
-//    var amenities: UITableView {
-//        let table = UITableView()
-//        return table
-//    }
+    var tableView = UITableView()
+    var stores: [AnnotationInfo] = []
+    var displayMode: DisplayMode = .allStores
+    var favoritesViewModel = FavoritesViewModel()
+    
+    enum DisplayMode {
+        case allStores
+        case singleStore
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .white
-//        addSubviews()
-//        setupDelegate()
-//        configure()
+        self.view.backgroundColor = .systemGray6
+        setupStoreListUI()
+        tableView.reloadData()
+        view.isUserInteractionEnabled = true
+        setupCloseButton()
     }
     
-//    func setupDelegate() {
-//        distance.register(DistanceCollectionViewCell.self, forCellWithReuseIdentifier: distanceCell)
-//        distance.delegate = self
-//        distance.dataSource = self
-//    }
-//    
-//    func addSubviews() {
-//        view.addSubview(distance)
-//    }
-//    
-//    func configure() {
-//        distance.snp.makeConstraints {
-//            $0.top.equalToSuperview().offset(25)
-//            $0.height.equalTo(50)
-//        }
-//    }
+    func setupCloseButton() {
+        let closeButton = UIButton(type: .system)
+        closeButton.setTitle("닫기", for: .normal)
+        closeButton.addTarget(self, action: #selector(closeAction), for: .touchUpInside)
+        view.addSubview(closeButton)
+        closeButton.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(5)
+            make.trailing.equalToSuperview().offset(-20)
+        }
+    }
     
+    @objc func closeAction() {
+        delegate?.didCloseStoreViewController()
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func setupStoreListUI() {
+        view.addSubview(tableView)
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.separatorStyle = .none
+        tableView.register(StoreTableViewCell.self, forCellReuseIdentifier: "StoreCell")
+        tableView.backgroundColor = UIColor.systemGray6
+        tableView.isScrollEnabled = true
+        
+        tableView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        if let parentView = self.presentingViewController?.view {
+            let halfHeight = parentView.frame.height / 2
+            self.view.frame = CGRect(x: 0, y: parentView.frame.height - halfHeight, width: parentView.frame.width, height: halfHeight)
+        }
+    }
+    
+    func updateTableView(for mode: DisplayMode, with stores: [AnnotationInfo]) {
+        self.displayMode = mode
+        self.stores = stores
+        tableView.reloadData()
+    }
+
+}
+extension StoreViewController: UITableViewDelegate, UITableViewDataSource{
+    // MARK: - 데이터 로딩
+    
+    private func updateUI() {
+        // 근처의 데이터로 UI 업데이트
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return stores.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "StoreCell", for: indexPath) as? StoreTableViewCell else {
+            return UITableViewCell()
+        }
+        
+        let store = stores[indexPath.row]
+        
+        cell.storeLabel.text = store.name
+        cell.storeCategoryLabel.text = store.category
+        cell.isOpenLabel.text = store.isOpenNow ? "영업 중" : "영업 종료"
+        cell.storeDistanceLabel.text = "\(store.distance) m"
+        cell.storeAdressLabel.text = store.address
+        cell.delegate = self
+        
+        // 상점의 즐겨찾기 상태를 위/경도로 조회
+        favoritesViewModel.isStoreFavoritedByCoordinates(latitude: store.latitude, longitude: store.longitude) { isFavorited in
+            DispatchQueue.main.async {
+                cell.updateFavoriteButton(isFavorited: isFavorited)
+            }
+        }
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 120
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let store = stores[indexPath.row]
+        // 해당 레코드의 어노테이션으로 이동
+    }
 }
 
-//extension AmenitiesViewController: UICollectionViewDelegate, UICollectionViewDataSource {
-//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        return 3
-//    }
-//    
-//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-//        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: distanceCell, for: indexPath) as? DistanceCollectionViewCell else { return UICollectionViewCell() }
-//        
-//        return cell
-//    }
-//}
-//
-//extension AmenitiesViewController: UICollectionViewDelegateFlowLayout {
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        return CGSize(width: 320, height: collectionView.frame.height)
-//    }
-//}
+extension StoreViewController: StoreTableViewCellDelegate {
+    func didTapFavoriteButton(in cell: StoreTableViewCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        var store = stores[indexPath.row]
+        
+        store.isFavorite.toggle() // 토글
+        handleFavorite(for: store) { isFavoriteNow in
+            cell.updateFavoriteButton(isFavorited: isFavoriteNow)
+        }
+        stores[indexPath.row].isFavorite = store.isFavorite // 중요: 모델 업데이트
+    }
+    
+    // Adjusted to accept the entire store information
+    func handleFavorite(for store: AnnotationInfo, completion: @escaping (Bool) -> Void) {
+        let context = CoreDataManager.shared.persistentContainer.viewContext
+        let fetchRequest: NSFetchRequest<Favorite> = Favorite.fetchRequest()
+        // 상점을 고유하게 식별하기 위해 storeName, latitude, longitude를 모두 사용
+        fetchRequest.predicate = NSPredicate(format: "storeName == %@ AND latitude == %lf AND longitude == %lf", store.name, store.latitude, store.longitude)
+
+        do {
+            let favorites = try context.fetch(fetchRequest)
+            if let favorite = favorites.first {
+                // If it's already a favorite, delete it
+                print("Attempting to delete favorite: \(store.name)")
+                CoreDataManager.shared.deleteFavorite(withId: favorite.objectID) { success in
+                    if success {
+                        print("Successfully deleted favorite: \(store.name)")
+                    } else {
+                        print("Failed to delete favorite: \(store.name)")
+                    }
+                    completion(!success) // If deletion was successful, isFavoriteNow should be false.
+                }
+            } else {
+                // If it's not a favorite, add it
+                print("Attempting to add favorite: \(store.name)")
+                let isSuccess = CoreDataManager.shared.addFavorite(storeName: store.name, address: store.address, category: store.category, distance: Double(store.distance), latitude: store.latitude, longitude: store.longitude)
+                if isSuccess {
+                    print("Successfully added favorite: \(store.name)")
+                } else {
+                    print("Failed to add favorite: \(store.name)")
+                }
+                completion(isSuccess) // isFavoriteNow should be true after adding.
+            }
+        } catch {
+            print("Failed to fetch favorites: \(error)")
+            completion(false) // If there was an error, we assume isFavoriteNow is false.
+        }
+    }
+}

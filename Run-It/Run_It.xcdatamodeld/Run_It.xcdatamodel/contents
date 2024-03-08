@@ -5,6 +5,12 @@
     </entity>
     <entity name="Favorite" representedClassName="Favorite" parentEntity="User" syncable="YES" codeGenerationType="class">
         <attribute name="addedDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="address" optional="YES" attributeType="String"/>
+        <attribute name="category" optional="YES" attributeType="String"/>
+        <attribute name="distance" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="storeName" optional="YES" attributeType="String"/>
         <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="favorite" inverseEntity="User"/>
     </entity>
     <entity name="PlaceInfo" representedClassName="PlaceInfo" syncable="YES" codeGenerationType="class">

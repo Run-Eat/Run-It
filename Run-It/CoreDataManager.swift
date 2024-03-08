@@ -73,7 +73,59 @@ class CoreDataManager {
     // Add functions for creating, reading, updating, and deleting destinations
     
     // MARK: - Favorite Operations
-    // Add functions for managing favorites
+    
+    func loadFavorites(completion: @escaping (Bool, [Favorite]?) -> Void) {
+        let context = persistentContainer.viewContext
+        let fetchRequest: NSFetchRequest<Favorite> = Favorite.fetchRequest()
+        
+        context.perform {
+            do {
+                let favorites = try context.fetch(fetchRequest)
+                completion(true, favorites)
+            } catch {
+                print("Failed to load favorites: \(error)")
+                completion(false, nil)
+            }
+        }
+    }
+    
+    func addFavorite(storeName: String, address: String, category: String, distance: Double, latitude: Double, longitude: Double) -> Bool {
+        let context = persistentContainer.viewContext
+        guard let entity = NSEntityDescription.entity(forEntityName: "Favorite", in: context) else {
+            print("Failed to create entity description for Favorite")
+            return false
+        }
+
+        let favorite = NSManagedObject(entity: entity, insertInto: context)
+        favorite.setValue(storeName, forKey: "storeName")
+        favorite.setValue(address, forKey: "address")
+        favorite.setValue(category, forKey: "category")
+        favorite.setValue(distance, forKey: "distance")
+        favorite.setValue(Date(), forKey: "addedDate")
+
+        do {
+            try context.save()
+            return true
+        } catch {
+            print("Failed to add favorite: \(error)")
+            return false
+        }
+    }
+
+    func deleteFavorite(withId id: NSManagedObjectID, completion: (Bool) -> Void) {
+        let context = persistentContainer.viewContext
+        let objectToDelete = context.object(with: id)
+        context.delete(objectToDelete)
+        
+        do {
+            try context.save()
+            completion(true)
+        } catch {
+            print("Failed to delete favorite: \(error)")
+            completion(false)
+        }
+    }
+
     
     // MARK: - PlaceInfo Operations
     // Add functions for managing place information
