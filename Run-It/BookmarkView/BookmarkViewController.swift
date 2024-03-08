@@ -11,6 +11,8 @@ import SnapKit
 class BookmarkViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     var tableView = UITableView()
+    var favoritesViewModel = FavoritesViewModel()
+    var favoriteRecords: [Favorite] = []
     
     var myFavorite: UILabel = {
         let label = UILabel()
@@ -23,9 +25,15 @@ class BookmarkViewController: UIViewController, UITableViewDataSource, UITableVi
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        favoritesViewModel.delegate = self
         setupFavoriteUI()
-        
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        favoritesViewModel.fetchFavorites()
+    }
+
     // MARK: - UI Setup
     func setupFavoriteUI() {
         setupFavoriteListUI()
@@ -38,7 +46,7 @@ class BookmarkViewController: UIViewController, UITableViewDataSource, UITableVi
         tableView.dataSource = self
         tableView.separatorStyle = .none
         tableView.register(FavoriteViewCell.self, forCellReuseIdentifier: "FavoriteCell")
-        tableView.backgroundColor = UIColor.white
+        tableView.backgroundColor = UIColor.systemGray6
         tableView.isScrollEnabled = false
         
         myFavorite.snp.makeConstraints { make in
@@ -49,24 +57,57 @@ class BookmarkViewController: UIViewController, UITableViewDataSource, UITableVi
         }
         tableView.snp.makeConstraints { make in
             make.top.equalTo(myFavorite.snp.bottom).offset(15)
-            make.left.equalToSuperview().offset(20)
-            make.right.equalToSuperview().offset(-20)
-            make.height.equalTo(3 * 120)
+            make.left.equalToSuperview()
+            make.right.equalToSuperview()
+            make.height.equalTo(favoriteRecords.count * 120)
         }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        3
+//        favoriteRecords.count
+        favoriteRecords.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "FavoriteCell", for: indexPath) as? FavoriteViewCell else {
             return UITableViewCell()
         }
+        let favoriteRecord = favoriteRecords[indexPath.row]
+
+        // FavoriteViewCell을 구성하기 위한 새로운 ViewModel 인스턴스 생성
+        let viewModel = FavoritesViewModel(favoriteRecord: favoriteRecord)
+        cell.configure(with: viewModel)
+
         return cell
     }
+
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 120
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            favoritesViewModel.removeFavorite(at: indexPath) // Use the ViewModel to remove the favorite.
+        }
+    }
+    
+    func updateTableViewHeight() {
+        let newHeight = favoriteRecords.count * 120 // Assuming each cell's height is 120
+        tableView.snp.updateConstraints { make in
+            make.height.equalTo(newHeight)
+        }
+        // You may need to call this if your view's layout needs to be immediately updated
+        self.view.layoutIfNeeded()
+    }
+}
+extension BookmarkViewController: FavoritesViewModelDelegate {
+    func favoritesDidUpdate() {
+        DispatchQueue.main.async { [weak self] in
+            print("Favorites did update. Reloading tableView.")
+            self?.favoriteRecords = self?.favoritesViewModel.favorites ?? []
+            self?.tableView.reloadData()
+            self?.updateTableViewHeight()
+        }
     }
 }

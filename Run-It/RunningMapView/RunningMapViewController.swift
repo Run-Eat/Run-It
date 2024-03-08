@@ -14,12 +14,17 @@ class CustomAnnotation: MKPointAnnotation {
     var mapItem: MKMapItem?
     var startPin: MKPointAnnotation?
     var endPin: MKPointAnnotation?
+    var name: String?
+    var address: String?
+    var distance: Int?
+    var category: String?
 }
 
 class RunningMapViewController: UIViewController, MKMapViewDelegate {
     weak var parentVC: RunningTimerToMapViewPageController?
     
     //MARK: - UI Properties
+    var favoritesViewModel: FavoritesViewModel!
     var tabBarHeight: CGFloat = .zero
     
     lazy var locationManager: CLLocationManager = {
@@ -169,6 +174,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
         mapView.delegate = self
         locationManager.delegate = self
         RunningTimerLocationManager.shared.getLocationUsagePermission() //viewDidLoad 되었을 때 권한요청을 할 것인지, 현재 위치를 눌렀을 때 권한요청을 할 것인지
+        favoritesViewModel = FavoritesViewModel()
         
     }
     
@@ -204,12 +210,13 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
     }
     
     @objc func presentStoreAnnotationButton() {
-        getAnnotationLocation()
+//        getAnnotationLocation()
+        searchConvenienceStores() // 모달뷰로 변경
 
         //        let storeViewController = StoreViewController()
         //        showMyViewControllerInACustomizedSheet(storeViewController)
     }
-    
+
 }
 
 //MARK: - Annotation Setup
@@ -224,7 +231,7 @@ extension RunningMapViewController {
         let Searchrequest = MKLocalSearch.Request()
         Searchrequest.naturalLanguageQuery = "GS25" // 원하는 POI 유형을 검색어로 지정
         //        request.region = mapView.region // 검색 범위를 지정
-        Searchrequest.region = MKCoordinateRegion(center: currentLocation.coordinate, latitudinalMeters: 150, longitudinalMeters: 150) // 150m 범위를 지정
+        Searchrequest.region = MKCoordinateRegion(center: currentLocation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500) // 500m 범위를 지정
         
         let search = MKLocalSearch(request: Searchrequest)
         search.start { (response, error) in
@@ -238,7 +245,9 @@ extension RunningMapViewController {
                 annotation.coordinate = item.placemark.coordinate
                 annotation.title = item.name
                 annotation.mapItem = item // MKMapItem 저장
-                self.mapView.addAnnotation(annotation)
+                DispatchQueue.main.async {
+                    self.mapView.addAnnotation(annotation)
+                }
             }
             
 //            for item in response.mapItems {
@@ -262,6 +271,67 @@ extension RunningMapViewController {
         // mapView.overlays 배열에서 currentCircle를 제외하고 모두 제거
         let overlaysToRemove = mapView.overlays.filter { $0 !== currentCircle }
         mapView.removeOverlays(overlaysToRemove)
+    }
+    
+    func calculateDistance(to location: CLLocation) -> Int {
+        let userLocation = CLLocation(latitude: mapView.userLocation.coordinate.latitude, longitude: mapView.userLocation.coordinate.longitude)
+        let distanceInMeters = userLocation.distance(from: location)
+        return Int(distanceInMeters)
+    }
+    
+    func isStoreFavorite(name: String, latitude: Double, longitude: Double) -> Bool {
+        let viewModel = FavoritesViewModel()
+        return viewModel.isFavorite(storeName: name, latitude: latitude, longitude: longitude)
+    }
+
+    func searchConvenienceStores() {
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = "GS25"
+        request.region = mapView.region
+        
+        let search = MKLocalSearch(request: request)
+        search.start { (response, error) in
+            guard let response = response else {
+                print("Error: \(error?.localizedDescription ?? "Unknown error").")
+                return
+            }
+            
+            var places: [AnnotationInfo] = []
+            for item in response.mapItems {
+                // 임시 카테고리
+                let category = "편의점"
+                
+                let isOpenNow = false // 이 값을 설정하기 위한 로직이 필요
+                // 거리 계산
+                let storeLocation = CLLocation(latitude: item.placemark.coordinate.latitude, longitude: item.placemark.coordinate.longitude)
+                let distanceInMeters = self.calculateDistance(to: storeLocation)
+                let isFavorite = self.isStoreFavorite(name: item.name ?? "", latitude: item.placemark.coordinate.latitude, longitude: item.placemark.coordinate.longitude)
+
+                let place = AnnotationInfo(
+                    name: item.name ?? "Unknown",
+                    category: category,
+                    address: item.placemark.title ?? "No address",
+                    latitude: item.placemark.coordinate.latitude,
+                    longitude: item.placemark.coordinate.longitude,
+                    isOpenNow: isOpenNow,
+                    distance: distanceInMeters, isFavorite: isFavorite
+                )
+                
+                places.append(place)
+            }
+            
+            self.presentStoreViewController(with: places)
+        }
+    }
+    
+    func presentStoreViewController(with places: [AnnotationInfo]) {
+        let storeVC = StoreViewController()
+        storeVC.delegate = self
+        storeVC.stores = places // 데이터 전달
+        storeVC.modalPresentationStyle = .formSheet
+        storeVC.modalTransitionStyle = .coverVertical
+//        storeVC.modalPresentationStyle = .overCurrentContext
+        self.present(storeVC, animated: true, completion: nil)
     }
     
 } //extension
@@ -367,28 +437,44 @@ extension RunningMapViewController: CLLocationManagerDelegate {
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        if let annotation = view.annotation as? CustomAnnotation {
-            calculateAndShowRoute(from: mapView.userLocation.coordinate, to: annotation.coordinate)
-            
-            if let pointOfInterestCategory = annotation.mapItem?.pointOfInterestCategory {
-                print("pointOfInterestCategory: \(pointOfInterestCategory)")
-            }
-            print()
-            if let name = annotation.mapItem?.name {
-                print("name: \(name)")
-            }
-            print()
-            if let placemark = annotation.mapItem?.placemark {
-                print("name: \(placemark)")
-            }
-            print()
-            if let phoneNumber = annotation.mapItem?.phoneNumber {
-                print("Phone Number: \(phoneNumber)")
-            }
-            print()
-            
-        }
+        guard let customAnnotation = view.annotation as? CustomAnnotation, let mapItem = customAnnotation.mapItem else { return }
+        
+        let annotation = CustomAnnotation()
+        
+        let name = mapItem.name ?? "Unknown"
+        let phoneNumber = mapItem.phoneNumber ?? "No Phone Number"
+        let address = mapItem.placemark.title ?? "No Address"
+        let category = "편의점" // 확장 필요
+
+        // 어노테이션까지 거리 계산
+        let userLocation = CLLocation(latitude: mapView.userLocation.coordinate.latitude, longitude: mapView.userLocation.coordinate.longitude)
+        let annotationLocation = CLLocation(latitude: customAnnotation.coordinate.latitude, longitude: customAnnotation.coordinate.longitude)
+        let distance = userLocation.distance(from: annotationLocation)
+        
+        let isFavorite = favoritesViewModel.isFavorite(storeName: annotation.title ?? "", latitude: annotation.coordinate.latitude, longitude: annotation.coordinate.longitude)
+
+        // 예시 정보를 `AnnotationInfo`로 생성
+        let info = AnnotationInfo(
+            name: name,
+            category: category,
+            address: address,
+            latitude: customAnnotation.coordinate.latitude,
+            longitude: customAnnotation.coordinate.longitude,
+            isOpenNow: true, // 로직 수정 필요
+            distance: Int(distance), // 계산된 거리 정보 사용
+            isFavorite: isFavorite
+        )
+
+        // StoreViewController에 정보 전달 및 표시
+        let storeVC = StoreViewController()
+        storeVC.stores = [info] // 단일 어노테이션 정보 전달
+        storeVC.modalPresentationStyle = .formSheet
+        storeVC.modalTransitionStyle = .coverVertical
+        storeVC.view.backgroundColor = UIColor.systemBackground
+        
+        self.present(storeVC, animated: true, completion: nil)
     }
+
     
     func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
         
@@ -535,4 +621,10 @@ extension RunningMapViewController {
     }
     
     
+}
+
+extension RunningMapViewController: StoreViewControllerDelegate {
+    func didCloseStoreViewController() {
+        getAnnotationLocation()
+    }
 }

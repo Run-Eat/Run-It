@@ -52,28 +52,37 @@ class FavoriteViewCell: UITableViewCell {
     }
     
     private func setupUI() {
-        backgroundColor = UIColor.white
+        backgroundColor = UIColor.systemGray6
         contentView.addSubview(nameLabel)
         contentView.addSubview(adressLabel)
         contentView.addSubview(categoryLabel)
     }
     
+    func configure(with viewModel: FavoritesViewModel) {
+        nameLabel.text = viewModel.storeText
+        adressLabel.text = viewModel.addressText
+        categoryLabel.text = viewModel.categoryText
+        // If you're storing the distance as a String or a Number, make sure to convert it to a String.
+        // The following assumes distance is stored as an NSNumber or Int and converts it to String.
+//        if let distance = favorite.distance as? NSNumber {
+//            storeDistanceLabel.text = "\(distance.stringValue) m"
+//        }
+    }
     private func setupLayout() {
         
         nameLabel.snp.makeConstraints { make in
             make.top.equalTo(contentView.snp.top).offset(15)
             make.leading.equalTo(contentView.snp.leading).offset(18)
-            make.trailing.equalTo(contentView.snp.trailing).offset(-18)
             make.height.equalTo(18)
         }
         
         categoryLabel.snp.makeConstraints { make in
-            make.top.equalTo(nameLabel.snp.bottom).offset(15)
-            make.leading.equalTo(contentView.snp.leading).offset(18)
+            make.top.equalTo(contentView.snp.top).offset(15)
+            make.leading.equalTo(nameLabel.snp.trailing).offset(10)
             make.height.equalTo(18)
         }
         adressLabel.snp.makeConstraints { make in
-            make.top.equalTo(categoryLabel.snp.bottom).offset(10)
+            make.top.equalTo(nameLabel.snp.bottom).offset(10)
             make.leading.equalTo(contentView.snp.leading).offset(18)
             make.height.equalTo(18)
         }
@@ -84,7 +93,7 @@ class FavoriteViewCell: UITableViewCell {
         super.layoutSubviews()
         
         let backgroundView = UIView()
-        backgroundView.backgroundColor = UIColor.systemGray6
+        backgroundView.backgroundColor = UIColor.white
         backgroundView.layer.cornerRadius = 10
         backgroundView.layer.masksToBounds = true
         backgroundView.frame = self.bounds.inset(by: UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0))
