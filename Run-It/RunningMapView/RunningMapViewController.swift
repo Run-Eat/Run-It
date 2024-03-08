@@ -30,11 +30,12 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
     
     lazy var locationManager: CLLocationManager = {
         let manager = CLLocationManager()
-        manager.desiredAccuracy = kCLLocationAccuracyBest
-        manager.startUpdatingLocation() // startUpdate를 해야 didUpdateLocation 메서드가 호출됨.
         manager.delegate = self
+        manager.startUpdatingLocation() // startUpdate를 해야 didUpdateLocation 메서드가 호출됨.
+        manager.desiredAccuracy = kCLLocationAccuracyBest
         manager.allowsBackgroundLocationUpdates = true
         manager.showsBackgroundLocationIndicator = true
+        manager.pausesLocationUpdatesAutomatically = false
         return manager
     }()
     
@@ -61,7 +62,8 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
     lazy var currentLocationButton: UIButton = {
         let button = UIButton()
         var config = UIButton.Configuration.filled()
-        config.baseBackgroundColor = .systemCyan
+        config.baseForegroundColor = .black
+        config.baseBackgroundColor = .white
         config.cornerStyle = .capsule
         config.image = UIImage(systemName: "location")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .medium))
         button.configuration = config
@@ -73,7 +75,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
     lazy var storeListButton: UIButton = {
         let button = UIButton()
         var config = UIButton.Configuration.filled()
-        config.baseBackgroundColor = .systemIndigo
+        config.baseBackgroundColor = .systemBlue
         config.cornerStyle = .capsule
         config.image = UIImage(systemName: "plus")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .medium))
         button.configuration = config
@@ -87,7 +89,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
     lazy var convenienceStoreButton: UIButton = {
         let button = UIButton()
         var config = UIButton.Configuration.filled()
-        config.baseBackgroundColor = .systemPink
+        config.baseBackgroundColor = .systemIndigo
         config.cornerStyle = .capsule
         config.image = UIImage(systemName: "storefront")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .medium))
         button.configuration = config
@@ -102,7 +104,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
     lazy var cafeButton: UIButton = {
         let button = UIButton()
         var config = UIButton.Configuration.filled()
-        config.baseBackgroundColor = .systemPink
+        config.baseBackgroundColor = .systemIndigo
         config.cornerStyle = .capsule
         config.image = UIImage(systemName: "cup.and.saucer")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .medium))
         button.configuration = config
@@ -129,7 +131,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
         if let image = UIImage(systemName: "figure.run", withConfiguration: configuration) {
             button.setImage(image, for: .normal)
         }
-        button.backgroundColor = .systemIndigo
+        button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 45
         button.clipsToBounds = true
         
@@ -145,7 +147,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
         if let image = UIImage(systemName: "restart", withConfiguration: configuration) {
             button.setImage(image, for: .normal)
         }
-        button.backgroundColor = .systemIndigo
+        button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 15
         button.clipsToBounds = true
         button.isHidden = true
@@ -176,7 +178,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
         locationManager.delegate = self
         RunningTimerLocationManager.shared.getLocationUsagePermission() //viewDidLoad 되었을 때 권한요청을 할 것인지, 현재 위치를 눌렀을 때 권한요청을 할 것인지
         favoritesViewModel = FavoritesViewModel()
-        
+        mapView.setUserTrackingMode(.follow, animated: true)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -548,7 +550,7 @@ extension RunningMapViewController: CLLocationManagerDelegate {
             var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "endPin")
             if annotationView == nil {
                 annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: "endPin")
-                annotationView?.image = UIImage(systemName: "figure.run")
+                annotationView?.image = UIImage(named: "DestinationIcon")
             } else {
                 annotationView?.annotation = annotation
             }
