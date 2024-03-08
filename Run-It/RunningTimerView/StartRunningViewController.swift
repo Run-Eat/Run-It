@@ -55,7 +55,7 @@ extension StartRunningViewController {
 
     }
     private func setupUI() {
-        view.backgroundColor = .systemIndigo
+        view.backgroundColor = .systemBlue
     }
     private func setLayout() {
         

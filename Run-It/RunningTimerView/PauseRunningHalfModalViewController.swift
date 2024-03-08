@@ -119,7 +119,7 @@ class PauseRunningHalfModalViewController: UIViewController {
         if let image = UIImage(systemName: "restart", withConfiguration: configuration) {
             button.setImage(image, for: .normal)
         }
-        button.backgroundColor = .systemTeal
+        button.backgroundColor = .systemIndigo
         button.layer.cornerRadius = 50
         button.clipsToBounds = true
         

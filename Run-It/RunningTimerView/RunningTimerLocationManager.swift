@@ -26,6 +26,8 @@ class RunningTimerLocationManager: NSObject, CLLocationManagerDelegate {
         locationManager.delegate = self
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.showsBackgroundLocationIndicator = true
+        locationManager.pausesLocationUpdatesAutomatically = false
     }
     
     //위치사용 권한 요청
