@@ -8,32 +8,6 @@
 import UIKit
 import SnapKit
 
-#if DEBUG
-import SwiftUI
-struct RPreview: UIViewControllerRepresentable {
-    
-    // 여기 ViewController를 변경해주세요
-    func makeUIViewController(context: Context) -> UIViewController {
-        RunningRecordViewController()
-    }
-    
-    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-        // leave this empty
-    }
-}
-
-struct RunningRecordViewController_PreviewProvider: PreviewProvider {
-    static var previews: some View {
-        Group {
-            RPreview()
-                .edgesIgnoringSafeArea(.all)
-                .previewDisplayName("Preview")
-                .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro"))
-        }
-    }
-}
-#endif
-
 class RunningRecordViewController: UIViewController, UITextFieldDelegate {
     // MARK: - Properties
     var viewModel: RunningRecordViewModel! {
@@ -136,6 +110,7 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
     var routeImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.backgroundColor = UIColor.systemGreen
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     // MARK: - Life Cycle
@@ -190,6 +165,7 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
             make.top.equalTo(stackView.snp.bottom).offset(20)
             make.left.equalToSuperview().offset(20)
             make.right.equalToSuperview().offset(-20)
+            make.height.equalTo(202)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-20)
         }
     }
@@ -200,7 +176,6 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
         recordDistance.text = viewModel.distanceText
         recordTime.text = viewModel.timeText
         userPace.text = viewModel.paceText
-//        routeImage.image = viewModel.routeImageData.flatMap(UIImage.init)
         if let imageData = viewModel.routeImageData {
             routeImageView.image = UIImage(data: imageData)
         } else {

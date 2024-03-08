@@ -7,13 +7,15 @@
 
 import Foundation
 import CoreData
+import CoreLocation
 import KakaoSDKUser
+import UIKit
 
 class CoreDataManager {
     static let shared = CoreDataManager()
     
     private init() {}
-
+    
     // MARK: - Core Data stack
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "Run_It")
@@ -47,7 +49,7 @@ class CoreDataManager {
             print("Failed to create entity description for User")
             return nil
         }
-
+        
         let user = User(entity: entity, insertInto: context)
         user.userId = UUID()
         user.email = email
@@ -64,7 +66,7 @@ class CoreDataManager {
             return nil
         }
     }
-
+    
     
     // Add similar functions for other CRUD operations on User and other entities
     // For example: fetchUsers(), updateUser(), deleteUser(), etc.
@@ -95,14 +97,14 @@ class CoreDataManager {
             print("Failed to create entity description for Favorite")
             return false
         }
-
+        
         let favorite = NSManagedObject(entity: entity, insertInto: context)
         favorite.setValue(storeName, forKey: "storeName")
         favorite.setValue(address, forKey: "address")
         favorite.setValue(category, forKey: "category")
         favorite.setValue(distance, forKey: "distance")
         favorite.setValue(Date(), forKey: "addedDate")
-
+        
         do {
             try context.save()
             return true
@@ -111,7 +113,7 @@ class CoreDataManager {
             return false
         }
     }
-
+    
     func deleteFavorite(withId id: NSManagedObjectID, completion: (Bool) -> Void) {
         let context = persistentContainer.viewContext
         let objectToDelete = context.object(with: id)
@@ -125,43 +127,36 @@ class CoreDataManager {
             completion(false)
         }
     }
-
+    
     
     // MARK: - PlaceInfo Operations
     // Add functions for managing place information
     
     // MARK: - RunningRecord Operations
-    func createRunningRecord(time: Int, distance: Double, pace: Double) -> RunningRecord? {
+    func createRunningRecord(time: Int, distance: Double, pace: Double, routeImage: Data) -> UUID? {
         let context = persistentContainer.viewContext
-        guard let entity = NSEntityDescription.entity(forEntityName: "RunningRecord", in: context) else {
-            print("Failed to create entity description for RunningRecord")
-            return nil
-        }
-
-        let record = RunningRecord(entity: entity, insertInto: context)
-        record.id =  UUID()
-        record.time = Int32(time)
-        record.distance = distance
-        record.pace = pace
-        record.date = Date()
-//        record.createdAt = Date()
-        print("CoreData id: \(String(describing: record.id)) Time: \(record.time), Distance: \(record.distance), Pace: \(record.pace)")
+        let newRecord = RunningRecord(context: context)
+        newRecord.id = UUID()
+        newRecord.time = Int32(time)
+        newRecord.distance = distance
+        newRecord.pace = pace
+        newRecord.date = Date()
+        newRecord.routeImage = routeImage
         
         do {
             try context.save()
-            return record
+            return newRecord.id
         } catch {
-            print("Failed to create running record: \(error)")
+            print("Failed to save running record: \(error)")
             return nil
         }
     }
 
     
-    // MARK: - RunningRecord Operations
     func fetchRunningRecords() -> [RunningRecord] {
         let context = persistentContainer.viewContext
         let fetchRequest: NSFetchRequest<RunningRecord> = RunningRecord.fetchRequest()
-
+        
         do {
             let records = try context.fetch(fetchRequest)
             return records
@@ -171,22 +166,40 @@ class CoreDataManager {
         }
     }
     
-//    func generateDummyRunningRecords() {
-//        // 더미 데이터 배열
-//        let dummyData = [
-//            (time: 3600, distance: 10.0, pace: 6.0), // 1시간, 10km, 페이스 6분/km
-//            (time: 1800, distance: 5.0, pace: 6.0),  // 30분, 5km, 페이스 6분/km
-//            (time: 5400, distance: 15.0, pace: 6.0) // 1시간 30분, 15km, 페이스 6분/km
-//        ]
-//        
-//        // 각 더미 데이터에 대해 RunningRecord 인스턴스 생성
-//        for data in dummyData {
-//            _ = createRunningRecord(time: data.time, distance: data.distance, pace: data.pace)
-//        }
-//        
-//        // 변경 사항 저장
-//        saveContext()
-//    }
+    // Data 객체로부터 [CLLocation] 배열을 로드하는 함수
+    func loadRoute(from data: Data) -> [CLLocation]? {
+        do {
+            // 'requiringSecureCoding' 옵션을 true로 설정하여 NSSecureCoding을 준수하는 객체만 역직렬화 허용
+            let locations = try NSKeyedUnarchiver.unarchivedArrayOfObjects(ofClass: CLLocation.self, from: data)
+            return locations
+        } catch {
+            print("Failed to unarchive locations: \(error)")
+            return nil
+        }
+    }
+    
+    func updateRunningRecordWithImage(recordId: UUID, routeImage: UIImage, completion: @escaping (Bool) -> Void) {
+        // `persistentContainer` 및 `context` 설정을 가정
+        let context = persistentContainer.viewContext
+        let fetchRequest: NSFetchRequest<RunningRecord> = RunningRecord.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", recordId as CVarArg)
+
+        do {
+            let records = try context.fetch(fetchRequest)
+            if let recordToUpdate = records.first {
+                if let imageData = routeImage.pngData() {
+                    recordToUpdate.routeImage = imageData
+                    try context.save()
+                    completion(true)
+                    return
+                }
+            }
+        } catch {
+            print("Error updating record: \(error)")
+        }
+        completion(false)
+    }
+    
     // MARK: - Delete RunningRecord in CoreDataManager
     func deleteRunningRecord(withId id: UUID, completion: (Bool) -> Void) {
         let context = persistentContainer.viewContext
@@ -208,5 +221,5 @@ class CoreDataManager {
             completion(false)
         }
     }
-
+    
 }

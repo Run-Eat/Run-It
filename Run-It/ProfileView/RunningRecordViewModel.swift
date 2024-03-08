@@ -8,6 +8,7 @@
 import Foundation
 
 import CoreData
+import CoreLocation
 
 class RunningRecordViewModel {
     // 뷰에 표시될 속성들
@@ -35,7 +36,6 @@ class RunningRecordViewModel {
     
     func fetchRunningRecords(completion: @escaping () -> Void) {
         runningRecords = CoreDataManager.shared.fetchRunningRecords()
-        // 최신 레코드를 사용해 뷰모델의 속성 설정
         if let latestRecord = runningRecords.last {
             configure(with: latestRecord)
         }
@@ -53,10 +53,8 @@ class RunningRecordViewModel {
     }
     
     func updateLabelText(newLabelText: String) {
-        // Update the viewModel's labelText
         self.labelText = newLabelText
         
-        // Find the RunningRecord entity with the current ID and update its label
         let context = CoreDataManager.shared.persistentContainer.viewContext
         let fetchRequest: NSFetchRequest<RunningRecord> = RunningRecord.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "id == %@", self.id as CVarArg)
@@ -73,22 +71,27 @@ class RunningRecordViewModel {
         }
     }
     
+    func loadRoute(from data: Data) -> [CLLocation]? {
+        do {
+            let locations = try NSKeyedUnarchiver.unarchivedArrayOfObjects(ofClass: CLLocation.self, from: data)
+            return locations
+        } catch {
+            print("Failed to unarchive locations: \(error)")
+            return nil
+        }
+    }
+    
     // MARK: - Delete RunningRecord
     func deleteRunningRecord(at index: Int, completion: @escaping (Bool) -> Void) {
-        // Assuming you have an array of RunningRecords in your viewModel
         let recordToDelete = runningRecords[index]
         
-        // Delete from Core Data
         if let recordId = recordToDelete.id {
             CoreDataManager.shared.deleteRunningRecord(withId: recordId) { success in
-                // Handle the deletion result
             }
         } else {
-            // Handle the case where recordToDelete.id is nil
             print("Record ID is nil, cannot delete.")
         }
     }
-
 
 }
 // MARK: - Helper Methods

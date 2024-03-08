@@ -13,7 +13,6 @@ class FavoriteViewCell: UITableViewCell {
     lazy var nameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        label.text = "시청gs편의점"
         label.numberOfLines = 0
         return label
     }()
@@ -21,15 +20,14 @@ class FavoriteViewCell: UITableViewCell {
     lazy var adressLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
-        label.text = "서울시 중구 "
-        label.textAlignment = .right
+        label.textAlignment = .left
+        label.numberOfLines = 0
         return label
     }()
     
     lazy var categoryLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12)
-        label.text = "편의점 "
         label.textColor = UIColor.secondaryLabel
         label.textAlignment = .right
         return label
@@ -84,7 +82,8 @@ class FavoriteViewCell: UITableViewCell {
         adressLabel.snp.makeConstraints { make in
             make.top.equalTo(nameLabel.snp.bottom).offset(10)
             make.leading.equalTo(contentView.snp.leading).offset(18)
-            make.height.equalTo(18)
+            make.trailing.equalTo(contentView.snp.trailing).offset(-18)
+            make.height.equalTo(60)
         }
     }
     // MARK: - Layout & Drawing

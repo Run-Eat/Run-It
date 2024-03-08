@@ -14,8 +14,9 @@
 		2B4652F92B96B64F0040B146 /* RunningRecordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B4652F82B96B64F0040B146 /* RunningRecordViewModel.swift */; };
 		2B46533D2B97527D0040B146 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B46533C2B97527D0040B146 /* ProfileViewController.swift */; };
 		2B46533F2B9752D60040B146 /* EventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B46533E2B9752D60040B146 /* EventViewController.swift */; };
-		2B4653542B99DC0A0040B146 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2B4653532B99DC0A0040B146 /* GoogleService-Info.plist */; };
 		2B4653562B99E9DD0040B146 /* FavoritesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B4653552B99E9DD0040B146 /* FavoritesViewModel.swift */; };
+		2B4653582B9AB55F0040B146 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2B4653572B9AB55F0040B146 /* GoogleService-Info.plist */; };
+		2B46535A2B9B1D2D0040B146 /* MapSnapshotManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B4653592B9B1D2D0040B146 /* MapSnapshotManager.swift */; };
 		2B9888242B8B76A300B2BC74 /* EventViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888232B8B76A300B2BC74 /* EventViewCell.swift */; };
 		2B98882A2B8C770900B2BC74 /* RecordViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888292B8C770900B2BC74 /* RecordViewCell.swift */; };
 		2B9888472B904D8500B2BC74 /* RunningRecordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888462B904D8500B2BC74 /* RunningRecordViewController.swift */; };
@@ -85,8 +86,9 @@
 		2B4652F82B96B64F0040B146 /* RunningRecordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningRecordViewModel.swift; sourceTree = "<group>"; };
 		2B46533C2B97527D0040B146 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		2B46533E2B9752D60040B146 /* EventViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
-		2B4653532B99DC0A0040B146 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2B4653552B99E9DD0040B146 /* FavoritesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesViewModel.swift; sourceTree = "<group>"; };
+		2B4653572B9AB55F0040B146 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		2B4653592B9B1D2D0040B146 /* MapSnapshotManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapSnapshotManager.swift; sourceTree = "<group>"; };
 		2B9888232B8B76A300B2BC74 /* EventViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewCell.swift; sourceTree = "<group>"; };
 		2B9888292B8C770900B2BC74 /* RecordViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordViewCell.swift; sourceTree = "<group>"; };
 		2B9888462B904D8500B2BC74 /* RunningRecordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningRecordViewController.swift; sourceTree = "<group>"; };
@@ -195,7 +197,7 @@
 				C82CEDCA2B86FCB200B619AD /* SceneDelegate.swift */,
 				C82CEDD42B86FCB300B619AD /* Assets.xcassets */,
 				C82CEDD92B86FCB300B619AD /* Info.plist */,
-				2B4653532B99DC0A0040B146 /* GoogleService-Info.plist */,
+				2B4653572B9AB55F0040B146 /* GoogleService-Info.plist */,
 				C82CEDEE2B86FEAF00B619AD /* MainTabBarViewController */,
 				6C7A43E62B8CAB5900A14291 /* LoginView */,
 				C82CEDE52B86FDBD00B619AD /* ProfileView */,
@@ -253,6 +255,7 @@
 				C82CEDE82B86FDE800B619AD /* RunningTimerViewController.swift */,
 				C879CD042B8880F200DBFB82 /* PauseViewHalfModal.swift */,
 				C879CD022B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift */,
+				2B4653592B9B1D2D0040B146 /* MapSnapshotManager.swift */,
 			);
 			path = RunningTimerView;
 			sourceTree = "<group>";
@@ -383,7 +386,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C82CEDD82B86FCB300B619AD /* LaunchScreen.storyboard in Resources */,
-				2B4653542B99DC0A0040B146 /* GoogleService-Info.plist in Resources */,
+				2B4653582B9AB55F0040B146 /* GoogleService-Info.plist in Resources */,
 				C82CEDD52B86FCB300B619AD /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -425,6 +428,7 @@
 				6C7A43E32B8C903100A14291 /* LoginViewController.swift in Sources */,
 				2B4652F92B96B64F0040B146 /* RunningRecordViewModel.swift in Sources */,
 				C893A7232B955B0E00D5466E /* RunningTimerManager.swift in Sources */,
+				2B46535A2B9B1D2D0040B146 /* MapSnapshotManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

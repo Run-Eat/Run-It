@@ -256,8 +256,8 @@ class ProfileViewController: UIViewController
         scrollView.addSubview(thisWeek_MonthRunningCountLabel)
         scrollView.addSubview(lastWeek_MonthRunningCountLabel)
         scrollView.addSubview(tableView)
-        
         scrollView.addSubview(resetButton)
+
     }
     
 // MARK: - 레이아웃
