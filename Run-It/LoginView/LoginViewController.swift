@@ -426,7 +426,6 @@ class LoginViewController: UIViewController
         else if result == "successLogin"
         {
             let VC = MainTabBarViewController()
-            VC.selectedIndex = 1
             
             VC.modalPresentationStyle = .fullScreen
             self.present(VC, animated: true, completion: nil)
