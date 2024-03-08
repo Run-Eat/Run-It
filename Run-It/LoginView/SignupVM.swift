@@ -20,12 +20,43 @@ func isValidEmail(_ email: String) -> Bool      // 이메일 유효성 검사
 }
     
    
-func isValidPassword(_ password: String) -> Bool    // 비밀번호 유효성 검사
+func isValidPassword(_ password: String) -> (isVaild: Bool, message: String)    // 비밀번호 유효성 검사
 {
     // 비밀번호 정규 표현식
     let passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,20}$"
     let passwordPredicate = NSPredicate(format: "SELF MATCHES %@", passwordRegex)
-    return passwordPredicate.evaluate(with: password)
+    let isValid = passwordPredicate.evaluate(with: password)
+    
+    var message = ""
+    if !isValid
+    {
+        if password.count < 8 || password.count > 20
+        {
+            message += "비밀번호는 8자 이상 20자 이하여야 합니다."
+        }
+        
+        else
+        {
+            var inValidCondition = [String]()
+            if password.rangeOfCharacter(from: CharacterSet.letters) == nil
+            {
+                inValidCondition.append("영문자")
+            }
+            if password.rangeOfCharacter(from: CharacterSet.decimalDigits) == nil
+            {
+                inValidCondition.append("숫자")
+            }
+            if password.rangeOfCharacter(from: CharacterSet(charactersIn: "$@$!%*#?&")) == nil
+            {
+                inValidCondition.append("특수문자")
+            }
+            if !inValidCondition.isEmpty
+            {
+                message = "\(inValidCondition.joined(separator: ", "))가 입력되지 않았습니다."
+            }
+        }
+    }
+    return(isValid, message)
 }
 
 // MARK: - Firebase 유저 생성

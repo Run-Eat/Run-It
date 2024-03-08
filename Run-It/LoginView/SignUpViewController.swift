@@ -87,6 +87,15 @@ class SignUpViewController: UIViewController
         return textField
     }()
     
+    lazy var passwordShowHideButton: UIButton =
+    {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(systemName: "eye.slash"), for: .normal)
+        button.addTarget(self, action: #selector(showHidePassword), for: .touchUpInside)
+        button.tintColor = .lightGray
+        return button
+    }()
+    
     let passwordExplainLabel: UILabel =
     {
         let label = UILabel()
@@ -157,6 +166,7 @@ class SignUpViewController: UIViewController
         
         emailTextField.delegate = self
         passwordTextField.delegate = self
+        passwordTextField.isSecureTextEntry = true
     }
 
 // MARK: - 레이아웃 지정
@@ -168,6 +178,7 @@ class SignUpViewController: UIViewController
         view.addSubview(emailTextField)
         view.addSubview(emailExplainLabel)
         view.addSubview(passwordTextField)
+        view.addSubview(passwordShowHideButton)
         view.addSubview(passwordExplainLabel)
         view.addSubview(signUpButton)
         view.addSubview(socialSignUpLabel)
@@ -217,6 +228,14 @@ class SignUpViewController: UIViewController
             make.centerX.equalTo(view.snp.centerX)
             make.width.equalTo(350)
             make.height.equalTo(40)
+        }
+        
+        passwordShowHideButton.snp.makeConstraints
+        {   make in
+            make.centerY.equalTo(passwordTextField.snp.centerY)
+            make.trailing.equalTo(passwordTextField).offset(-10)
+            make.width.equalTo(30)
+            make.height.equalTo(30)
         }
         
         passwordExplainLabel.snp.makeConstraints
@@ -281,6 +300,21 @@ class SignUpViewController: UIViewController
         alertController.addAction(cancel)
         alertController.addAction(confirm)
         self.present(alertController, animated: true, completion: nil)
+    }
+    
+    @objc func showHidePassword()
+    {
+        passwordTextField.isSecureTextEntry.toggle()
+        
+        if passwordTextField.isSecureTextEntry
+        {
+            passwordShowHideButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
+        }
+        
+        else
+        {
+            passwordShowHideButton.setImage(UIImage(systemName: "eye.fill"), for: .normal)
+        }
     }
     
     @objc func touchedSignUpButton()
@@ -361,7 +395,7 @@ extension SignUpViewController: UITextFieldDelegate
     func textFieldDidChangeSelection(_ textField: UITextField)
     {
         let isEmailValid = isValidEmail(emailTextField.text ?? "")
-        let isPasswordValid = isValidPassword(passwordTextField.text ?? "")
+        let (isPasswordValid, passwordMessage) = isValidPassword(passwordTextField.text ?? "")
         
         if textField == emailTextField
         {
@@ -388,7 +422,7 @@ extension SignUpViewController: UITextFieldDelegate
             else
             {
                 passwordTextField.layer.borderColor = UIColor.red.cgColor
-                passwordExplainLabel.text = "비밀번호가 조건에 맞지 않습니다."
+                passwordExplainLabel.text = passwordMessage
             }
         }
 

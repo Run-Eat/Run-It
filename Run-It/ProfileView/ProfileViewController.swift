@@ -170,6 +170,18 @@ class ProfileViewController: UIViewController
     lazy var thisWeek_MonthRunningCountLabel = createLabel("", 17)
     lazy var lastWeek_MonthRunningCountLabel = createLabel("", 17)
     
+    lazy var resetButton: UIButton =
+    {
+        let button = UIButton()
+        button.setTitle("러닝 기록 초기화", for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
+        button.addTarget(self, action: #selector(resetRecord), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    
 // MARK: - Life Cycle
     override func viewDidLoad()
     {
@@ -198,6 +210,7 @@ class ProfileViewController: UIViewController
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tableView.reloadData()
+        displayProfileImage()
         statisticsManager(true)
         
         totalRunningDistanceLabel.text = "총 거리 : \(String(format: "%.2f", totalRunningDistance)) (km)"
@@ -243,6 +256,8 @@ class ProfileViewController: UIViewController
         scrollView.addSubview(thisWeek_MonthRunningCountLabel)
         scrollView.addSubview(lastWeek_MonthRunningCountLabel)
         scrollView.addSubview(tableView)
+        
+        scrollView.addSubview(resetButton)
     }
     
 // MARK: - 레이아웃
@@ -253,6 +268,7 @@ class ProfileViewController: UIViewController
             make.top.equalTo(view.snp.top).inset(0)
             make.centerX.equalTo(view.snp.centerX)
             make.width.equalTo(view.frame.width)
+            make.height.equalTo(600)
             make.edges.equalToSuperview()
         }
         
@@ -411,6 +427,12 @@ class ProfileViewController: UIViewController
             make.top.equalTo(thisWeek_MonthPaceLabel.snp.bottom).offset(30)
             make.leading.equalTo(thisWeek_MonthRunningCountLabel.snp.leading).offset(120)
         }
+        
+        resetButton.snp.makeConstraints
+        {   make in
+            make.centerY.equalTo(pointImage.snp.centerY)
+            make.leading.equalTo(view.snp.leading).inset(30)
+        }
     }
     
 // MARK: - 레이블 생성 함수
@@ -471,6 +493,60 @@ class ProfileViewController: UIViewController
         catch _ as NSError
         {
             print("로그아웃 에러")
+        }
+    }
+ 
+// MARK: - 프로필 사진 관리 메서드
+    func saveImageData(profileImage: UIImage)
+    {
+        guard let context = self.persistentContainer?.viewContext else { return }
+        
+        
+        let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
+        fetchRequest.predicate = NSPredicate(value: true)
+        
+        do
+        {
+            let results = try context.fetch(fetchRequest)
+            
+            if results.isEmpty
+            {
+                print("데이터 비어있음")
+            }
+            
+            else
+            {
+                print("User데이터 존재")
+                let user = results[0]
+                user.profilePhoto = profileImage.imageData
+                print(user.loginType as Any)
+                try context.save()
+            }
+        }
+        catch
+        {
+            print("error")
+        }
+    }
+    
+    func displayProfileImage()
+    {
+        guard let context = persistentContainer?.viewContext else { return }
+        let request: NSFetchRequest<User> = User.fetchRequest()
+            // 이미지 데이터 가져오기
+        do
+        {
+            if let imageData = try context.fetch(request).first?.profilePhoto
+            {
+                if let image = UIImage(data: imageData)
+                {
+                    profileImageView.image = image
+                }
+            }
+        }
+        catch
+        {
+            print("Error fetching image data: \(error)")
         }
     }
     
@@ -617,9 +693,41 @@ class ProfileViewController: UIViewController
         self.navigationController?.pushViewController(eventVC, animated: true)
     }
     // 추후 coreData 활용 데이터 관리 코드 작성
+    
+    @objc func resetRecord()
+    {
+        print("러닝 기록 초기화")
+        guard let context = persistentContainer?.viewContext else { return }
+        
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "RunningRecord")
+        
+        do
+        {
+            let datas = try context.fetch(fetchRequest)
+            for data in datas
+            {
+                guard let removeData = data as? NSManagedObject else { continue }
+                context.delete(removeData)
+            }
+            
+            try context.save()
+        }
+        catch
+        {
+            print("error")
+        }
+    }
 }
 
 
+// MARK: - UIImage extension
+extension UIImage
+{
+    var imageData: Data?
+    {
+        return self.pngData()
+    }
+}
 
 // MARK: - ImageView extension
 extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate
@@ -628,8 +736,9 @@ extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationCo
     {
         if let selectedImage = info[.originalImage] as? UIImage
         {
-            let image = makeRoundedImage(from: selectedImage)
+            guard let image = makeRoundedImage(from: selectedImage) else { return }
             profileImageView.image = image
+            saveImageData(profileImage: image)
         }
         picker.dismiss(animated: true, completion: nil)
     }
