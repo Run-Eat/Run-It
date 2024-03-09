@@ -17,7 +17,7 @@ class BookmarkViewController: UIViewController, UITableViewDataSource, UITableVi
     var myFavorite: UILabel = {
         let label = UILabel()
         label.text = "즐겨찾기"
-        label.font = UIFont.systemFont(ofSize: 18)
+        label.font = UIFont.systemFont(ofSize: 25)
         label.textAlignment = .left
         return label
     }()
@@ -50,10 +50,9 @@ class BookmarkViewController: UIViewController, UITableViewDataSource, UITableVi
         tableView.isScrollEnabled = true
         
         myFavorite.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(30)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.left.equalToSuperview().offset(20)
             make.right.equalToSuperview().offset(-20)
-//            make.height.equalTo(30)
         }
         tableView.snp.makeConstraints { make in
             make.top.equalTo(myFavorite.snp.bottom).offset(15)
@@ -71,7 +70,6 @@ class BookmarkViewController: UIViewController, UITableViewDataSource, UITableVi
         }
         let favoriteRecord = favoriteRecords[indexPath.row]
 
-        // FavoriteViewCell을 구성하기 위한 새로운 ViewModel 인스턴스 생성
         let viewModel = FavoritesViewModel(favoriteRecord: favoriteRecord)
         cell.configure(with: viewModel)
 
@@ -85,14 +83,13 @@ class BookmarkViewController: UIViewController, UITableViewDataSource, UITableVi
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            favoritesViewModel.removeFavorite(at: indexPath) // Use the ViewModel to remove the favorite.
+            favoritesViewModel.removeFavorite(at: indexPath)
         }
     }
 }
 extension BookmarkViewController: FavoritesViewModelDelegate {
     func favoritesDidUpdate() {
         DispatchQueue.main.async { [weak self] in
-            print("Favorites did update. Reloading tableView.")
             self?.favoriteRecords = self?.favoritesViewModel.favorites ?? []
             self?.tableView.reloadData()
         }

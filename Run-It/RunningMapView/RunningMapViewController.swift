@@ -446,7 +446,7 @@ extension RunningMapViewController: CLLocationManagerDelegate {
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         guard let customAnnotation = view.annotation as? CustomAnnotation, let mapItem = customAnnotation.mapItem else { return }
-        
+        mapView.removeOverlays(mapView.overlays)
         let annotation = CustomAnnotation()
         
         let name = mapItem.name ?? "Unknown"

@@ -45,15 +45,16 @@ class ProfileViewController: UIViewController
     var lastMonthRunningCount: Int = 0
     
     var runningRecords: [RunningRecord] = []
+    var uiView = UIView()
     var tableView = UITableView()
     var userRecord: UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "활동기록"
         label.font = UIFont.systemFont(ofSize: 18)
         label.textAlignment = .left
         return label
     }()
+    var tableViewHeightConstraint: Constraint?
     
 // MARK: - UI 생성
     
@@ -187,8 +188,6 @@ class ProfileViewController: UIViewController
     {
         super.viewDidLoad()
         view.backgroundColor = .white
-        //        let coreDataManager = CoreDataManager.shared
-        //        coreDataManager.generateDummyRunningRecords()
         let uuidToDelete = UUID()
         
         CoreDataManager.shared.deleteRunningRecord(withId: uuidToDelete) { success in
@@ -200,7 +199,7 @@ class ProfileViewController: UIViewController
         }
         loadRunningRecords()
         view.addSubview(scrollView)
-        scrollView.contentSize = CGSize(width: view.frame.width, height: 1500)
+        scrollView.contentSize = CGSize(width: view.frame.width, height: 2000)
         addScrollView()
         setLayout()
         setupProfileUI()
@@ -210,6 +209,7 @@ class ProfileViewController: UIViewController
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tableView.reloadData()
+        updateTableViewHeight()
         displayProfileImage()
         statisticsManager(true)
         
@@ -255,7 +255,8 @@ class ProfileViewController: UIViewController
         scrollView.addSubview(runningCountTextLabel)
         scrollView.addSubview(thisWeek_MonthRunningCountLabel)
         scrollView.addSubview(lastWeek_MonthRunningCountLabel)
-        scrollView.addSubview(tableView)
+        scrollView.addSubview(userRecord)
+        scrollView.addSubview(uiView)
         scrollView.addSubview(resetButton)
 
     }
@@ -265,11 +266,8 @@ class ProfileViewController: UIViewController
     {
         scrollView.snp.makeConstraints
         {   make in
-            make.top.equalTo(view.snp.top).inset(0)
-            make.centerX.equalTo(view.snp.centerX)
-            make.width.equalTo(view.frame.width)
-            make.height.equalTo(600)
             make.edges.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
         
         noticeButton.snp.makeConstraints
@@ -441,7 +439,6 @@ class ProfileViewController: UIViewController
         let label = UILabel()
         label.text = text
         label.font = UIFont.systemFont(ofSize: CGFloat(fontSize))
-        label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
     }
@@ -780,28 +777,46 @@ extension ProfileViewController {
     }
     
     func setupRecordListUI() {
-        view.addSubview(userRecord)
-        view.addSubview(tableView)
+        uiView.addSubview(tableView)
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
         tableView.register(RecordViewCell.self, forCellReuseIdentifier: "RecordCell")
         tableView.backgroundColor = UIColor.systemGray6
         tableView.isScrollEnabled = false
+        uiView.backgroundColor = UIColor.systemGray6
         
         userRecord.snp.makeConstraints { make in
             make.top.equalTo(runningCountTextLabel.snp.bottom).offset(30)
-            make.left.equalToSuperview().offset(20)
-            make.right.equalToSuperview().offset(-20)
+            make.leading.equalTo(view.snp.leading).inset(20)
             make.height.equalTo(20)
         }
+        
+        uiView.snp.makeConstraints { make in
+            make.top.equalTo(userRecord.snp.bottom).offset(30)
+            make.leading.equalTo(view.snp.leading)
+            make.trailing.equalTo(view.snp.trailing)
+            make.height.equalTo(runningRecords.count * 120 + 60)
+        }
+        
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(userRecord.snp.bottom)
-            make.left.equalToSuperview()
-            make.right.equalToSuperview()
-            make.height.equalTo(runningRecords.count * 120)
+            make.top.equalToSuperview()
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
+            self.tableViewHeightConstraint = make.height.equalTo(runningRecords.count * 120).constraint
         }
     }
+    
+    func updateTableViewHeight() {
+        tableView.layoutIfNeeded()
+        tableViewHeightConstraint?.update(offset: runningRecords.count * 120)
+        uiView.snp.updateConstraints { make in
+            make.height.equalTo(runningRecords.count * 120 + 60)
+        }
+        view.layoutIfNeeded()
+    }
+    
+    
 }
 extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     // MARK: - 데이터 로딩
@@ -809,6 +824,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         runningRecords = CoreDataManager.shared.fetchRunningRecords()
         DispatchQueue.main.async {
             self.tableView.reloadData()
+            self.updateTableViewHeight()
         }
     }
     
