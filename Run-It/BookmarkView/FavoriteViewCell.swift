@@ -33,6 +33,11 @@ class FavoriteViewCell: UITableViewCell {
         return label
     }()
     
+    lazy var storeImage: UIImageView = {
+        let image = UIImageView()
+        return image
+    }()
+    
     // MARK: - Initializers
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: "FavoriteCell")
@@ -54,12 +59,14 @@ class FavoriteViewCell: UITableViewCell {
         contentView.addSubview(nameLabel)
         contentView.addSubview(adressLabel)
         contentView.addSubview(categoryLabel)
+        contentView.addSubview(storeImage)
     }
     
     func configure(with viewModel: FavoritesViewModel) {
         nameLabel.text = viewModel.storeText
         adressLabel.text = viewModel.addressText
         categoryLabel.text = viewModel.categoryText
+        storeImage.image = UIImage(named: "LogoGs25")
         // If you're storing the distance as a String or a Number, make sure to convert it to a String.
         // The following assumes distance is stored as an NSNumber or Int and converts it to String.
 //        if let distance = favorite.distance as? NSNumber {
@@ -79,12 +86,21 @@ class FavoriteViewCell: UITableViewCell {
             make.leading.equalTo(nameLabel.snp.trailing).offset(10)
             make.height.equalTo(18)
         }
+        
         adressLabel.snp.makeConstraints { make in
             make.top.equalTo(nameLabel.snp.bottom).offset(10)
             make.leading.equalTo(contentView.snp.leading).offset(18)
-            make.trailing.equalTo(contentView.snp.trailing).offset(-18)
+            make.trailing.equalTo(storeImage.snp.leading).offset(-18)
             make.height.equalTo(60)
         }
+        
+        storeImage.snp.makeConstraints { make in
+            make.top.equalTo(contentView.snp.top).offset(15)
+            make.trailing.equalTo(contentView.snp.trailing).offset(-18)
+            make.width.height.equalTo(90)
+        }
+
+        
     }
     // MARK: - Layout & Drawing
     
