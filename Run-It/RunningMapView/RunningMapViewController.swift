@@ -24,6 +24,8 @@ class CustomAnnotation: MKPointAnnotation {
 class RunningMapViewController: UIViewController, MKMapViewDelegate {
     weak var parentVC: RunningTimerToMapViewPageController?
     
+    weak var delegate: StoreViewControllerDelegate?
+    
     //MARK: - UI Properties
     var favoritesViewModel: FavoritesViewModel!
     var tabBarHeight: CGFloat = .zero
@@ -167,6 +169,8 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
     var startPin: CustomAnnotation?
     var endPin: CustomAnnotation?
     
+    var storeVC: StoreViewController?
+    
     
     //MARK: - LifeCycle
     override func viewDidLoad() {
@@ -217,7 +221,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
     }
     
     @objc func presentStoreAnnotationButton() {
-//        getAnnotationLocation()
+        getAnnotationLocation()
         searchConvenienceStores() // 모달뷰로 변경
 
         //        let storeViewController = StoreViewController()
@@ -256,17 +260,6 @@ extension RunningMapViewController {
                     self.mapView.addAnnotation(annotation)
                 }
             }
-            
-//            for item in response.mapItems {
-//                // 검색한 POI를 지도에 추가
-//                let annotation = MKPointAnnotation()
-//                annotation.coordinate = item.placemark.coordinate
-//                annotation.title = item.name
-//                
-//                }
-//                
-//                self.mapView.addAnnotation(annotation)
-//            }
         }
     }
     
@@ -336,12 +329,28 @@ extension RunningMapViewController {
     }
     
     func presentStoreViewController(with places: [AnnotationInfo]) {
+        
+        if let currentModal = self.presentedViewController {
+            currentModal.dismiss(animated: true)
+        }
+        
         let storeVC = StoreViewController()
         storeVC.delegate = self
         storeVC.stores = places // 데이터 전달
         storeVC.modalPresentationStyle = .formSheet
         storeVC.modalTransitionStyle = .coverVertical
 //        storeVC.modalPresentationStyle = .overCurrentContext
+        // 모달을 표시하기 전에 sheetPresentationController 설정을 추가
+        if let sheet = storeVC.presentationController as? UISheetPresentationController {
+            sheet.detents = [.medium()] // 모달의 높이를 중간.medium로 설정하고, .large()를 추가하면 크게.large로 설정합니다.
+            sheet.prefersGrabberVisible = true
+            sheet.largestUndimmedDetentIdentifier = .medium // 최대 확장 시 어둡게 표시되지 않도록 설정
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false // 모달 내부 스크롤 시 확장되지 않도록 설정
+            sheet.prefersEdgeAttachedInCompactHeight = true // 컴팩트 높이에서 모달이 화면 가장자리에 붙도록 설정
+            sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true // 모달의 너비가 preferredContentSize를 따르도록 설정
+            
+        }
+        
         self.present(storeVC, animated: true, completion: nil)
     }
     
@@ -477,6 +486,7 @@ extension RunningMapViewController: CLLocationManagerDelegate {
             distance: Int(distance), // 계산된 거리 정보 사용
             isFavorite: isFavorite
         )
+
         
         // 사용자 현재 위치와 선택한 어노테이션 위치 사이의 경로 계산 및 표시
         let sourceCoordinate = mapView.userLocation.coordinate
@@ -509,12 +519,31 @@ extension RunningMapViewController: CLLocationManagerDelegate {
             mapView.setRegion(MKCoordinateRegion(rect), animated: true)
         }
         
+        if let currentModal = self.presentedViewController {
+            currentModal.dismiss(animated: true)
+        }
+        
         // StoreViewController에 정보 전달 및 표시
         let storeVC = StoreViewController()
         storeVC.stores = [info] // 단일 어노테이션 정보 전달
-        storeVC.modalPresentationStyle = .formSheet
-        storeVC.modalTransitionStyle = .coverVertical
+//        storeVC.modalPresentationStyle = .formSheet
+//        storeVC.modalTransitionStyle = .coverVertical
         storeVC.view.backgroundColor = UIColor.systemBackground
+        
+        if let sheet = storeVC.presentationController as? UISheetPresentationController {
+            let customDetentIdentifier = UISheetPresentationController.Detent.Identifier("customBottomBarHeight")
+            let customDetent = UISheetPresentationController.Detent.custom(identifier: customDetentIdentifier) { _ in
+                return 150
+            }
+            
+            sheet.detents = [customDetent] // 모달의 높이를 중간.medium로 설정하고, .large()를 추가하면 크게.large로 설정합니다.
+            sheet.prefersGrabberVisible = true
+            sheet.largestUndimmedDetentIdentifier = customDetentIdentifier // 모달이 처음 나타날 때 음영 처리 없이 표시
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false // 모달 내부 스크롤 시 확장되지 않도록 설정
+            sheet.prefersEdgeAttachedInCompactHeight = true // 컴팩트 높이에서 모달이 화면 가장자리에 붙도록 설정
+            sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true // 모달의 너비가 preferredContentSize를 따르도록 설정
+            sheet.presentingViewController.modalTransitionStyle = .coverVertical
+        }
         
         self.present(storeVC, animated: true, completion: nil)
     }

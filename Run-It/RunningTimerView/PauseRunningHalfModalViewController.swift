@@ -181,23 +181,6 @@ class PauseRunningHalfModalViewController: UIViewController {
         self.runningTimer.stop()
         RunningTimerLocationManager.shared.stopUpdatingLocation()
         
-        let locations = RunningTimerLocationManager.shared.getLocations()
-        
-        // 맵 스냅샷 생성
-        MapSnapshotManager.createSnapshot(for: locations) { [weak self] image in
-            guard let self = self, let image = image, let imageData = image.pngData() else {
-                print("Failed to create route image snapshot.")
-                return
-            }
-            
-            // 스냅샷 이미지 데이터와 함께 코어 데이터에 러닝 기록 저장
-            if let recordId = CoreDataManager.shared.createRunningRecord(time: self.time, distance: self.distance, pace: self.pace, routeImage: imageData) {
-                print("Running record with route saved successfully. Record ID: \(recordId)")
-            } else {
-                print("Failed to save running record with route image.")
-            }
-        }
-        
         // 운동 완료 알림창 표시
         presentCompletionAlert()
     }
@@ -206,6 +189,23 @@ class PauseRunningHalfModalViewController: UIViewController {
         let alert = UIAlertController(title: "운동을 완료하시겠습니까?", message: "근처 편의점에서 물 한잔 어떻신가요?", preferredStyle: .alert)
         
         alert.addAction(UIAlertAction(title: "운동 완료하기", style: .default, handler: { _ in
+            let locations = RunningTimerLocationManager.shared.getLocations()
+            
+            // 맵 스냅샷 생성
+            MapSnapshotManager.createSnapshot(for: locations) { [weak self] image in
+                guard let self = self, let image = image, let imageData = image.pngData() else {
+                    print("Failed to create route image snapshot.")
+                    return
+                }
+                
+                // 스냅샷 이미지 데이터와 함께 코어 데이터에 러닝 기록 저장
+                if let recordId = CoreDataManager.shared.createRunningRecord(time: self.time, distance: self.distance, pace: self.pace, routeImage: imageData) {
+                    print("Running record with route saved successfully. Record ID: \(recordId)")
+                } else {
+                    print("Failed to save running record with route image.")
+                }
+            }
+            
             let mainTabBarViewController = MainTabBarViewController()
             mainTabBarViewController.modalPresentationStyle = .fullScreen
             self.present(mainTabBarViewController, animated: true)
