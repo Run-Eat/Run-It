@@ -107,4 +107,9 @@ class RunningTimerLocationManager: NSObject, CLLocationManagerDelegate {
         return self.locations
     }
     
+    func resetLocationData() {
+        locations.removeAll()
+        totalDistance = 0.0
+        previousLocation = nil
+    }
 }
