@@ -151,19 +151,35 @@ class CoreDataManager {
             return nil
         }
     }
-
+    
+    //.   기존코드
+    //    func fetchRunningRecords() -> [RunningRecord] {
+    //        let context = persistentContainer.viewContext
+    //        let fetchRequest: NSFetchRequest<RunningRecord> = RunningRecord.fetchRequest()
+    //
+    //        do {
+    //            let records = try context.fetch(fetchRequest)
+    //            return records
+    //        } catch {
+    //            print("Failed to fetch running records: \(error)")
+    //            return []
+    //        }
+    //    }
     
     func fetchRunningRecords() -> [RunningRecord] {
         let context = persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<RunningRecord> = RunningRecord.fetchRequest()
+        let request: NSFetchRequest<RunningRecord> = RunningRecord.fetchRequest()
+        // 날짜를 기준으로 내림차순 정렬
+        let sortDescriptor = NSSortDescriptor(key: "date", ascending: false)
+        request.sortDescriptors = [sortDescriptor]
         
         do {
-            let records = try context.fetch(fetchRequest)
+            let records = try context.fetch(request)
             return records
         } catch {
-            print("Failed to fetch running records: \(error)")
-            return []
+            print("Fetching Failed")
         }
+        return []
     }
     
     // Data 객체로부터 [CLLocation] 배열을 로드하는 함수
@@ -183,7 +199,7 @@ class CoreDataManager {
         let context = persistentContainer.viewContext
         let fetchRequest: NSFetchRequest<RunningRecord> = RunningRecord.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "id == %@", recordId as CVarArg)
-
+        
         do {
             let records = try context.fetch(fetchRequest)
             if let recordToUpdate = records.first {

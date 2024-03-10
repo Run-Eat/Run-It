@@ -189,6 +189,9 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
     @objc private func TappedstartRunningButton() {
         print("TappedstartRunningButton()")
         
+        // RunningTimerLocationManager 인스턴스의 위치 데이터 및 거리 초기화
+        RunningTimerLocationManager.shared.resetLocationData()
+        
         let startRunningViewController =  StartRunningViewController()
         startRunningViewController.modalPresentationStyle = .fullScreen
         self.present(startRunningViewController, animated: true)
