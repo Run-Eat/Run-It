@@ -618,6 +618,9 @@ extension RunningMapViewController {
                 self.convenienceStoreButton.alpha = 1.0
             })
         } else {
+            if let currentModal = self.presentedViewController {
+                currentModal.dismiss(animated: true)
+            }
             UIView.animate(withDuration: 0.15, delay: 0.2, options: []) { [weak self] in
                 guard let self = self else { return }
                 self.convenienceStoreButton.layer.transform = CATransform3DMakeScale(0.4, 0.4, 0.1)
