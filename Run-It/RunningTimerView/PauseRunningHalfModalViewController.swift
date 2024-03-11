@@ -12,9 +12,9 @@ protocol PauseRunningHalfModalViewControllerDelegate: AnyObject {
 //    func mapViewController(_ controller: RunningMapViewController, didCaptureRouteImage routeImage: UIImage?, forLocations locations: [CLLocation])
 //}
 
-protocol MapRouteImageDelegate: AnyObject {
-    func updateRouteImageWithSnapshot(routeImage: UIImage, for recordId: UUID)
-}
+//protocol MapRouteImageDelegate: AnyObject {
+//    func updateRouteImageWithSnapshot(routeImage: UIImage, for recordId: UUID)
+//}
 
 import UIKit
 import CoreLocation
@@ -24,7 +24,7 @@ class PauseRunningHalfModalViewController: UIViewController {
     let runningTimer = RunningTimer()
     
     weak var delegate: PauseRunningHalfModalViewControllerDelegate?
-    weak var mapDelegate: MapRouteImageDelegate?
+//    weak var mapDelegate: MapRouteImageDelegate?
     //MARK: - UI properties
     var time: Int = 0
     var distance: Double = 0.0

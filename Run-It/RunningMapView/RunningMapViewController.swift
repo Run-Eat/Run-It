@@ -21,7 +21,7 @@ class CustomAnnotation: MKPointAnnotation {
     let url: String = ""
 }
 
-class RunningMapViewController: UIViewController, MKMapViewDelegate {
+class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRecognizerDelegate {
     weak var parentVC: RunningTimerToMapViewPageController?
     
     weak var delegate: StoreViewControllerDelegate?
@@ -156,7 +156,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
         button.addTarget(self, action: #selector(backToRunningTimerView), for: .touchUpInside)
         return button
     }()
-    
+
     //MARK: - 전역 변수 선언
     var currentCircle: MKCircle?
     var currentPolyLine: MKPolyline?
@@ -175,7 +175,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
     //MARK: - LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        setupUI()
         addSubview()
         setLayout()
         mapView.delegate = self
@@ -223,9 +223,6 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate {
     @objc func presentStoreAnnotationButton() {
         getAnnotationLocation()
         searchConvenienceStores() // 모달뷰로 변경
-
-        //        let storeViewController = StoreViewController()
-        //        showMyViewControllerInACustomizedSheet(storeViewController)
     }
 
 }
@@ -329,7 +326,6 @@ extension RunningMapViewController {
     }
     
     func presentStoreViewController(with places: [AnnotationInfo]) {
-        
         if let currentModal = self.presentedViewController {
             currentModal.dismiss(animated: true)
         }
@@ -342,18 +338,25 @@ extension RunningMapViewController {
 //        storeVC.modalPresentationStyle = .overCurrentContext
         // 모달을 표시하기 전에 sheetPresentationController 설정을 추가
         if let sheet = storeVC.presentationController as? UISheetPresentationController {
-            sheet.detents = [.medium()] // 모달의 높이를 중간.medium로 설정하고, .large()를 추가하면 크게.large로 설정합니다.
+            let customDetentIdentifier = UISheetPresentationController.Detent.Identifier("customBottomBarHeight")
+            let customDetent = UISheetPresentationController.Detent.custom(identifier: customDetentIdentifier) { _ in
+                return 250
+            }
+            
+            sheet.detents = [customDetent] // 모달의 높이를 중간.medium로 설정하고, .large()를 추가하면 크게.large로 설정합니다.
             sheet.prefersGrabberVisible = true
-            sheet.largestUndimmedDetentIdentifier = .medium // 최대 확장 시 어둡게 표시되지 않도록 설정
+            sheet.largestUndimmedDetentIdentifier = customDetentIdentifier // 모달이 처음 나타날 때 음영 처리 없이 표시
             sheet.prefersScrollingExpandsWhenScrolledToEdge = false // 모달 내부 스크롤 시 확장되지 않도록 설정
             sheet.prefersEdgeAttachedInCompactHeight = true // 컴팩트 높이에서 모달이 화면 가장자리에 붙도록 설정
             sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true // 모달의 너비가 preferredContentSize를 따르도록 설정
+            sheet.presentingViewController.modalTransitionStyle = .coverVertical
             
         }
         
         self.present(storeVC, animated: true, completion: nil)
+
     }
-    
+
 } //extension
 
 //MARK: - CLLocationManagerDelegate
@@ -516,7 +519,10 @@ extension RunningMapViewController: CLLocationManagerDelegate {
             mapView.addOverlay(route.polyline, level: .aboveRoads)
             
             let rect = route.polyline.boundingMapRect
-            mapView.setRegion(MKCoordinateRegion(rect), animated: true)
+            // 폴리라인 주변에 여분의 공간을 추가하기 위한 패딩 설정
+            let edgePadding = UIEdgeInsets(top: 100, left: 100, bottom: 100, right: 100)
+//            mapView.setRegion(MKCoordinateRegion(rect), animated: true)
+            mapView.setVisibleMapRect(rect, edgePadding: edgePadding, animated: true)
         }
         
         if let currentModal = self.presentedViewController {
@@ -615,16 +621,21 @@ extension RunningMapViewController {
             UIView.animate(withDuration: 0.3, delay: 0.2, usingSpringWithDamping: 0.55, initialSpringVelocity: 0.3, options: [.curveEaseInOut], animations: { [weak self] in
                 guard let self = self else { return }
                 self.convenienceStoreButton.layer.transform = CATransform3DIdentity
+                self.cafeButton.layer.transform = CATransform3DIdentity
                 self.convenienceStoreButton.alpha = 1.0
+                self.cafeButton.alpha = 1.0
             })
         } else {
             if let currentModal = self.presentedViewController {
                 currentModal.dismiss(animated: true)
             }
+            
             UIView.animate(withDuration: 0.15, delay: 0.2, options: []) { [weak self] in
                 guard let self = self else { return }
                 self.convenienceStoreButton.layer.transform = CATransform3DMakeScale(0.4, 0.4, 0.1)
+                self.cafeButton.layer.transform = CATransform3DMakeScale(0.4, 0.4, 0.1)
                 self.convenienceStoreButton.alpha = 0.0
+                self.cafeButton.alpha = 0.0
                 removeAnnotationsFromMap() // 지도에 표시된 MapItem을 삭제(사용자 위치 제외)
                 
             }
@@ -645,6 +656,12 @@ extension RunningMapViewController {
 }
 //MARK: - Layout setup
 extension RunningMapViewController {
+    
+    private func setupUI() {
+        view.backgroundColor = .white
+        navigationController?.setNavigationBarHidden(true, animated: true)
+    }
+    
     private func addSubview() {
         view.addSubview(mapView)
         view.addSubview(compassButton)
@@ -653,6 +670,7 @@ extension RunningMapViewController {
         view.addSubview(currentLocationButton)
         view.addSubview(storeListButton)
         view.addSubview(convenienceStoreButton)
+        view.addSubview(cafeButton)
     }
     
     private func setLayout() {
@@ -694,6 +712,11 @@ extension RunningMapViewController {
             $0.top.equalTo(storeListButton.snp.bottom).offset(20)
             $0.centerX.equalTo(storeListButton)
         }
+        
+        cafeButton.snp.makeConstraints {
+            $0.top.equalTo(convenienceStoreButton.snp.bottom).offset(20)
+            $0.centerX.equalTo(storeListButton)
+        }
     }
     
     
@@ -705,48 +728,48 @@ extension RunningMapViewController: StoreViewControllerDelegate {
     }
 }
 
-extension RunningMapViewController: MapRouteImageDelegate {
-    func updateRouteImageWithSnapshot(routeImage: UIImage, for recordId: UUID) {
-        displayRouteAndTakeSnapshot(locations: locations, mapView: self.mapView) { capturedImage in
-            guard let capturedImage = capturedImage else {
-                print("Snapshot capture failed")
-                return
-            }
-            
-            // 코어 데이터에서 해당 recordId를 가진 레코드를 찾아 이미지를 업데이트 합니다.
-            CoreDataManager.shared.updateRunningRecordWithImage(recordId: recordId, routeImage: capturedImage) { success in
-                if success {
-                    print("Running record updated successfully with route image")
-                } else {
-                    print("Failed to update running record with route image")
-                }
-            }
-        }
-    }
-}
-
-func displayRouteAndTakeSnapshot(locations: [CLLocation], mapView: MKMapView, completion: @escaping (UIImage?) -> Void) {
-    // mapView에 경로를 추가합니다.
-    let coordinates = locations.map { $0.coordinate }
-    let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
-    mapView.addOverlay(polyline)
-    
-    // 경로가 모두 보이도록 mapView의 영역을 조정합니다.
-    let mapPadding = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
-    mapView.setVisibleMapRect(polyline.boundingMapRect, edgePadding: mapPadding, animated: true)
-    
-    // mapView가 업데이트 된 후 스냅샷을 캡처합니다.
-    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { // Adjust delay as necessary
-        let options = MKMapSnapshotter.Options()
-        options.region = mapView.region
-        options.size = mapView.frame.size
-        let snapshotter = MKMapSnapshotter(options: options)
-        snapshotter.start { snapshot, error in
-            guard let snapshot = snapshot else {
-                completion(nil)
-                return
-            }
-            completion(snapshot.image)
-        }
-    }
-}
+//extension RunningMapViewController: MapRouteImageDelegate {
+//    func updateRouteImageWithSnapshot(routeImage: UIImage, for recordId: UUID) {
+//        displayRouteAndTakeSnapshot(locations: locations, mapView: self.mapView) { capturedImage in
+//            guard let capturedImage = capturedImage else {
+//                print("Snapshot capture failed")
+//                return
+//            }
+//            
+//            // 코어 데이터에서 해당 recordId를 가진 레코드를 찾아 이미지를 업데이트 합니다.
+//            CoreDataManager.shared.updateRunningRecordWithImage(recordId: recordId, routeImage: capturedImage) { success in
+//                if success {
+//                    print("Running record updated successfully with route image")
+//                } else {
+//                    print("Failed to update running record with route image")
+//                }
+//            }
+//        }
+//    }
+//}
+//
+//func displayRouteAndTakeSnapshot(locations: [CLLocation], mapView: MKMapView, completion: @escaping (UIImage?) -> Void) {
+//    // mapView에 경로를 추가합니다.
+//    let coordinates = locations.map { $0.coordinate }
+//    let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
+//    mapView.addOverlay(polyline)
+//    
+//    // 경로가 모두 보이도록 mapView의 영역을 조정합니다.
+//    let mapPadding = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+//    mapView.setVisibleMapRect(polyline.boundingMapRect, edgePadding: mapPadding, animated: true)
+//    
+//    // mapView가 업데이트 된 후 스냅샷을 캡처합니다.
+//    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { // Adjust delay as necessary
+//        let options = MKMapSnapshotter.Options()
+//        options.region = mapView.region
+//        options.size = mapView.frame.size
+//        let snapshotter = MKMapSnapshotter(options: options)
+//        snapshotter.start { snapshot, error in
+//            guard let snapshot = snapshot else {
+//                completion(nil)
+//                return
+//            }
+//            completion(snapshot.image)
+//        }
+//    }
+//}

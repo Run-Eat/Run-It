@@ -114,14 +114,14 @@ class StoreViewController: UIViewController {
         }
     }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        
-        if let parentView = self.presentingViewController?.view {
-            let halfHeight = parentView.frame.height
-            self.view.frame = CGRect(x: 0, y: parentView.frame.height - halfHeight, width: parentView.frame.width, height: halfHeight)
-        }
-    }
+//    override func viewWillLayoutSubviews() {
+//        super.viewWillLayoutSubviews()
+//        
+//        if let parentView = self.presentingViewController?.view {
+//            let halfHeight = parentView.frame.height
+//            self.view.frame = CGRect(x: 0, y: parentView.frame.height - halfHeight, width: parentView.frame.width, height: halfHeight)
+//        }
+//    }
     
     func updateTableView(for mode: DisplayMode, with stores: [AnnotationInfo]) {
         self.displayMode = mode

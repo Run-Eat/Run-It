@@ -46,7 +46,7 @@ func isValidPassword(_ password: String) -> (isVaild: Bool, message: String)    
             {
                 inValidCondition.append("숫자")
             }
-            if password.rangeOfCharacter(from: CharacterSet(charactersIn: "$@$!%*#?&")) == nil
+            if password.rangeOfCharacter(from: CharacterSet(charactersIn: "@$!%*#?&")) == nil
             {
                 inValidCondition.append("특수문자")
             }

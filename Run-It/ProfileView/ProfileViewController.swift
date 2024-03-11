@@ -213,14 +213,15 @@ class ProfileViewController: UIViewController
         displayProfileImage()
         statisticsManager(true)
         
-        totalRunningDistanceLabel.text = "총 거리 : \(String(format: "%.2f", totalRunningDistance)) (km)"
+        totalRunningDistanceLabel.text = "총 거리 : \(String(format: "%.2f", totalRunningDistance / 1000))km"
+
         
-        thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisWeekDistance))"
-        thisWeek_MonthPaceLabel.text = String(format: "%.2f", thisWeekPace)
+        thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisWeekDistance / 1000))"
+        thisWeek_MonthPaceLabel.text = String(format: "%.2f", thisWeekPace / 60)
         thisWeek_MonthRunningCountLabel.text = "\(thisWeekRunningCount) 회"
         
-        lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", lastWeekDistance))"
-        lastWeek_MonthPaceLabel.text = String(format: "%.2f", lastWeekPace)
+        lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", lastWeekDistance / 1000))"
+        lastWeek_MonthPaceLabel.text = String(format: "%.2f", lastWeekPace / 60)
         lastWeek_MonthRunningCountLabel.text = "\(lastWeekRunningCount) 회"
     }
     
