@@ -28,6 +28,15 @@ protocol StoreViewControllerDelegate: AnyObject {
 class StoreViewController: UIViewController {
     weak var delegate: StoreViewControllerDelegate?
     
+    
+    var RecommandatedLocation: UILabel = {
+        let label = UILabel()
+        label.text = "추천장소"
+        label.font = UIFont.systemFont(ofSize: 20)
+        label.textAlignment = .left
+        return label
+    }()
+    
     var tableView = UITableView()
     var stores: [AnnotationInfo] = []
     var displayMode: DisplayMode = .allStores
@@ -44,26 +53,45 @@ class StoreViewController: UIViewController {
         setupStoreListUI()
         tableView.reloadData()
         view.isUserInteractionEnabled = true
-        setupCloseButton()
+//        setupCloseButton()
+        setGesture()
+    }
+    private func setGesture() {
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleDismissGesture))
+        self.view.addGestureRecognizer(panGesture)
     }
     
-    func setupCloseButton() {
-        let closeButton = UIButton(type: .system)
-        closeButton.setTitle("닫기", for: .normal)
-        closeButton.addTarget(self, action: #selector(closeAction), for: .touchUpInside)
-        view.addSubview(closeButton)
-        closeButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(5)
-            make.trailing.equalToSuperview().offset(-20)
+    @objc func handleDismissGesture(_ gesture: UIPanGestureRecognizer) {
+        if gesture.state == .ended {
+            let translation = gesture.translation(in: view)
+            let velocity = gesture.velocity(in: view)
+            
+            if translation.y > 100 || velocity.y > 1000 {
+                // 드래그가 일정 거리 이상이거나 속도가 충분히 빠를 경우 모달 닫기
+                dismiss(animated: true, completion: nil)
+            }
+//            delegate?.didCloseStoreViewController()
         }
     }
     
+//    func setupCloseButton() {
+//        let closeButton = UIButton(type: .system)
+//        closeButton.setTitle("닫기", for: .normal)
+//        closeButton.addTarget(self, action: #selector(closeAction), for: .touchUpInside)
+//        view.addSubview(closeButton)
+//        closeButton.snp.makeConstraints { make in
+//            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(5)
+//            make.trailing.equalToSuperview().offset(-20)
+//        }
+//    }
+//    
     @objc func closeAction() {
         delegate?.didCloseStoreViewController()
         dismiss(animated: true, completion: nil)
     }
     
     func setupStoreListUI() {
+        view.addSubview(RecommandatedLocation)
         view.addSubview(tableView)
         tableView.delegate = self
         tableView.dataSource = self
@@ -72,19 +100,28 @@ class StoreViewController: UIViewController {
         tableView.backgroundColor = UIColor.systemGray6
         tableView.isScrollEnabled = true
         
+        RecommandatedLocation.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(10)
+            make.left.equalToSuperview().offset(10)
+//            make.right.equalToSuperview().offset(-20)
+        }
+        
         tableView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+//            make.top.equalTo(RecommandatedLocation.snp.bottom).offset(5)
+//            make.edges.equalToSuperview()
+            make.top.equalTo(RecommandatedLocation.snp.bottom).offset(2)
+            make.left.right.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        
-        if let parentView = self.presentingViewController?.view {
-            let halfHeight = parentView.frame.height / 2
-            self.view.frame = CGRect(x: 0, y: parentView.frame.height - halfHeight, width: parentView.frame.width, height: halfHeight)
-        }
-    }
+//    override func viewWillLayoutSubviews() {
+//        super.viewWillLayoutSubviews()
+//        
+//        if let parentView = self.presentingViewController?.view {
+//            let halfHeight = parentView.frame.height
+//            self.view.frame = CGRect(x: 0, y: parentView.frame.height - halfHeight, width: parentView.frame.width, height: halfHeight)
+//        }
+//    }
     
     func updateTableView(for mode: DisplayMode, with stores: [AnnotationInfo]) {
         self.displayMode = mode

@@ -24,7 +24,7 @@ class RunningRecordViewModel {
         self.id = runningRecord.id ?? UUID()
         self.dateText = RunningRecordViewModel.dateFormatter.string(from: runningRecord.date ?? Date())
         self.labelText = runningRecord.label ?? dateText
-        self.distanceText = String(format: "%.2f", runningRecord.distance / 1000)
+        self.distanceText = "\(String(format: "%.2f", runningRecord.distance / 1000)) km"
         self.timeText = RunningRecordViewModel.timeFormatter.string(from: TimeInterval(runningRecord.time)) ?? "N/A"
         let paceMinutes = Int(runningRecord.pace) / 60
         let paceSeconds = Int(runningRecord.pace) % 60
