@@ -15,7 +15,7 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
             updateUI()
         }
     }
-        
+    
     var userDate: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 18)
@@ -23,7 +23,7 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
         return label
     }()
     
-    var recordTextField: UITextField = {
+    lazy var recordTextField: UITextField = {
         let textField = UITextField()
         textField.font = UIFont.systemFont(ofSize: 18)
         textField.textAlignment = .left
@@ -37,9 +37,9 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
         editButton.contentMode = .scaleAspectFit
         editButton.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
         
-        editButton.addTarget(RunningRecordViewController.self, action: #selector(editButtonTapped), for: .touchUpInside)
+        editButton.addTarget(self, action: #selector(editButtonTapped(sender:)), for: .touchUpInside)
         
-        let rightView = UIView(frame: CGRect(x: 0, y: 0, width: 32, height: 24)) // 오른쪽 뷰 크기 설정
+        let rightView = UIView(frame: CGRect(x: 0, y: 0, width: 32, height: 24))
         rightView.addSubview(editButton)
         editButton.center = rightView.center
         
@@ -47,6 +47,8 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
         textField.rightViewMode = .always
         
         textField.returnKeyType = .done
+        textField.autocorrectionType = .no
+        textField.spellCheckingType = .no
         
         let underlineView = UIView()
         underlineView.backgroundColor = .gray
@@ -119,9 +121,8 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
         setupView()
         recordTextField.text = viewModel.labelText
         recordTextField.delegate = self
-        // 텍스트 필드 편집 상태 감지를 위한 옵저버 추가
+        
         NotificationCenter.default.addObserver(self, selector: #selector(textFieldDidBeginEditing), name: UITextField.textDidBeginEditingNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(textFieldDidEndEditing), name: UITextField.textDidEndEditingNotification, object: nil)
     }
     
     @objc func backButtonTapped() {
@@ -184,43 +185,37 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
     }
     // MARK: - UITextFieldDelegate
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        // Assume textField is recordTextField and it's editing the label
         if let newText = textField.text, !newText.isEmpty {
-            // Update the viewModel and persist the new label
             viewModel.updateLabelText(newLabelText: newText)
             print("라벨 저장")
-            
-            // Optionally, refresh UI elements that depend on labelText
-            // e.g., if you have a UILabel that displays labelText
         }
         
         textField.resignFirstResponder()
+        
+        if let rightButton = textField.rightView?.subviews.compactMap({ $0 as? UIButton }).first {
+            rightButton.setImage(UIImage(systemName: "pencil"), for: .normal)
+        }
         return true
     }
-    
     // MARK: - @objc
     @objc func editButtonTapped(sender: UIButton) {
-        if recordTextField.isFirstResponder {
-            recordTextField.resignFirstResponder() // Hide keyboard and end editing mode
-            recordTextField.text = "" // Clear text field content
-            sender.setImage(UIImage(systemName: "pencil"), for: .normal) // Change icon to pencil
-        } else {
-            recordTextField.becomeFirstResponder() // Set text field to editing mode
-            sender.setImage(UIImage(systemName: "xmark"), for: .normal) // Change icon to X
+        print("editButtonTapped called")
+        DispatchQueue.main.async {
+            if self.recordTextField.isFirstResponder {
+                self.recordTextField.text = ""
+                sender.setImage(UIImage(systemName: "pencil"), for: .normal)
+            } else {
+                self.recordTextField.becomeFirstResponder() // Set text field to editing mode
+                sender.setImage(UIImage(systemName: "xmark"), for: .normal)
+            }
         }
     }
-
+    
     @objc private func textFieldDidBeginEditing(notification: NSNotification) {
         // 텍스트 필드가 편집 모드일 때 X 아이콘으로 변경
         if let textField = notification.object as? UITextField, textField == recordTextField {
             let rightButton = textField.rightView?.subviews.compactMap { $0 as? UIButton }.first
             rightButton?.setImage(UIImage(systemName: "xmark"), for: .normal)
-        }
-    }
-    
-    @objc private func textFieldDidEndEditing(notification: NSNotification) {
-        // 텍스트 필드 편집이 종료될 때 펜슬 아이콘으로 변경
-        if let textField = notification.object as? UITextField, textField == recordTextField {
         }
     }
 }
