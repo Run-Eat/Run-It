@@ -121,6 +121,8 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
         setupView()
         recordTextField.text = viewModel.labelText
         recordTextField.delegate = self
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(textFieldDidBeginEditing), name: UITextField.textDidBeginEditingNotification, object: nil)
     }
     
     @objc func backButtonTapped() {
@@ -206,6 +208,14 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
                 self.recordTextField.becomeFirstResponder() // Set text field to editing mode
                 sender.setImage(UIImage(systemName: "xmark"), for: .normal)
             }
+        }
+    }
+    
+    @objc private func textFieldDidBeginEditing(notification: NSNotification) {
+        // 텍스트 필드가 편집 모드일 때 X 아이콘으로 변경
+        if let textField = notification.object as? UITextField, textField == recordTextField {
+            let rightButton = textField.rightView?.subviews.compactMap { $0 as? UIButton }.first
+            rightButton?.setImage(UIImage(systemName: "xmark"), for: .normal)
         }
     }
 }
