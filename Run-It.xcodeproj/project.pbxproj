@@ -16,6 +16,7 @@
 		2B46533F2B9752D60040B146 /* EventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B46533E2B9752D60040B146 /* EventViewController.swift */; };
 		2B4653562B99E9DD0040B146 /* FavoritesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B4653552B99E9DD0040B146 /* FavoritesViewModel.swift */; };
 		2B46535A2B9B1D2D0040B146 /* MapSnapshotManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B4653592B9B1D2D0040B146 /* MapSnapshotManager.swift */; };
+		2B6C84872BA05E9D00334AF4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2B6C84862BA05E9D00334AF4 /* GoogleService-Info.plist */; };
 		2B9888242B8B76A300B2BC74 /* EventViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888232B8B76A300B2BC74 /* EventViewCell.swift */; };
 		2B98882A2B8C770900B2BC74 /* RecordViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888292B8C770900B2BC74 /* RecordViewCell.swift */; };
 		2B9888472B904D8500B2BC74 /* RunningRecordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9888462B904D8500B2BC74 /* RunningRecordViewController.swift */; };
@@ -62,7 +63,6 @@
 		C82CEDE92B86FDE800B619AD /* RunningTimerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDE82B86FDE800B619AD /* RunningTimerViewController.swift */; };
 		C83F1FC02B9959EC00D309CC /* RunningTimerToMapViewPageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C83F1FBF2B9959EC00D309CC /* RunningTimerToMapViewPageController.swift */; };
 		C85561412B9F19E9004CA358 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = C85561402B9F19E9004CA358 /* SnapKit */; };
-		C85561432B9F2FB1004CA358 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C85561422B9F2FB1004CA358 /* GoogleService-Info.plist */; };
 		C879CD032B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879CD022B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift */; };
 		C879CD052B8880F200DBFB82 /* PauseViewHalfModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879CD042B8880F200DBFB82 /* PauseViewHalfModal.swift */; };
 		C879CD072B8AA9B400DBFB82 /* StartRunningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879CD062B8AA9B400DBFB82 /* StartRunningViewController.swift */; };
@@ -87,6 +87,7 @@
 		2B46533E2B9752D60040B146 /* EventViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
 		2B4653552B99E9DD0040B146 /* FavoritesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesViewModel.swift; sourceTree = "<group>"; };
 		2B4653592B9B1D2D0040B146 /* MapSnapshotManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapSnapshotManager.swift; sourceTree = "<group>"; };
+		2B6C84862BA05E9D00334AF4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2B9888232B8B76A300B2BC74 /* EventViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewCell.swift; sourceTree = "<group>"; };
 		2B9888292B8C770900B2BC74 /* RecordViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordViewCell.swift; sourceTree = "<group>"; };
 		2B9888462B904D8500B2BC74 /* RunningRecordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningRecordViewController.swift; sourceTree = "<group>"; };
@@ -107,7 +108,6 @@
 		C82CEDE12B86FD7C00B619AD /* RunningMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningMapViewController.swift; sourceTree = "<group>"; };
 		C82CEDE82B86FDE800B619AD /* RunningTimerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningTimerViewController.swift; sourceTree = "<group>"; };
 		C83F1FBF2B9959EC00D309CC /* RunningTimerToMapViewPageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningTimerToMapViewPageController.swift; sourceTree = "<group>"; };
-		C85561422B9F2FB1004CA358 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Desktop/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C879CD022B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseRunningHalfModalViewController.swift; sourceTree = "<group>"; };
 		C879CD042B8880F200DBFB82 /* PauseViewHalfModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseViewHalfModal.swift; sourceTree = "<group>"; };
 		C879CD062B8AA9B400DBFB82 /* StartRunningViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartRunningViewController.swift; sourceTree = "<group>"; };
@@ -195,7 +195,7 @@
 				C82CEDCA2B86FCB200B619AD /* SceneDelegate.swift */,
 				C82CEDD42B86FCB300B619AD /* Assets.xcassets */,
 				C82CEDD92B86FCB300B619AD /* Info.plist */,
-				C85561422B9F2FB1004CA358 /* GoogleService-Info.plist */,
+				2B6C84862BA05E9D00334AF4 /* GoogleService-Info.plist */,
 				C82CEDEE2B86FEAF00B619AD /* MainTabBarViewController */,
 				6C7A43E62B8CAB5900A14291 /* LoginView */,
 				C82CEDE52B86FDBD00B619AD /* ProfileView */,
@@ -383,7 +383,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C82CEDD82B86FCB300B619AD /* LaunchScreen.storyboard in Resources */,
-				C85561432B9F2FB1004CA358 /* GoogleService-Info.plist in Resources */,
+				2B6C84872BA05E9D00334AF4 /* GoogleService-Info.plist in Resources */,
 				C82CEDD52B86FCB300B619AD /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
