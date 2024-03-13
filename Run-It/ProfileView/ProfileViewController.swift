@@ -715,6 +715,11 @@ class ProfileViewController: UIViewController
             print("error")
         }
     }
+    
+    @objc func withdrawal()     // 회원탈퇴
+    {
+        
+    }
 }
 
 
