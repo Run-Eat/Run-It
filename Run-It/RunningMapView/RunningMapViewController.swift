@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 import MapKit
 import CoreLocation
+import Combine
 
 class CustomAnnotation: MKPointAnnotation {
     var mapItem: MKMapItem?
@@ -25,6 +26,9 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     weak var parentVC: RunningTimerToMapViewPageController?
     
     weak var delegate: StoreViewControllerDelegate?
+    
+    var weatherViewModel = WeatherViewModel()
+    var cancellables = Set<AnyCancellable>()
     
     //MARK: - UI Properties
     var favoritesViewModel: FavoritesViewModel!
@@ -50,6 +54,59 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         mapView.showsCompass = false
         
         return mapView
+    }()
+    
+    lazy var weatherContainer : UIView = {
+        let container = UIView()
+        container.backgroundColor = UIColor.systemGray6
+        container.layer.cornerRadius = 20
+        container.layer.shadowRadius = 15
+        container.layer.shadowOpacity = 0.3
+        container.alpha = 0.8
+        return container
+    }()
+    
+    lazy var weatherSymbol: UIImageView = {
+        let symbol = UIImageView()
+        symbol.image = UIImage(systemName: "sun.max.trianglebadge.exclamationmark")
+        symbol.tintColor = .black
+        symbol.contentMode = .scaleToFill
+        return symbol
+    }()
+    
+    lazy var temperatureLabel: UILabel = {
+        let label = UILabel()
+        label.text = "ºC"
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textColor = .black
+        label.textAlignment = .center
+        return label
+    }()
+    
+    lazy var humidityLabel: UILabel = {
+        let label = UILabel()
+        label.text = "%"
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textColor = .black
+        label.textAlignment = .center
+        return label
+    }()
+    lazy var windspeedLabel: UILabel = {
+        let label = UILabel()
+        label.text = "km/h"
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textColor = .black
+        label.textAlignment = .center
+        return label
+    }()
+    
+    lazy var uvIndexcategoryLabel: UILabel = {
+        let label = UILabel()
+        label.text = "uv"
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textColor = .black
+        label.textAlignment = .center
+        return label
     }()
     
     lazy var compassButton: MKCompassButton = {
@@ -213,6 +270,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         //        RunningTimerLocationManager.shared.getLocationUsagePermission()  //viewDidLoad 되었을 때 권한요청을 할 것인지, 현재 위치를 눌렀을 때 권한요청을 할 것인지
         mapView.showsUserLocation = true
         mapView.setUserTrackingMode(.follow, animated: true)
+        bindViewModel()
         print("확인")
     }
     
@@ -392,6 +450,7 @@ extension RunningMapViewController: CLLocationManagerDelegate {
                 addCustomPins(userLocation: userLocation, destination: destination)
             }
         }
+        bindViewModel()
     }
     
     // 사용자의 현재 위치를 기반으로 경로를 계산하고 지도에 표시하는 메서드
@@ -671,12 +730,47 @@ extension RunningMapViewController {
         view.addSubview(storeListButton)
         view.addSubview(convenienceStoreButton)
         view.addSubview(cafeButton)
+        view.addSubview(weatherContainer)
+        weatherContainer.addSubview(temperatureLabel)
+        weatherContainer.addSubview(humidityLabel)
+        weatherContainer.addSubview(windspeedLabel)
+        weatherContainer.addSubview(uvIndexcategoryLabel)
+        weatherContainer.addSubview(weatherSymbol)
     }
     
     private func setLayout() {
         mapView.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()
             $0.bottom.equalToSuperview().offset(-self.tabBarHeight * 1.8)
+        }
+        
+        weatherContainer.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(80)
+            $0.leading.equalToSuperview().offset(20)
+            $0.width.equalTo(160)
+            $0.height.equalTo(60)
+        }
+        weatherSymbol.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.leading.equalToSuperview().offset(10)
+            $0.width.height.equalTo(40)
+        }
+        
+        temperatureLabel.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.top.equalTo(weatherContainer.snp.top).offset(10)
+        }
+        humidityLabel.snp.makeConstraints {
+            $0.centerX.equalTo(temperatureLabel)
+            $0.top.equalTo(temperatureLabel.snp.bottom).offset(10)
+        }
+        windspeedLabel.snp.makeConstraints {
+            $0.trailing.equalToSuperview().offset(-10)
+            $0.top.equalTo(temperatureLabel)
+        }
+        uvIndexcategoryLabel.snp.makeConstraints {
+            $0.trailing.equalToSuperview().offset(-10)
+            $0.top.equalTo(windspeedLabel.snp.bottom).offset(10)
         }
         
         startRunningButton.snp.makeConstraints {
@@ -728,48 +822,41 @@ extension RunningMapViewController: StoreViewControllerDelegate {
     }
 }
 
-//extension RunningMapViewController: MapRouteImageDelegate {
-//    func updateRouteImageWithSnapshot(routeImage: UIImage, for recordId: UUID) {
-//        displayRouteAndTakeSnapshot(locations: locations, mapView: self.mapView) { capturedImage in
-//            guard let capturedImage = capturedImage else {
-//                print("Snapshot capture failed")
-//                return
-//            }
-//            
-//            // 코어 데이터에서 해당 recordId를 가진 레코드를 찾아 이미지를 업데이트 합니다.
-//            CoreDataManager.shared.updateRunningRecordWithImage(recordId: recordId, routeImage: capturedImage) { success in
-//                if success {
-//                    print("Running record updated successfully with route image")
-//                } else {
-//                    print("Failed to update running record with route image")
-//                }
-//            }
-//        }
-//    }
-//}
-//
-//func displayRouteAndTakeSnapshot(locations: [CLLocation], mapView: MKMapView, completion: @escaping (UIImage?) -> Void) {
-//    // mapView에 경로를 추가합니다.
-//    let coordinates = locations.map { $0.coordinate }
-//    let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
-//    mapView.addOverlay(polyline)
-//    
-//    // 경로가 모두 보이도록 mapView의 영역을 조정합니다.
-//    let mapPadding = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
-//    mapView.setVisibleMapRect(polyline.boundingMapRect, edgePadding: mapPadding, animated: true)
-//    
-//    // mapView가 업데이트 된 후 스냅샷을 캡처합니다.
-//    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { // Adjust delay as necessary
-//        let options = MKMapSnapshotter.Options()
-//        options.region = mapView.region
-//        options.size = mapView.frame.size
-//        let snapshotter = MKMapSnapshotter(options: options)
-//        snapshotter.start { snapshot, error in
-//            guard let snapshot = snapshot else {
-//                completion(nil)
-//                return
-//            }
-//            completion(snapshot.image)
-//        }
-//    }
-//}
+//MARK: - Weather Setup
+extension RunningMapViewController {
+
+    func bindViewModel() {
+        // 현재 위치 정보가 있는지 확인
+        if let location = self.currentLocation {
+            print("현재 위치: 위도 \(location.coordinate.latitude), 경도 \(location.coordinate.longitude)")
+            // 위치 정보가 있을 경우, 해당 위치를 사용하여 날씨 정보를 업데이트
+            weatherViewModel.getWeather(location: location)
+            
+            weatherViewModel.$weathersymbolName.receive(on: DispatchQueue.main).sink { [weak self] weatherSymbol in
+                self?.weatherSymbol.image = UIImage(systemName: weatherSymbol)
+            }.store(in: &cancellables)
+            
+            weatherViewModel.$currentTemperature.receive(on: DispatchQueue.main).sink { [weak self] temperatureLabel in
+                let roundedTemperature = round(temperatureLabel * 10) / 10.0
+                self?.temperatureLabel.text = "\(roundedTemperature)ºC"
+            }.store(in: &cancellables)
+            
+            weatherViewModel.$currenthumidity.receive(on: DispatchQueue.main).sink { [weak self] humidityLabel in
+                let percentageHumidity = Int(humidityLabel * 100) // 백분율로 변환 후 정수로 표시
+                self?.humidityLabel.text = "\(percentageHumidity)%"
+            }.store(in: &cancellables)
+            
+            weatherViewModel.$windspeed.receive(on: DispatchQueue.main).sink { [weak self] windspeedLabel in
+                let roundedwindspeed = round(windspeedLabel * 10) / 10.0
+                self?.windspeedLabel.text = "\(roundedwindspeed)m/s"
+            }.store(in: &cancellables)
+            
+            weatherViewModel.$uvIndexcategory.receive(on: DispatchQueue.main).sink { [weak self] uvIndexcategoryLabel in
+                self?.uvIndexcategoryLabel.text = "UV \(uvIndexcategoryLabel)"
+            }.store(in: &cancellables)
+        } else {
+            print("no location data")
+        }
+    }
+    
+}
