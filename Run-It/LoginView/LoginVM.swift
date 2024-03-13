@@ -43,115 +43,116 @@ func signInUser(email: String, password: String)
         }
     }
 
-    func kakaoLogin()
+func kakaoLogin()
+{
+    if AuthApi.hasToken()
     {
-        if AuthApi.hasToken()
-        {
-            UserApi.shared.accessTokenInfo
-            {   _, error in
-                if let error = error    // 토큰이 유효하지 않은 경우
-                {
-                    openKakaoService()
-                }
-                
-                else    // 토큰이 유효한 경우
-                {
-                    bringKakaoInfo()
-                }
-                
+        UserApi.shared.accessTokenInfo
+        {   _, error in
+            if let error = error    // 토큰이 유효하지 않은 경우
+            {
+                openKakaoService()
             }
-        }
-        
-        else    // 토큰이 만료된 경우
-        {
-            openKakaoService()
+            
+            else    // 토큰이 유효한 경우
+            {
+                bringKakaoInfo()
+            }
+            
         }
     }
     
-    func openKakaoService()   // 카카오 서비스 열기
+    else    // 토큰이 만료된 경우
     {
-        if UserApi.isKakaoTalkLoginAvailable()
+        openKakaoService()
+    }
+}
+    
+func openKakaoService()   // 카카오 서비스 열기
+{
+    if UserApi.isKakaoTalkLoginAvailable()
+    {
+        kakaoLoginInApp()
+    }
+    
+    else
+    {
+        kakaoLoginInWeb()
+        bringKakaoInfo()
+    }
+}
+    
+func kakaoLoginInApp()  // 카카오톡 앱이 설치되어있을 경우
+{
+    UserApi.shared.loginWithKakaoTalk
+    {   oauthToken, error in
+        if let error = error
         {
-            kakaoLoginInApp()
+            print("카카오톡 로그인 실패")
         }
         
         else
         {
-            kakaoLoginInWeb()
-            bringKakaoInfo()
+            if let token = oauthToken
+            {
+                bringKakaoInfo()
+            }
         }
     }
+}
     
-    func kakaoLoginInApp()  // 카카오톡 앱이 설치되어있을 경우
-    {
-        UserApi.shared.loginWithKakaoTalk
-        {   oauthToken, error in
-            if let error = error
+func kakaoLoginInWeb()  // 카카오톡 앱이 설치되어있지 않거나 열수 없는 경우
+{
+    UserApi.shared.loginWithKakaoAccount
+    {   oauthToken, error in
+        if let error = error
+        {
+            print("카카오톡 로그인 실패")
+        }
+        
+        else
+        {
+            if let token = oauthToken
             {
-                print("카카오톡 로그인 실패")
-            }
-            
-            else
-            {
-                if let token = oauthToken
-                {
-                    bringKakaoInfo()
-                }
+                bringKakaoInfo()
             }
         }
     }
+}
     
-    func kakaoLoginInWeb()  // 카카오톡 앱이 설치되어있지 않거나 열수 없는 경우
-    {
-        UserApi.shared.loginWithKakaoAccount
-        {   oauthToken, error in
-            if let error = error
+func bringKakaoInfo()
+{
+    UserApi.shared.me
+    {   user, error in
+        if let error = error
+        {
+            print("카카오 사용자 정보 불러오기 실패")
+            return
+        }
+        
+        guard let email = user?.kakaoAccount?.email else { return }
+        guard let pw = user?.id else { return }
+        
+        Auth.auth().signIn(withEmail: email, password: "\(pw)")
+        {    authResult, error in
+            if authResult == nil
             {
-                print("카카오톡 로그인 실패")
+                print("로그인 실패")
+                if let error = error
+                {
+                    print(error)
+                }
             }
             
-            else
+            else if authResult != nil
             {
-                if let token = oauthToken
-                {
-                    bringKakaoInfo()
-                }
+                print("로그인 성공")
+                sendTask(task: "successLogin")
             }
         }
     }
-    
-    func bringKakaoInfo()
-    {
-        UserApi.shared.me
-        {   user, error in
-            if let error = error
-            {
-                print("카카오 사용자 정보 불러오기 실패")
-                return
-            }
-            
-            guard let email = user?.kakaoAccount?.email else { return }
-            guard let pw = user?.id else { return }
-            
-            Auth.auth().signIn(withEmail: email, password: "\(pw)")
-            {    authResult, error in
-                if authResult == nil
-                {
-                    print("로그인 실패")
-                    if let error = error
-                    {
-                        print(error)
-                    }
-                }
-                
-                else if authResult != nil
-                {
-                    print("로그인 성공")
-                    sendTask(task: "successLogin")
-                }
-            }
-        }
-    }
+}
+
 
 // MARK: - Notification
 func sendTask(task: String)
