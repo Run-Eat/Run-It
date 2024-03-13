@@ -18,7 +18,8 @@ class StartRunningViewController: UIViewController {
     
     lazy var timerCounterView: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 100)
+        label.font = UIFont.boldSystemFont(ofSize: 150)
+        label.textColor = .systemYellow
         label.textAlignment = .center
         label.isHidden = true
         return label

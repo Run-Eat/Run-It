@@ -67,6 +67,7 @@
 		C879CD052B8880F200DBFB82 /* PauseViewHalfModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879CD042B8880F200DBFB82 /* PauseViewHalfModal.swift */; };
 		C879CD072B8AA9B400DBFB82 /* StartRunningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879CD062B8AA9B400DBFB82 /* StartRunningViewController.swift */; };
 		C879CD092B8B405E00DBFB82 /* RunningTimerLocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879CD082B8B405E00DBFB82 /* RunningTimerLocationManager.swift */; };
+		C87BF1122BA194320066073C /* WeatherViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C87BF1112BA194320066073C /* WeatherViewModel.swift */; };
 		C893A7232B955B0E00D5466E /* RunningTimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C893A7222B955B0E00D5466E /* RunningTimerManager.swift */; };
 		C8A362FC2B95BFB7006D551E /* StoreViewHalfModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A362FB2B95BFB7006D551E /* StoreViewHalfModal.swift */; };
 		C8D903EF2B8731870008C15E /* KakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = C8D903EE2B8731870008C15E /* KakaoSDK */; };
@@ -112,6 +113,8 @@
 		C879CD042B8880F200DBFB82 /* PauseViewHalfModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseViewHalfModal.swift; sourceTree = "<group>"; };
 		C879CD062B8AA9B400DBFB82 /* StartRunningViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartRunningViewController.swift; sourceTree = "<group>"; };
 		C879CD082B8B405E00DBFB82 /* RunningTimerLocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningTimerLocationManager.swift; sourceTree = "<group>"; };
+		C87BF1102BA193B00066073C /* Run-It.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Run-It.entitlements"; sourceTree = "<group>"; };
+		C87BF1112BA194320066073C /* WeatherViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewModel.swift; sourceTree = "<group>"; };
 		C893A7222B955B0E00D5466E /* RunningTimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningTimerManager.swift; sourceTree = "<group>"; };
 		C8A362FB2B95BFB7006D551E /* StoreViewHalfModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreViewHalfModal.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -191,6 +194,7 @@
 		C82CEDC72B86FCB200B619AD /* Run-It */ = {
 			isa = PBXGroup;
 			children = (
+				C87BF1102BA193B00066073C /* Run-It.entitlements */,
 				C82CEDC82B86FCB200B619AD /* AppDelegate.swift */,
 				C82CEDCA2B86FCB200B619AD /* SceneDelegate.swift */,
 				C82CEDD42B86FCB300B619AD /* Assets.xcassets */,
@@ -230,6 +234,7 @@
 				0BF25AC52B8B73E600B0C8CE /* RunningMapModel.swift */,
 				0BF25AC72B8BA87900B0C8CE /* StoreViewController.swift */,
 				0BF25ACB2B8C724600B0C8CE /* StoreTableViewCell.swift */,
+				C87BF1112BA194320066073C /* WeatherViewModel.swift */,
 			);
 			path = RunningMapView;
 			sourceTree = "<group>";
@@ -408,6 +413,7 @@
 				2B46533F2B9752D60040B146 /* EventViewController.swift in Sources */,
 				2B98882A2B8C770900B2BC74 /* RecordViewCell.swift in Sources */,
 				C82CEDC92B86FCB200B619AD /* AppDelegate.swift in Sources */,
+				C87BF1122BA194320066073C /* WeatherViewModel.swift in Sources */,
 				C879CD092B8B405E00DBFB82 /* RunningTimerLocationManager.swift in Sources */,
 				C82CEDE22B86FD7C00B619AD /* RunningMapViewController.swift in Sources */,
 				6C7A43E52B8C904500A14291 /* SignUpViewController.swift in Sources */,
@@ -567,6 +573,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Run-It/Run-It.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -600,6 +607,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Run-It/Run-It.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
