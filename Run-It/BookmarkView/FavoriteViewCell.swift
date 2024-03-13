@@ -77,26 +77,27 @@ class FavoriteViewCell: UITableViewCell {
         
         nameLabel.snp.makeConstraints { make in
             make.top.equalTo(contentView.snp.top).offset(15)
-            make.leading.equalTo(contentView.snp.leading).offset(18)
+            make.leading.equalTo(contentView.snp.leading).offset(16)
+            make.trailing.equalTo(storeImage.snp.leading).offset(-16)
             make.height.equalTo(18)
         }
         
         categoryLabel.snp.makeConstraints { make in
-            make.top.equalTo(contentView.snp.top).offset(15)
-            make.leading.equalTo(nameLabel.snp.trailing).offset(10)
+            make.top.equalTo(nameLabel.snp.bottom).offset(4)
+            make.leading.equalTo(contentView.snp.leading).offset(16)
             make.height.equalTo(18)
         }
         
         adressLabel.snp.makeConstraints { make in
-            make.top.equalTo(nameLabel.snp.bottom).offset(10)
-            make.leading.equalTo(contentView.snp.leading).offset(18)
-            make.trailing.equalTo(storeImage.snp.leading).offset(-18)
+            make.top.equalTo(categoryLabel.snp.bottom).offset(4)
+            make.leading.equalTo(contentView.snp.leading).offset(16)
+            make.trailing.equalTo(storeImage.snp.leading).offset(-16)
             make.height.equalTo(60)
         }
         
         storeImage.snp.makeConstraints { make in
-            make.top.equalTo(contentView.snp.top).offset(15)
-            make.trailing.equalTo(contentView.snp.trailing).offset(-18)
+            make.top.equalTo(contentView.snp.top).offset(16)
+            make.trailing.equalTo(contentView.snp.trailing).offset(-16)
             make.width.height.equalTo(90)
         }
 
@@ -108,7 +109,7 @@ class FavoriteViewCell: UITableViewCell {
         super.layoutSubviews()
         
         let backgroundView = UIView()
-        backgroundView.backgroundColor = UIColor.white
+        backgroundView.backgroundColor = UIColor.systemBackground
         backgroundView.layer.cornerRadius = 10
         backgroundView.layer.masksToBounds = true
         backgroundView.frame = self.bounds.inset(by: UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0))

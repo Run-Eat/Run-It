@@ -37,12 +37,12 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     // MARK: - UI Setup
     func setupUI() {
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = UIColor.systemBackground
         
         navigationItem.title = "Event"
         
         tableView.register(EventViewCell.self, forCellReuseIdentifier: "EventCell")
-        tableView.backgroundColor = UIColor.white
+        tableView.backgroundColor = UIColor.systemBackground
         view.addSubview(tableView)
         
         tableView.snp.makeConstraints { make in
@@ -69,9 +69,9 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = UIView()
         if section == 0 {
-            headerView.backgroundColor = UIColor.white
+            headerView.backgroundColor = UIColor.systemBackground
         } else {
-            headerView.backgroundColor = UIColor.white
+            headerView.backgroundColor = UIColor.systemBackground
         }
         
         let label = UILabel()

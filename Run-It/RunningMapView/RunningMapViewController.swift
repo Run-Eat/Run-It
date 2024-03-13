@@ -69,7 +69,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     lazy var weatherSymbol: UIImageView = {
         let symbol = UIImageView()
         symbol.image = UIImage(systemName: "sun.max.trianglebadge.exclamationmark")
-        symbol.tintColor = .black
+        symbol.tintColor = UIColor.label
         symbol.contentMode = .scaleToFill
         return symbol
     }()
@@ -78,7 +78,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         let label = UILabel()
         label.text = "ºC"
         label.font = UIFont.systemFont(ofSize: 12)
-        label.textColor = .black
+        label.textColor = UIColor.label
         label.textAlignment = .center
         return label
     }()
@@ -87,7 +87,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         let label = UILabel()
         label.text = "%"
         label.font = UIFont.systemFont(ofSize: 12)
-        label.textColor = .black
+        label.textColor = .label
         label.textAlignment = .center
         return label
     }()
@@ -95,7 +95,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         let label = UILabel()
         label.text = "km/h"
         label.font = UIFont.systemFont(ofSize: 12)
-        label.textColor = .black
+        label.textColor = .label
         label.textAlignment = .center
         return label
     }()
@@ -104,7 +104,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         let label = UILabel()
         label.text = "uv"
         label.font = UIFont.systemFont(ofSize: 12)
-        label.textColor = .black
+        label.textColor = .label
         label.textAlignment = .center
         return label
     }()
@@ -717,7 +717,7 @@ extension RunningMapViewController {
 extension RunningMapViewController {
     
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         navigationController?.setNavigationBarHidden(true, animated: true)
     }
     

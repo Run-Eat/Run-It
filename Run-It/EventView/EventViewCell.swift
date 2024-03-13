@@ -28,7 +28,7 @@ class EventViewCell: UITableViewCell {
     // MARK: - UI Setup
     
     private func setupUI() {
-        backgroundColor = UIColor.white
+        backgroundColor = UIColor.systemBackground
         contentView.addSubview(cellImageView)
     }
     

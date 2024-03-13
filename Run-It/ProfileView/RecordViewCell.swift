@@ -44,7 +44,7 @@ class RecordViewCell: UITableViewCell {
     }
     
     private func setupUI() {
-        backgroundColor = UIColor.white
+        backgroundColor = UIColor.systemGray6
         contentView.addSubview(dateLabel)
         contentView.addSubview(distanceLabel)
         contentView.addSubview(timeLabel)
@@ -78,7 +78,7 @@ class RecordViewCell: UITableViewCell {
         super.layoutSubviews()
         
         let backgroundView = UIView()
-        backgroundView.backgroundColor = UIColor.white
+        backgroundView.backgroundColor = UIColor.systemBackground
         backgroundView.layer.cornerRadius = 10
         backgroundView.layer.masksToBounds = true
         backgroundView.frame = self.bounds.inset(by: UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0))
@@ -90,8 +90,7 @@ class RecordViewCell: UITableViewCell {
 extension RecordViewCell {
     func configure(with viewModel: RunningRecordViewModel) {
         dateLabel.text = viewModel.labelText
-        distanceLabel.text = viewModel.distanceText
-        timeLabel.text = viewModel.timeText
-//        paceLabel.text = viewModel.paceText
+        distanceLabel.text = String("\(viewModel.distanceText) km")
+        timeLabel.text = String("\(viewModel.timeText) 분")
     }
 }
