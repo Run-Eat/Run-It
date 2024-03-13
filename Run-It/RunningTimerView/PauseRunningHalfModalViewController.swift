@@ -8,14 +8,6 @@ protocol PauseRunningHalfModalViewControllerDelegate: AnyObject {
     func didDismissPauseRunningHalfModalViewController()
 }
 
-//protocol MapRouteImageDelegate: AnyObject {
-//    func mapViewController(_ controller: RunningMapViewController, didCaptureRouteImage routeImage: UIImage?, forLocations locations: [CLLocation])
-//}
-
-//protocol MapRouteImageDelegate: AnyObject {
-//    func updateRouteImageWithSnapshot(routeImage: UIImage, for recordId: UUID)
-//}
-
 import UIKit
 import CoreLocation
 
@@ -24,7 +16,6 @@ class PauseRunningHalfModalViewController: UIViewController {
     let runningTimer = RunningTimer()
     
     weak var delegate: PauseRunningHalfModalViewControllerDelegate?
-//    weak var mapDelegate: MapRouteImageDelegate?
     //MARK: - UI properties
     var time: Int = 0
     var distance: Double = 0.0
@@ -40,7 +31,7 @@ class PauseRunningHalfModalViewController: UIViewController {
     let modaltimeLabel: UILabel = {
         let label = UILabel()
         label.text = "시간"
-        label.textColor = .black
+        label.textColor = UIColor.label
         label.font = UIFont.systemFont(ofSize: 25)
         return label
     }()
@@ -48,7 +39,7 @@ class PauseRunningHalfModalViewController: UIViewController {
     lazy var modaltimeNumberLabel: UILabel = {
         let label = UILabel()
         label.text = "0:00:00"
-        label.textColor = .black
+        label.textColor = UIColor.label
         label.font = UIFont.systemFont(ofSize: 45)
         return label
     }()
@@ -63,7 +54,7 @@ class PauseRunningHalfModalViewController: UIViewController {
     let modaldistanceLabel: UILabel = {
         let label = UILabel()
         label.text = "거리"
-        label.textColor = .black
+        label.textColor = UIColor.label
         label.font = UIFont.systemFont(ofSize: 25)
         return label
     }()
@@ -71,7 +62,7 @@ class PauseRunningHalfModalViewController: UIViewController {
     lazy var modaldistanceNumberLabel: UILabel = {
         let label = UILabel()
         label.text = "0:00:00"
-        label.textColor = .black
+        label.textColor = UIColor.label
         label.font = UIFont.systemFont(ofSize: 45)
         return label
     }()
@@ -79,7 +70,7 @@ class PauseRunningHalfModalViewController: UIViewController {
     let modalkilometerLabel: UILabel = {
         let label = UILabel()
         label.text = "킬로미터"
-        label.textColor = .black
+        label.textColor = UIColor.label
         label.font = UIFont.systemFont(ofSize: 15)
         return label
     }()
@@ -96,7 +87,7 @@ class PauseRunningHalfModalViewController: UIViewController {
     let modalpaceLabel: UILabel = {
         let label = UILabel()
         label.text = "평균 페이스"
-        label.textColor = .black
+        label.textColor = UIColor.label
         label.font = UIFont.systemFont(ofSize: 25)
         return label
     }()
@@ -104,7 +95,7 @@ class PauseRunningHalfModalViewController: UIViewController {
     lazy var modalpaceNumberLabel: UILabel = {
         let label = UILabel()
         label.text = "0:00"
-        label.textColor = .black
+        label.textColor = UIColor.label
         label.font = UIFont.systemFont(ofSize: 45)
         return label
     }()
@@ -239,7 +230,7 @@ extension PauseRunningHalfModalViewController {
     
     // MARK: - setupUI
     private func setupModalUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         
         
     }

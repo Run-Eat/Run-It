@@ -128,7 +128,7 @@ class StoreTableViewCell: UITableViewCell {
         super.layoutSubviews()
         
         let backgroundView = UIView()
-        backgroundView.backgroundColor = UIColor.white
+        backgroundView.backgroundColor = UIColor.systemBackground
         backgroundView.layer.cornerRadius = 10
         backgroundView.layer.masksToBounds = true
         backgroundView.frame = self.bounds.inset(by: UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0))

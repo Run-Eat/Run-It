@@ -57,7 +57,7 @@ class RunningTimer {
             
             // 경과 시간을 기반으로 페이스 계산
             let elapsedTime = Date().timeIntervalSince(self.startTime) - Double(self.pauseDuration)
-            self.pace = elapsedTime > 0 ? self.distance / elapsedTime : 0
+            self.pace = elapsedTime / (self.distance / 1000.0)
             
             DispatchQueue.main.async {
                 // UI 업데이트 클로저 호출

@@ -86,7 +86,7 @@ class ProfileViewController: UIViewController
     {
         let button = UIButton()
         button.setTitle("로그아웃", for: .normal)
-        button.setTitleColor(.black, for: .normal)
+        button.setTitleColor(.label, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 17)
         button.addTarget(self, action: #selector(touchedLogoutButton), for: .touchUpInside)
         
@@ -128,7 +128,7 @@ class ProfileViewController: UIViewController
     let line: UIView =
     {
         let lineView = UIView()
-        lineView.backgroundColor = UIColor.black
+        lineView.backgroundColor = UIColor.label
         return lineView
     }()
     
@@ -138,7 +138,7 @@ class ProfileViewController: UIViewController
     {
         let button = UIButton()
         button.setTitle("매 주", for: .normal)
-        button.setTitleColor(.black, for: .normal)
+        button.setTitleColor(.label, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
         button.addTarget(self, action: #selector(touchedWeeklyButton), for: .touchUpInside)
         
@@ -149,7 +149,7 @@ class ProfileViewController: UIViewController
     {
         let button = UIButton()
         button.setTitle("매 달", for: .normal)
-        button.setTitleColor(.black, for: .normal)
+        button.setTitleColor(.label, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
         button.addTarget(self, action: #selector(touchedMonthlyButton), for: .touchUpInside)
         
@@ -175,7 +175,7 @@ class ProfileViewController: UIViewController
     {
         let button = UIButton()
         button.setTitle("러닝 기록 초기화", for: .normal)
-        button.setTitleColor(.black, for: .normal)
+        button.setTitleColor(.label, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
         button.addTarget(self, action: #selector(resetRecord), for: .touchUpInside)
         
@@ -187,7 +187,7 @@ class ProfileViewController: UIViewController
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         let uuidToDelete = UUID()
         
         CoreDataManager.shared.deleteRunningRecord(withId: uuidToDelete) { success in
@@ -799,16 +799,16 @@ extension ProfileViewController {
         }
         
         uiView.snp.makeConstraints { make in
-            make.top.equalTo(userRecord.snp.bottom).offset(30)
+            make.top.equalTo(userRecord.snp.bottom).offset(16)
             make.leading.equalTo(view.snp.leading)
             make.trailing.equalTo(view.snp.trailing)
             make.height.equalTo(runningRecords.count * 120 + 60)
         }
         
         tableView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
+            make.top.equalToSuperview().offset(8)
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().offset(-16)
             self.tableViewHeightConstraint = make.height.equalTo(runningRecords.count * 120).constraint
         }
     }

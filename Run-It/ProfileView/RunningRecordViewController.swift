@@ -29,7 +29,7 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
         textField.textAlignment = .left
         
         textField.snp.makeConstraints { make in
-            make.height.equalTo(60)
+            make.height.equalTo(90)
         }
         
         let editButton = UIButton(type: .system)
@@ -112,7 +112,8 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
     var routeImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.backgroundColor = UIColor.systemGreen
-        imageView.contentMode = .scaleAspectFit
+//        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleToFill
         return imageView
     }()
     // MARK: - Life Cycle
@@ -130,7 +131,7 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
     }
     // MARK: - UI Setup
     private func setupView() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         navigationItem.title = "Run it"
         setupRecordStackView()
     }
