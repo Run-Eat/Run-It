@@ -802,22 +802,22 @@ extension ProfileViewController {
             make.top.equalTo(userRecord.snp.bottom).offset(16)
             make.leading.equalTo(view.snp.leading)
             make.trailing.equalTo(view.snp.trailing)
-            make.height.equalTo(runningRecords.count * 120 + 60)
+            make.height.equalTo(runningRecords.count * 170 + 16)
         }
         
         tableView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(8)
             make.leading.equalToSuperview().offset(16)
             make.trailing.equalToSuperview().offset(-16)
-            self.tableViewHeightConstraint = make.height.equalTo(runningRecords.count * 120).constraint
+            self.tableViewHeightConstraint = make.height.equalTo(runningRecords.count * 170).constraint
         }
     }
     
     func updateTableViewHeight() {
         tableView.layoutIfNeeded()
-        tableViewHeightConstraint?.update(offset: runningRecords.count * 120)
+        tableViewHeightConstraint?.update(offset: runningRecords.count * 170)
         uiView.snp.updateConstraints { make in
-            make.height.equalTo(runningRecords.count * 120 + 60)
+            make.height.equalTo(runningRecords.count * 170 + 16)
         }
         view.layoutIfNeeded()
     }
@@ -856,7 +856,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 120
+        return 170
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
