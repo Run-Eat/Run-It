@@ -184,12 +184,12 @@ extension RunningTimerViewController {
         let seconds = (time % 3600) % 60
         timeNumberLabel.text = String(format: "%01d:%02d:%02d", hours, minutes, seconds)
         
-        if self.distance >= 0.05 {
+        if pace > 0 { // 페이스가 0보다 클 때만 계산
             let paceMinutes = Int(pace) / 60
             let paceSeconds = Int(pace) % 60
             paceNumberLabel.text = String(format: "%02d:%02d", paceMinutes, paceSeconds)
         } else {
-            // 거리가 50m 미만일 때는 페이스를 표시하지 않음
+            // 페이스가 0 이하일 경우 대체 텍스트 표시
             paceNumberLabel.text = "--:--"
         }
         

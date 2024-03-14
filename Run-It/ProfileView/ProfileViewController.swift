@@ -188,28 +188,16 @@ class ProfileViewController: UIViewController
     {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        let uuidToDelete = UUID()
-        
-        CoreDataManager.shared.deleteRunningRecord(withId: uuidToDelete) { success in
-            if success {
-                print("Record successfully deleted.")
-            } else {
-                print("Failed to delete the record.")
-            }
-        }
-        loadRunningRecords()
         view.addSubview(scrollView)
         scrollView.contentSize = CGSize(width: view.frame.width, height: 2000)
         addScrollView()
         setLayout()
         setupProfileUI()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        tableView.reloadData()
-        updateTableViewHeight()
+        loadRunningRecords()
         displayProfileImage()
         statisticsManager(true)
         
@@ -268,7 +256,6 @@ class ProfileViewController: UIViewController
         scrollView.snp.makeConstraints
         {   make in
             make.edges.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
         
         noticeButton.snp.makeConstraints
