@@ -108,7 +108,9 @@ class RunningTimerViewController: UIViewController, PauseRunningHalfModalViewCon
         if let image = UIImage(systemName: "pause.fill", withConfiguration: configuration) {
             button.setImage(image, for: .normal)
         }
-        button.backgroundColor = .systemIndigo
+        button.backgroundColor = .systemBlue
+        button.layer.shadowRadius = 15
+        button.layer.shadowOpacity = 0.3
         button.layer.cornerRadius = 50
         button.clipsToBounds = true
         

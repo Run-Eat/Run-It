@@ -52,7 +52,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         mapView.isRotateEnabled = true
         mapView.mapType = MKMapType.standard
         mapView.showsCompass = false
-        
+        mapView.userTrackingMode = .followWithHeading
         return mapView
     }()
     
@@ -115,6 +115,8 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         var config = UIButton.Configuration.filled()
         config.cornerStyle = .capsule
         compassButton.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
+        compassButton.layer.shadowRadius = 15
+        compassButton.layer.shadowOpacity = 0.3
         return compassButton
     }()
     
@@ -127,6 +129,8 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         config.image = UIImage(systemName: "location")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .medium))
         button.configuration = config
         button.layer.cornerRadius = 25
+        button.layer.shadowRadius = 15
+        button.layer.shadowOpacity = 0.3
         button.addTarget(self, action: #selector(currentLocationButtonAction), for: .touchUpInside)
         return button
     }()
@@ -150,7 +154,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = .systemIndigo
         config.cornerStyle = .capsule
-        config.image = UIImage(systemName: "storefront")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .medium))
+        config.image = UIImage(systemName: "storefront")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 18, weight: .medium))
         button.configuration = config
         button.layer.shadowRadius = 10
         button.layer.shadowOpacity = 0.3
@@ -165,7 +169,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = .systemIndigo
         config.cornerStyle = .capsule
-        config.image = UIImage(systemName: "cup.and.saucer")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .medium))
+        config.image = UIImage(systemName: "cup.and.saucer")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 18, weight: .medium))
         button.configuration = config
         button.layer.shadowRadius = 10
         button.layer.shadowOpacity = 0.3
@@ -191,6 +195,8 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
             button.setImage(image, for: .normal)
         }
         button.backgroundColor = .systemBlue
+        button.layer.shadowRadius = 15
+        button.layer.shadowOpacity = 0.3
         button.layer.cornerRadius = 45
         button.clipsToBounds = true
         
@@ -207,6 +213,8 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
             button.setImage(image, for: .normal)
         }
         button.backgroundColor = .systemBlue
+        button.layer.shadowRadius = 15
+        button.layer.shadowOpacity = 0.3
         button.layer.cornerRadius = 15
         button.clipsToBounds = true
         button.isHidden = true
@@ -239,7 +247,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         locationManager.delegate = self
         RunningTimerLocationManager.shared.getLocationUsagePermission() //viewDidLoad 되었을 때 권한요청을 할 것인지, 현재 위치를 눌렀을 때 권한요청을 할 것인지
         favoritesViewModel = FavoritesViewModel()
-        mapView.setUserTrackingMode(.follow, animated: true)
+        mapView.setUserTrackingMode(.followWithHeading, animated: true)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -269,7 +277,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     @objc func currentLocationButtonAction() {
         //        RunningTimerLocationManager.shared.getLocationUsagePermission()  //viewDidLoad 되었을 때 권한요청을 할 것인지, 현재 위치를 눌렀을 때 권한요청을 할 것인지
         mapView.showsUserLocation = true
-        mapView.setUserTrackingMode(.follow, animated: true)
+        mapView.setUserTrackingMode(.followWithHeading, animated: true)
         bindViewModel()
         print("확인")
     }
@@ -802,7 +810,7 @@ extension RunningMapViewController {
         compassButton.snp.makeConstraints {
             $0.width.height.equalTo(50)
             $0.trailing.equalToSuperview().offset(-20)
-            $0.top.equalToSuperview().offset(120)
+            $0.top.equalToSuperview().offset(80)
         }
         
         currentLocationButton.snp.makeConstraints {
