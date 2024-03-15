@@ -465,6 +465,20 @@ class ProfileViewController: UIViewController
     }
     
 // MARK: - 로그아웃 함수
+    func emailLogout()
+    {
+        let firebaseAuth = Auth.auth()
+        do
+        {
+            try firebaseAuth.signOut()
+            print("로그아웃 완료")
+        }
+        catch _ as NSError
+        {
+            print("로그아웃 에러")
+        }
+    }
+    
     func kakaoLogout()
     {
         // 사용자 액세스 토큰과 리프레시 토큰을 모두 만료시켜, 더 이상 해당 사용자 정보로 카카오 API를 호출할 수 없도록 합니다.
@@ -480,19 +494,6 @@ class ProfileViewController: UIViewController
         }
     }
     
-    func emailLogout()
-    {
-        let firebaseAuth = Auth.auth()
-        do
-        {
-            try firebaseAuth.signOut()
-            print("로그아웃 완료")
-        }
-        catch _ as NSError
-        {
-            print("로그아웃 에러")
-        }
-    }
  
 // MARK: - 프로필 사진 관리 메서드
     func saveImageData(profileImage: UIImage)
