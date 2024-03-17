@@ -9,7 +9,7 @@ import UIKit
 
 import SnapKit
 
-class RunningTimerViewController: UIViewController, PauseRunningHalfModalViewControllerDelegate {
+class RunningTimerViewController: UIViewController {
 
     let runningTimer = RunningTimer()
     //MARK: - UI properties
@@ -137,9 +137,6 @@ class RunningTimerViewController: UIViewController, PauseRunningHalfModalViewCon
                 self?.updateTimerUI()
             }
         }
-//        // 위치 업데이트 시작
-        RunningTimerLocationManager.shared.startUpdatingLocation()
-
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -186,16 +183,16 @@ extension RunningTimerViewController {
         let seconds = (time % 3600) % 60
         timeNumberLabel.text = String(format: "%01d:%02d:%02d", hours, minutes, seconds)
         
-        if pace > 0 { // 페이스가 0보다 클 때만 계산
+        if distance > 0 {
             let paceMinutes = Int(pace) / 60
             let paceSeconds = Int(pace) % 60
             paceNumberLabel.text = String(format: "%02d:%02d", paceMinutes, paceSeconds)
+            distanceNumberLabel.text = String(format: "%.2f", distance / 1000)
+            print("거리: \(String(describing: distanceNumberLabel.text))")
         } else {
-            // 페이스가 0 이하일 경우 대체 텍스트 표시
             paceNumberLabel.text = "--:--"
+            distanceNumberLabel.text = "0.00"
         }
-        
-        distanceNumberLabel.text = String(format: "%.2f", distance / 1000)
     }
 
     // MARK: - setupUI
@@ -320,4 +317,18 @@ extension RunningTimerViewController {
     }
     
 
+}
+extension RunningTimerViewController: PauseRunningHalfModalViewControllerDelegate {
+    func pauseRunningHalfModalViewControllerDidRequestResume(_ controller: PauseRunningHalfModalViewController) {
+        runningTimer.restart()
+    }
+
+    func pauseRunningHalfModalViewControllerDidRequestStop(_ controller: PauseRunningHalfModalViewController) {
+        runningTimer.stop()
+        runningTimer.reset()
+    }
+    
+    func pauseRunningHalfModalViewControllerDidRequestReset(_ controller: PauseRunningHalfModalViewController) {
+        runningTimer.reset()
+    }
 }
