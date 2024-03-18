@@ -10,6 +10,7 @@ import SnapKit
 import CoreData
 import FirebaseAuth
 import FirebaseCore
+import FirebaseAppCheck
 import KakaoSDKAuth
 import KakaoSDKUser
 
@@ -182,6 +183,17 @@ class ProfileViewController: UIViewController
         return button
     }()
     
+    lazy var withdrawButton: UIButton =
+    {
+        let button = UIButton()
+        button.setTitle("회원 탈퇴", for: .normal)
+        button.setTitleColor(.label, for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
+        button.addTarget(self, action: #selector(withdrawal), for: .touchUpInside)
+        
+        return button
+    }()
+    
     
 // MARK: - Life Cycle
     override func viewDidLoad()
@@ -189,17 +201,10 @@ class ProfileViewController: UIViewController
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         view.addSubview(scrollView)
+        scrollView.contentSize = CGSize(width: view.frame.width, height: 2000)
         addScrollView()
         setLayout()
         setupProfileUI()
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        let uiViewHeight = CGFloat(runningRecords.count) * 170.0 + 16.0
-        let contentHeight = 671.33 + 44 + 8 + uiViewHeight
-        scrollView.contentSize = CGSize(width: view.frame.width, height: contentHeight)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -254,6 +259,7 @@ class ProfileViewController: UIViewController
         scrollView.addSubview(userRecord)
         scrollView.addSubview(uiView)
         scrollView.addSubview(resetButton)
+        scrollView.addSubview(withdrawButton)
 
     }
     
@@ -426,6 +432,12 @@ class ProfileViewController: UIViewController
             make.centerY.equalTo(pointImage.snp.centerY)
             make.leading.equalTo(view.snp.leading).inset(30)
         }
+        
+        withdrawButton.snp.makeConstraints
+        {   make in
+            make.centerY.equalTo(pointImage.snp.centerY)
+            make.leading.equalTo(resetButton.snp.leading).offset(130)
+        }
     }
     
 // MARK: - 레이블 생성 함수
@@ -459,20 +471,6 @@ class ProfileViewController: UIViewController
     }
     
 // MARK: - 로그아웃 함수
-    func emailLogout()
-    {
-        let firebaseAuth = Auth.auth()
-        do
-        {
-            try firebaseAuth.signOut()
-            print("로그아웃 완료")
-        }
-        catch _ as NSError
-        {
-            print("로그아웃 에러")
-        }
-    }
-    
     func kakaoLogout()
     {
         // 사용자 액세스 토큰과 리프레시 토큰을 모두 만료시켜, 더 이상 해당 사용자 정보로 카카오 API를 호출할 수 없도록 합니다.
@@ -488,6 +486,24 @@ class ProfileViewController: UIViewController
         }
     }
     
+    func emailLogout()
+    {
+        let firebaseAuth = Auth.auth()
+        do
+        {
+            try firebaseAuth.signOut()
+            print("로그아웃 완료")
+        }
+        catch _ as NSError
+        {
+            print("로그아웃 에러")
+        }
+    }
+    
+    func appleLogout()
+    {
+        
+    }
  
 // MARK: - 프로필 사진 관리 메서드
     func saveImageData(profileImage: UIImage)
@@ -638,6 +654,28 @@ class ProfileViewController: UIViewController
         }
     }
     
+//MARK: - 이메일 회원 탈퇴
+    func deleteAccount() {
+        if  let user = Auth.auth().currentUser {
+            user.delete
+            {   [self] error in
+                if let error = error
+                {
+                    print("Firebase Error : ",error)
+                }
+                else
+                {
+                    print("회원탈퇴 성공!")
+                }
+            }
+        }
+        else
+        {
+            print("로그인 정보가 존재하지 않습니다")
+        }
+    }
+
+    
 // MARK: - 버튼 함수
     @objc func selectImage()
     {
@@ -651,6 +689,7 @@ class ProfileViewController: UIViewController
     {
         kakaoLogout()
         emailLogout()
+        
         dismiss(animated: true)
     }
     
@@ -713,7 +752,7 @@ class ProfileViewController: UIViewController
     
     @objc func withdrawal()     // 회원탈퇴
     {
-        
+        deleteAccount()
     }
 }
 
