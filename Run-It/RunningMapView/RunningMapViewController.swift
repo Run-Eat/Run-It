@@ -52,7 +52,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         mapView.isRotateEnabled = true
         mapView.mapType = MKMapType.standard
         mapView.showsCompass = false
-        
+        mapView.userTrackingMode = .followWithHeading
         return mapView
     }()
     
@@ -115,6 +115,8 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         var config = UIButton.Configuration.filled()
         config.cornerStyle = .capsule
         compassButton.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
+        compassButton.layer.shadowRadius = 15
+        compassButton.layer.shadowOpacity = 0.3
         return compassButton
     }()
     
@@ -127,6 +129,8 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         config.image = UIImage(systemName: "location")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .medium))
         button.configuration = config
         button.layer.cornerRadius = 25
+        button.layer.shadowRadius = 15
+        button.layer.shadowOpacity = 0.3
         button.addTarget(self, action: #selector(currentLocationButtonAction), for: .touchUpInside)
         return button
     }()
@@ -150,12 +154,12 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = .systemIndigo
         config.cornerStyle = .capsule
-        config.image = UIImage(systemName: "storefront")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .medium))
+        config.image = UIImage(systemName: "storefront")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 18, weight: .medium))
         button.configuration = config
         button.layer.shadowRadius = 10
         button.layer.shadowOpacity = 0.3
         button.alpha = 0.0
-        button.addTarget(self, action: #selector(presentStoreAnnotationButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(presentConvenienceStoreAnnotations), for: .touchUpInside)
         return button
     }()
     
@@ -165,12 +169,12 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = .systemIndigo
         config.cornerStyle = .capsule
-        config.image = UIImage(systemName: "cup.and.saucer")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .medium))
+        config.image = UIImage(systemName: "cup.and.saucer")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 18, weight: .medium))
         button.configuration = config
         button.layer.shadowRadius = 10
         button.layer.shadowOpacity = 0.3
         button.alpha = 0.0
-        button.addTarget(self, action: #selector(presentStoreAnnotationButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(presentCafeAnnotations), for: .touchUpInside)
         return button
     }()
     
@@ -191,6 +195,8 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
             button.setImage(image, for: .normal)
         }
         button.backgroundColor = .systemBlue
+        button.layer.shadowRadius = 15
+        button.layer.shadowOpacity = 0.3
         button.layer.cornerRadius = 45
         button.clipsToBounds = true
         
@@ -207,6 +213,8 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
             button.setImage(image, for: .normal)
         }
         button.backgroundColor = .systemBlue
+        button.layer.shadowRadius = 15
+        button.layer.shadowOpacity = 0.3
         button.layer.cornerRadius = 15
         button.clipsToBounds = true
         button.isHidden = true
@@ -239,7 +247,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         locationManager.delegate = self
         RunningTimerLocationManager.shared.getLocationUsagePermission() //viewDidLoad 되었을 때 권한요청을 할 것인지, 현재 위치를 눌렀을 때 권한요청을 할 것인지
         favoritesViewModel = FavoritesViewModel()
-        mapView.setUserTrackingMode(.follow, animated: true)
+        mapView.setUserTrackingMode(.followWithHeading, animated: true)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -269,7 +277,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     @objc func currentLocationButtonAction() {
         //        RunningTimerLocationManager.shared.getLocationUsagePermission()  //viewDidLoad 되었을 때 권한요청을 할 것인지, 현재 위치를 눌렀을 때 권한요청을 할 것인지
         mapView.showsUserLocation = true
-        mapView.setUserTrackingMode(.follow, animated: true)
+        mapView.setUserTrackingMode(.followWithHeading, animated: true)
         bindViewModel()
         print("확인")
     }
@@ -279,8 +287,18 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     }
     
     @objc func presentStoreAnnotationButton() {
-        getAnnotationLocation()
-        searchConvenienceStores() // 모달뷰로 변경
+//        getAnnotationLocation()
+//        searchConvenienceStores() // 모달뷰로 변경
+    }
+    
+    @objc func presentConvenienceStoreAnnotations() {
+        getAnnotations(forQuery: "GS25", category: "GS25")
+        searchAndPresentStores(with: "GS25")
+    }
+
+    @objc func presentCafeAnnotations() {
+        getAnnotations(forQuery: "Cafe", category: "Cafe")
+        searchAndPresentStores(with: "Cafe")
     }
 
 }
@@ -288,31 +306,42 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
 //MARK: - Annotation Setup
 extension RunningMapViewController {
     
-    private func getAnnotationLocation() {
+    func getAnnotations(forQuery query: String, category: String) {
+        // 모든 어노테이션 제거
+        let allAnnotations = self.mapView.annotations
+        self.mapView.removeAnnotations(allAnnotations)
+        
         guard let currentLocation = self.mapView.userLocation.location else {
             print("Failed to get user location")
             return
         }
         
-        let Searchrequest = MKLocalSearch.Request()
-        Searchrequest.naturalLanguageQuery = "GS25" // 원하는 POI 유형을 검색어로 지정
-        //        request.region = mapView.region // 검색 범위를 지정
-        Searchrequest.region = MKCoordinateRegion(center: currentLocation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500) // 500m 범위를 지정
+        let searchRequest = MKLocalSearch.Request()
+        searchRequest.naturalLanguageQuery = query
+        searchRequest.region = MKCoordinateRegion(center: currentLocation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500)
         
-        let search = MKLocalSearch(request: Searchrequest)
-        search.start { (response, error) in
+        let search = MKLocalSearch(request: searchRequest)
+        search.start { [weak self] (response, error) in
             guard let response = response else {
                 print("Search error: \(error?.localizedDescription ?? "Unknown error")")
                 return
             }
             
-            for item in response.mapItems {
-                let annotation = CustomAnnotation()
-                annotation.coordinate = item.placemark.coordinate
-                annotation.title = item.name
-                annotation.mapItem = item // MKMapItem 저장
-                DispatchQueue.main.async {
-                    self.mapView.addAnnotation(annotation)
+            search.start { [weak self] (response, error) in
+                guard let response = response else {
+                    print("Search error: \(error?.localizedDescription ?? "Unknown error")")
+                    return
+                }
+                
+                for item in response.mapItems {
+                    let annotation = CustomAnnotation()
+                    annotation.coordinate = item.placemark.coordinate
+                    annotation.title = item.name
+                    annotation.mapItem = item
+                    annotation.category = category
+                    DispatchQueue.main.async {
+                        self?.mapView.addAnnotation(annotation)
+                    }
                 }
             }
         }
@@ -339,12 +368,12 @@ extension RunningMapViewController {
         return viewModel.isFavorite(storeName: name, latitude: latitude, longitude: longitude)
     }
 
-    func searchConvenienceStores() {
-        let request = MKLocalSearch.Request()
-        request.naturalLanguageQuery = "GS25"
-        request.region = mapView.region
+    func searchAndPresentStores(with query: String) {
+        let searchRequest = MKLocalSearch.Request()
+        searchRequest.naturalLanguageQuery = query
+        searchRequest.region = mapView.region
         
-        let search = MKLocalSearch(request: request)
+        let search = MKLocalSearch(request: searchRequest)
         search.start { (response, error) in
             guard let response = response else {
                 print("Error: \(error?.localizedDescription ?? "Unknown error").")
@@ -353,27 +382,17 @@ extension RunningMapViewController {
             
             var places: [AnnotationInfo] = []
             for item in response.mapItems {
-                // 임시 카테고리
-                let category = "편의점"
-                
-                let isOpenNow = false // 이 값을 설정하기 위한 로직이 필요
-                // 거리 계산
-                let storeLocation = CLLocation(latitude: item.placemark.coordinate.latitude, longitude: item.placemark.coordinate.longitude)
-                let distanceInMeters = self.calculateDistance(to: storeLocation)
-                
-                let url = item.url?.absoluteString ?? "No URL"
-                
-                let isFavorite = self.isStoreFavorite(name: item.name ?? "", latitude: item.placemark.coordinate.latitude, longitude: item.placemark.coordinate.longitude)
-
+                // 필요한 데이터를 places 배열에 추가
                 let place = AnnotationInfo(
                     name: item.name ?? "Unknown",
-                    category: category,
+                    category: query, // 카테고리를 검색어로 설정
                     address: item.placemark.title ?? "No address",
-                    url: url,
+                    url: item.url?.absoluteString ?? "No URL",
                     latitude: item.placemark.coordinate.latitude,
                     longitude: item.placemark.coordinate.longitude,
-                    isOpenNow: isOpenNow,
-                    distance: distanceInMeters, isFavorite: isFavorite
+                    isOpenNow: false, // 이 값을 설정하기 위한 로직이 필요
+                    distance: self.calculateDistance(to: CLLocation(latitude: item.placemark.coordinate.latitude, longitude: item.placemark.coordinate.longitude)),
+                    isFavorite: self.isStoreFavorite(name: item.name ?? "", latitude: item.placemark.coordinate.latitude, longitude: item.placemark.coordinate.longitude)
                 )
                 
                 places.append(place)
@@ -621,16 +640,19 @@ extension RunningMapViewController: CLLocationManagerDelegate {
     
     // 지도에 경로 및 주변원을 표시하기 위한 MKMapViewDelegate에서 MKPolylineRenderer, MKCircleRenderer를 설정
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        let isDarkMode = traitCollection.userInterfaceStyle == .dark
+        let polylineColor: UIColor = isDarkMode ? .systemGreen : .systemIndigo
+        let circleFillColor: UIColor = isDarkMode ? UIColor.white.withAlphaComponent(0.2) : UIColor.systemIndigo.withAlphaComponent(0.2)
+
         if overlay is MKPolyline {
             let renderer = MKPolylineRenderer(overlay: overlay)
-            renderer.strokeColor = UIColor.systemIndigo // 경로의 색상을 설정
+            renderer.strokeColor = polylineColor // 다크 모드에 따라 색상을 조정
             renderer.lineCap = .round
-            renderer.lineWidth = 5.0 // 경로의 두께를 설정합니다.
+            renderer.lineWidth = 5.0
             return renderer
-            // 지도에 서클을 표시하기 위해 MKCircle를 활용
         } else if let circleOverlay = overlay as? MKCircle {
             let renderer = MKCircleRenderer(circle: circleOverlay)
-            renderer.fillColor = UIColor.systemIndigo.withAlphaComponent(0.2)
+            renderer.fillColor = circleFillColor // 다크 모드에 따라 색상을 조정
             return renderer
         }
         return MKOverlayRenderer(overlay: overlay)
@@ -788,7 +810,7 @@ extension RunningMapViewController {
         compassButton.snp.makeConstraints {
             $0.width.height.equalTo(50)
             $0.trailing.equalToSuperview().offset(-20)
-            $0.top.equalToSuperview().offset(120)
+            $0.top.equalToSuperview().offset(80)
         }
         
         currentLocationButton.snp.makeConstraints {
@@ -818,7 +840,8 @@ extension RunningMapViewController {
 
 extension RunningMapViewController: StoreViewControllerDelegate {
     func didCloseStoreViewController() {
-        getAnnotationLocation()
+        getAnnotations(forQuery: "GS25", category:
+        "GS25")
     }
 }
 

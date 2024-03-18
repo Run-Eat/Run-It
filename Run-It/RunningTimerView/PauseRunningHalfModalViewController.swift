@@ -5,15 +5,15 @@
 //  Created by Jason Yang on 2/23/24.
 //
 protocol PauseRunningHalfModalViewControllerDelegate: AnyObject {
-    func didDismissPauseRunningHalfModalViewController()
+    func pauseRunningHalfModalViewControllerDidRequestResume(_ controller: PauseRunningHalfModalViewController)
+    func pauseRunningHalfModalViewControllerDidRequestStop(_ controller: PauseRunningHalfModalViewController)
+    func pauseRunningHalfModalViewControllerDidRequestReset(_ controller: PauseRunningHalfModalViewController)
 }
 
 import UIKit
 import CoreLocation
 
 class PauseRunningHalfModalViewController: UIViewController {
-    
-    let runningTimer = RunningTimer()
     
     weak var delegate: PauseRunningHalfModalViewControllerDelegate?
     //MARK: - UI properties
@@ -110,7 +110,9 @@ class PauseRunningHalfModalViewController: UIViewController {
         if let image = UIImage(systemName: "restart", withConfiguration: configuration) {
             button.setImage(image, for: .normal)
         }
-        button.backgroundColor = .systemIndigo
+        button.backgroundColor = .systemBlue
+        button.layer.shadowRadius = 15
+        button.layer.shadowOpacity = 0.3
         button.layer.cornerRadius = 50
         button.clipsToBounds = true
         
@@ -154,9 +156,9 @@ class PauseRunningHalfModalViewController: UIViewController {
     // MARK: - @objc
     @objc private func restartRunning() {
         print("TappedButton - restartRunning()")
-        self.runningTimer.restart()
-        self.dismiss(animated: true) {
-            self.delegate?.didDismissPauseRunningHalfModalViewController()
+        DispatchQueue.main.async {
+            self.delegate?.pauseRunningHalfModalViewControllerDidRequestResume(self)
+            self.dismiss(animated: true, completion: nil)
         }
         
         
@@ -167,46 +169,61 @@ class PauseRunningHalfModalViewController: UIViewController {
         // 운동 기록 정보 출력
         print("TappedButton - stopRunning()")
         print("stop Time: \(self.time), Distance: \(self.distance), Pace: \(self.pace), routeImage: String(\(self.routeImage))")
-        
-        // 타이머와 위치 업데이트 중지
-        self.runningTimer.stop()
-        RunningTimerLocationManager.shared.stopUpdatingLocation()
-        
         // 운동 완료 알림창 표시
-        presentCompletionAlert()
+        DispatchQueue.main.async {
+            self.presentCompletionAlert()
+        }
     }
     
     func presentCompletionAlert() {
-        let alert = UIAlertController(title: "운동을 완료하시겠습니까?", message: "근처 편의점에서 물 한잔 어떻신가요?", preferredStyle: .alert)
-        
-        alert.addAction(UIAlertAction(title: "운동 완료하기", style: .default, handler: { _ in
-            let locations = RunningTimerLocationManager.shared.getLocations()
+        // 거리가 0이면 삭제 여부를 묻는 알림창을 표시
+        if self.distance == 0 {
+            let deleteAlert = UIAlertController(title: "기록을 삭제할까요?", message: "운동 거리가 0km로 기록됩니다.", preferredStyle: .alert)
             
-            // 맵 스냅샷 생성
-            MapSnapshotManager.createSnapshot(for: locations) { [weak self] image in
-                guard let self = self, let image = image, let imageData = image.pngData() else {
-                    print("Failed to create route image snapshot.")
-                    return
-                }
+            deleteAlert.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
                 
-                // 스냅샷 이미지 데이터와 함께 코어 데이터에 러닝 기록 저장
-                if let recordId = CoreDataManager.shared.createRunningRecord(time: self.time, distance: self.distance, pace: self.pace, routeImage: imageData) {
-                    print("Running record with route saved successfully. Record ID: \(recordId)")
-                } else {
-                    print("Failed to save running record with route image.")
-                }
-            }
+                self.delegate?.pauseRunningHalfModalViewControllerDidRequestReset(self)
+                let mainTabBarVC = MainTabBarViewController()
+                mainTabBarVC.modalPresentationStyle = .fullScreen
+                self.present(mainTabBarVC, animated: true)
+            }))
             
-            let mainTabBarViewController = MainTabBarViewController()
-            mainTabBarViewController.modalPresentationStyle = .fullScreen
-            self.present(mainTabBarViewController, animated: true)
-        }))
-        
-        alert.addAction(UIAlertAction(title: "취소하기", style: .destructive, handler: nil))
-        
-        self.present(alert, animated: true, completion: nil)
+            deleteAlert.addAction(UIAlertAction(title: "취소하기", style: .cancel))
+            
+            self.present(deleteAlert, animated: true, completion: nil)
+        } else {
+            let alert = UIAlertController(title: "운동을 완료하시겠습니까?", message: "근처 편의점에서 물 한잔 어떻신가요?", preferredStyle: .alert)
+            
+            alert.addAction(UIAlertAction(title: "운동 완료하기", style: .default, handler: { _ in
+                let locations = RunningTimerLocationManager.shared.getLocations()
+                
+                // 맵 스냅샷 생성
+                MapSnapshotManager.createSnapshot(for: locations) { [weak self] image in
+                    guard let self = self, let image = image, let imageData = image.pngData() else {
+                        print("Failed to create route image snapshot.")
+                        return
+                    }
+                    
+                    // 스냅샷 이미지 데이터와 함께 코어 데이터에 러닝 기록 저장
+                    if let recordId = CoreDataManager.shared.createRunningRecord(time: self.time, distance: self.distance, pace: self.pace, routeImage: imageData) {
+                        print("Running record with route saved successfully. Record ID: \(recordId)")
+                    } else {
+                        print("Failed to save running record with route image.")
+                    }
+                }
+                DispatchQueue.main.async {
+                    self.delegate?.pauseRunningHalfModalViewControllerDidRequestStop(self)
+                    let mainTabBarViewController = MainTabBarViewController()
+                    mainTabBarViewController.modalPresentationStyle = .fullScreen
+                    self.present(mainTabBarViewController, animated: true)
+                }
+            }))
+            
+            alert.addAction(UIAlertAction(title: "취소하기", style: .destructive, handler: nil))
+            
+            self.present(alert, animated: true, completion: nil)
+        }
     }
-    
 }
 
 extension PauseRunningHalfModalViewController {

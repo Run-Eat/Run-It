@@ -20,12 +20,19 @@ class RunningTimerLocationManager: NSObject, CLLocationManagerDelegate {
     var startTime: Date?
     var pace: Double = 0
     var updateLocationClosure: ((CLLocation) -> Void)?
+    var state: LocationManagerState = .stopped
     
+    enum LocationManagerState {
+        case started
+        case stopped
+        case paused
+    }
     override init() {
         super.init()
         locationManager.delegate = self
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.distanceFilter = 10
         locationManager.showsBackgroundLocationIndicator = true
         locationManager.pausesLocationUpdatesAutomatically = false
     }
@@ -37,13 +44,29 @@ class RunningTimerLocationManager: NSObject, CLLocationManagerDelegate {
     
     // Call this method to start updating the location
     func startUpdatingLocation() {
+        guard state != .started else { return }
         locationManager.startUpdatingLocation()
+        state = .started
     }
     
     // Call this method to stop updating the location
     func stopUpdatingLocation() {
         locationManager.stopUpdatingLocation()
+        state = .stopped
     }
+    
+    func pauseLocationUpdates() {
+        guard state == .started else { return }
+        locationManager.stopUpdatingLocation()
+        state = .paused
+    }
+
+    func resumeLocationUpdates() {
+        guard state == .paused else { return }
+        locationManager.startUpdatingLocation()
+        state = .started
+    }
+
     
     //위치서비스의 권한 상태가 변경될 때 호출되는 매서드
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
@@ -74,8 +97,7 @@ class RunningTimerLocationManager: NSObject, CLLocationManagerDelegate {
     
     // CLLocationManagerDelegate 메서드
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.last else { return }
-
+        guard let location = locations.last, state == .started else { return }
         // 현재 위치 정보 출력
         print("Current location: \(location.coordinate.latitude), \(location.coordinate.longitude)")
         print("Locations array count: \(self.locations.count)")

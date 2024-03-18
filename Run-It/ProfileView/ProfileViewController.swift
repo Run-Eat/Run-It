@@ -188,28 +188,23 @@ class ProfileViewController: UIViewController
     {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        let uuidToDelete = UUID()
-        
-        CoreDataManager.shared.deleteRunningRecord(withId: uuidToDelete) { success in
-            if success {
-                print("Record successfully deleted.")
-            } else {
-                print("Failed to delete the record.")
-            }
-        }
-        loadRunningRecords()
         view.addSubview(scrollView)
-        scrollView.contentSize = CGSize(width: view.frame.width, height: 2000)
         addScrollView()
         setLayout()
         setupProfileUI()
-        
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        let uiViewHeight = CGFloat(runningRecords.count) * 170.0 + 16.0
+        let contentHeight = 671.33 + 44 + 8 + uiViewHeight
+        scrollView.contentSize = CGSize(width: view.frame.width, height: contentHeight)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        tableView.reloadData()
-        updateTableViewHeight()
+        loadRunningRecords()
         displayProfileImage()
         statisticsManager(true)
         
@@ -268,7 +263,6 @@ class ProfileViewController: UIViewController
         scrollView.snp.makeConstraints
         {   make in
             make.edges.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
         
         noticeButton.snp.makeConstraints
@@ -803,22 +797,22 @@ extension ProfileViewController {
             make.top.equalTo(userRecord.snp.bottom).offset(16)
             make.leading.equalTo(view.snp.leading)
             make.trailing.equalTo(view.snp.trailing)
-            make.height.equalTo(runningRecords.count * 120 + 60)
+            make.height.equalTo(runningRecords.count * 170 + 16)
         }
         
         tableView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(8)
             make.leading.equalToSuperview().offset(16)
             make.trailing.equalToSuperview().offset(-16)
-            self.tableViewHeightConstraint = make.height.equalTo(runningRecords.count * 120).constraint
+            self.tableViewHeightConstraint = make.height.equalTo(runningRecords.count * 170).constraint
         }
     }
     
     func updateTableViewHeight() {
         tableView.layoutIfNeeded()
-        tableViewHeightConstraint?.update(offset: runningRecords.count * 120)
+        tableViewHeightConstraint?.update(offset: runningRecords.count * 170)
         uiView.snp.updateConstraints { make in
-            make.height.equalTo(runningRecords.count * 120 + 60)
+            make.height.equalTo(runningRecords.count * 170 + 16)
         }
         view.layoutIfNeeded()
     }
@@ -857,7 +851,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 120
+        return 170
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

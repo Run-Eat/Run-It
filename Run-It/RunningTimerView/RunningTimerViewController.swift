@@ -9,7 +9,7 @@ import UIKit
 
 import SnapKit
 
-class RunningTimerViewController: UIViewController, PauseRunningHalfModalViewControllerDelegate {
+class RunningTimerViewController: UIViewController {
 
     let runningTimer = RunningTimer()
     //MARK: - UI properties
@@ -108,7 +108,9 @@ class RunningTimerViewController: UIViewController, PauseRunningHalfModalViewCon
         if let image = UIImage(systemName: "pause.fill", withConfiguration: configuration) {
             button.setImage(image, for: .normal)
         }
-        button.backgroundColor = .systemIndigo
+        button.backgroundColor = .systemBlue
+        button.layer.shadowRadius = 15
+        button.layer.shadowOpacity = 0.3
         button.layer.cornerRadius = 50
         button.clipsToBounds = true
         
@@ -135,9 +137,6 @@ class RunningTimerViewController: UIViewController, PauseRunningHalfModalViewCon
                 self?.updateTimerUI()
             }
         }
-//        // 위치 업데이트 시작
-        RunningTimerLocationManager.shared.startUpdatingLocation()
-
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -184,16 +183,16 @@ extension RunningTimerViewController {
         let seconds = (time % 3600) % 60
         timeNumberLabel.text = String(format: "%01d:%02d:%02d", hours, minutes, seconds)
         
-        if self.distance >= 0.05 {
+        if distance > 0 {
             let paceMinutes = Int(pace) / 60
             let paceSeconds = Int(pace) % 60
             paceNumberLabel.text = String(format: "%02d:%02d", paceMinutes, paceSeconds)
+            distanceNumberLabel.text = String(format: "%.2f", distance / 1000)
+            print("거리: \(String(describing: distanceNumberLabel.text))")
         } else {
-            // 거리가 50m 미만일 때는 페이스를 표시하지 않음
             paceNumberLabel.text = "--:--"
+            distanceNumberLabel.text = "0.00"
         }
-        
-        distanceNumberLabel.text = String(format: "%.2f", distance / 1000)
     }
 
     // MARK: - setupUI
@@ -318,4 +317,18 @@ extension RunningTimerViewController {
     }
     
 
+}
+extension RunningTimerViewController: PauseRunningHalfModalViewControllerDelegate {
+    func pauseRunningHalfModalViewControllerDidRequestResume(_ controller: PauseRunningHalfModalViewController) {
+        runningTimer.restart()
+    }
+
+    func pauseRunningHalfModalViewControllerDidRequestStop(_ controller: PauseRunningHalfModalViewController) {
+        runningTimer.stop()
+        runningTimer.reset()
+    }
+    
+    func pauseRunningHalfModalViewControllerDidRequestReset(_ controller: PauseRunningHalfModalViewController) {
+        runningTimer.reset()
+    }
 }
