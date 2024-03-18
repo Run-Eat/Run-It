@@ -22,6 +22,11 @@ class CustomAnnotation: MKPointAnnotation {
     let url: String = ""
 }
 
+enum PresentView {
+    case inProgress
+    case completed
+}
+
 class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRecognizerDelegate {
     weak var parentVC: RunningTimerToMapViewPageController?
     
@@ -154,7 +159,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = .systemIndigo
         config.cornerStyle = .capsule
-        config.image = UIImage(systemName: "storefront")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 18, weight: .medium))
+        config.image = UIImage(systemName: "waterbottle")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 18, weight: .medium))
         button.configuration = config
         button.layer.shadowRadius = 10
         button.layer.shadowOpacity = 0.3
@@ -163,8 +168,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         return button
     }()
     
-    // cafeButton 는 추후 구현 예정
-    lazy var cafeButton: UIButton = {
+    lazy var coffeeAndBakeryFranchisesButton: UIButton = {
         let button = UIButton()
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = .systemIndigo
@@ -174,7 +178,21 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         button.layer.shadowRadius = 10
         button.layer.shadowOpacity = 0.3
         button.alpha = 0.0
-        button.addTarget(self, action: #selector(presentCafeAnnotations), for: .touchUpInside)
+        button.addTarget(self, action: #selector(presentcoffeeAndBakeryFranchisesAnnotations), for: .touchUpInside)
+        return button
+    }()
+    
+    lazy var healthyEatingOptionsButton: UIButton = {
+        let button = UIButton()
+        var config = UIButton.Configuration.filled()
+        config.baseBackgroundColor = .systemIndigo
+        config.cornerStyle = .capsule
+        config.image = UIImage(systemName: "storefront")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 18, weight: .medium))
+        button.configuration = config
+        button.layer.shadowRadius = 10
+        button.layer.shadowOpacity = 0.3
+        button.alpha = 0.0
+        button.addTarget(self, action: #selector(presenthealthyEatingOptionsAnnotations), for: .touchUpInside)
         return button
     }()
     
@@ -236,6 +254,15 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     
     var storeVC: StoreViewController?
     
+    var searchResultsCache: [String: [MKMapItem]] = [:]
+    
+    var presentationState = PresentView.completed
+    
+    var loadingIndicator: UIActivityIndicatorView?
+    
+    // Debounce 프로퍼티 추가
+    var searchDebounceTimer: Timer?
+    
     
     //MARK: - LifeCycle
     override func viewDidLoad() {
@@ -278,7 +305,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         //        RunningTimerLocationManager.shared.getLocationUsagePermission()  //viewDidLoad 되었을 때 권한요청을 할 것인지, 현재 위치를 눌렀을 때 권한요청을 할 것인지
         mapView.showsUserLocation = true
         mapView.setUserTrackingMode(.followWithHeading, animated: true)
-        bindViewModel()
+        weatherDatabindViewModel()
         print("확인")
     }
     
@@ -291,35 +318,87 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
 //        searchConvenienceStores() // 모달뷰로 변경
     }
     
+    // 유저에게 편의전 옵션을 주고, 편의점 옵션을 선택해서 하프모달로 노출
     @objc func presentConvenienceStoreAnnotations() {
-        getAnnotations(forQuery: "GS25", category: "GS25")
-        searchAndPresentStores(with: "GS25")
+
+        let convenienceStores = ["GS25", "CU", "세븐일레븐", "이마트24", "미니스톱"]
+        let category = "편의점"
+
+        for convenienceStore in convenienceStores {
+            getAnnotations(forQuery: convenienceStore, category: category)
+            //            searchAndPresentStores(with: convenienceStore)
+        }
     }
 
-    @objc func presentCafeAnnotations() {
-        getAnnotations(forQuery: "Cafe", category: "Cafe")
-        searchAndPresentStores(with: "Cafe")
-    }
+    @objc func presentcoffeeAndBakeryFranchisesAnnotations() {
+        
+//        let coffeeAndBakeryFranchises = ["Cafe", "coffee", "투썸플레이스", "컴포즈커피",
+//                                         "스타벅스", "파리바게뜨", "뚜레쥬르", "할리스커피",
+//                                         "이디야커피", "메가커피", "브레드톡"]
+        
+        let coffeeAndBakeryFranchises = ["Cafe", "coffee"]
+        let category = "카페/베이커리"
+        // currentLocation이 nil인 경우를 처리
 
+        
+        for coffeeAndBakeryFranchise in coffeeAndBakeryFranchises {
+            getAnnotations(forQuery: coffeeAndBakeryFranchise, category: category)
+            //            searchAndPresentStores(with: coffeeAndBakeryFranchise)
+        }
+        
+    }
+    
+    @objc func presenthealthyEatingOptionsAnnotations() {
+        
+        let healthyEatingOptions = ["샐러디", "subway"]
+        let category = "건강식"
+        
+        for healthyEatingOption in healthyEatingOptions {
+            getAnnotations(forQuery: healthyEatingOption, category: category)
+//            DispatchQueue.main.async {
+//                                self.searchAndPresentStores(with: healthyEatingOption)
+//            }
+        }
+    }
+    
 }
+
 
 //MARK: - Annotation Setup
 extension RunningMapViewController {
     
     func getAnnotations(forQuery query: String, category: String) {
-        // 모든 어노테이션 제거
+        closeModal()
+        //TODO: 기존의 같은 카테고리의 어노테이션 제거
         let allAnnotations = self.mapView.annotations
-        self.mapView.removeAnnotations(allAnnotations)
+        for annotation in allAnnotations {
+            if let customAnnotation = annotation as? CustomAnnotation, customAnnotation.category != category {
+                self.mapView.removeAnnotation(annotation)
+            }
+        }
+        // mapView.overlays 배열에서 currentCircle를 제외하고 모두 제거
+        let overlaysToRemove = mapView.overlays.filter { $0 !== currentCircle }
+        mapView.removeOverlays(overlaysToRemove)
         
+        
+//        if let cachedResults = searchResultsCache[query] {
+//            //TODO: 캐시된 결과가 있으면 해당 결과를 사용하여 어노테이션을 추가
+//            addAnnotationsToMap(mapItems: cachedResults, category: category)
+//            return
+//        }
+        
+        //TODO: 사용자의 현재 위치를 가져오기
         guard let currentLocation = self.mapView.userLocation.location else {
             print("Failed to get user location")
             return
         }
         
+        //TODO: MKLocalSearch.Request() 활용하여 자연어로 파라미터로 주입된 query를 검색을 정의하고, 지역을 사용자 현재 위치 기준 500m로 설정
         let searchRequest = MKLocalSearch.Request()
         searchRequest.naturalLanguageQuery = query
         searchRequest.region = MKCoordinateRegion(center: currentLocation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500)
         
+        //MKLocalSearch를 활용, 검색하여 mapItems을 응답값으로 호출
         let search = MKLocalSearch(request: searchRequest)
         search.start { [weak self] (response, error) in
             guard let response = response else {
@@ -327,23 +406,50 @@ extension RunningMapViewController {
                 return
             }
             
-            search.start { [weak self] (response, error) in
-                guard let response = response else {
-                    print("Search error: \(error?.localizedDescription ?? "Unknown error")")
-                    return
-                }
+            // 50미터 이내의 결과만 필터링
+            let filteredMapItems = response.mapItems.filter { mapItem in
+                let distance = currentLocation.distance(from: mapItem.placemark.location!)
+                return distance <= 150
+            }
+            
+//            검색 결과를 캐시에 저장
+            self?.searchResultsCache[query] = filteredMapItems
+            
+            // 검색된 mapItems의 어노테이션을 추가
+            self?.addAnnotationsToMap(mapItems: response.mapItems, category: category)
+        }
+    }
+    
+    private func addAnnotationsToMap(mapItems: [MKMapItem], category: String) {
+        DispatchQueue.main.async {
+            // 현재 맵에 있는 모든 어노테이션을 호출
+            let existingAnnotations = self.mapView.annotations.compactMap { $0 as? CustomAnnotation }
+            
+            // 새로운 어노테이션을 추가하기 전에, 이미 존재하는 어노테이션인지 확인
+            for item in mapItems {
+                let newItemCoordinate = item.placemark.coordinate
                 
-                for item in response.mapItems {
+                // 현재 맵에 동일한 위치의 어노테이션이 있는지 확인
+                let isExisting = existingAnnotations.contains(where: { existingAnnotation in
+                    existingAnnotation.coordinate.latitude == newItemCoordinate.latitude && existingAnnotation.coordinate.longitude == newItemCoordinate.longitude
+                })
+                
+                // 동일한 위치의 어노테이션이 없을 경우에만 새 어노테이션을 추가
+                if !isExisting {
                     let annotation = CustomAnnotation()
-                    annotation.coordinate = item.placemark.coordinate
+                    annotation.coordinate = newItemCoordinate
                     annotation.title = item.name
                     annotation.mapItem = item
                     annotation.category = category
-                    DispatchQueue.main.async {
-                        self?.mapView.addAnnotation(annotation)
-                    }
+                    self.mapView.addAnnotation(annotation)
                 }
             }
+        }
+    }
+    
+    func closeModal() {
+        if let currentModal = self.presentedViewController {
+            currentModal.dismiss(animated: true)
         }
     }
     
@@ -469,7 +575,7 @@ extension RunningMapViewController: CLLocationManagerDelegate {
                 addCustomPins(userLocation: userLocation, destination: destination)
             }
         }
-        bindViewModel()
+        weatherDatabindViewModel()
     }
     
     // 사용자의 현재 위치를 기반으로 경로를 계산하고 지도에 표시하는 메서드
@@ -702,10 +808,16 @@ extension RunningMapViewController {
             UIView.animate(withDuration: 0.3, delay: 0.2, usingSpringWithDamping: 0.55, initialSpringVelocity: 0.3, options: [.curveEaseInOut], animations: { [weak self] in
                 guard let self = self else { return }
                 self.convenienceStoreButton.layer.transform = CATransform3DIdentity
-                self.cafeButton.layer.transform = CATransform3DIdentity
                 self.convenienceStoreButton.alpha = 1.0
-                self.cafeButton.alpha = 1.0
+                
+                self.coffeeAndBakeryFranchisesButton.layer.transform = CATransform3DIdentity
+                self.coffeeAndBakeryFranchisesButton.alpha = 1.0
+                
+                self.healthyEatingOptionsButton.layer.transform = CATransform3DIdentity
+                self.healthyEatingOptionsButton.alpha = 1.0
+                
             })
+            
         } else {
             if let currentModal = self.presentedViewController {
                 currentModal.dismiss(animated: true)
@@ -714,9 +826,15 @@ extension RunningMapViewController {
             UIView.animate(withDuration: 0.15, delay: 0.2, options: []) { [weak self] in
                 guard let self = self else { return }
                 self.convenienceStoreButton.layer.transform = CATransform3DMakeScale(0.4, 0.4, 0.1)
-                self.cafeButton.layer.transform = CATransform3DMakeScale(0.4, 0.4, 0.1)
                 self.convenienceStoreButton.alpha = 0.0
-                self.cafeButton.alpha = 0.0
+                
+                self.coffeeAndBakeryFranchisesButton.layer.transform = CATransform3DMakeScale(0.4, 0.4, 0.1)
+                self.coffeeAndBakeryFranchisesButton.alpha = 0.0
+                
+                self.healthyEatingOptionsButton.layer.transform = CATransform3DMakeScale(0.4, 0.4, 0.1)
+                self.healthyEatingOptionsButton.alpha = 0.0
+                
+                
                 removeAnnotationsFromMap() // 지도에 표시된 MapItem을 삭제(사용자 위치 제외)
                 
             }
@@ -751,7 +869,8 @@ extension RunningMapViewController {
         view.addSubview(currentLocationButton)
         view.addSubview(storeListButton)
         view.addSubview(convenienceStoreButton)
-        view.addSubview(cafeButton)
+        view.addSubview(coffeeAndBakeryFranchisesButton)
+        view.addSubview(healthyEatingOptionsButton)
         view.addSubview(weatherContainer)
         weatherContainer.addSubview(temperatureLabel)
         weatherContainer.addSubview(humidityLabel)
@@ -829,8 +948,13 @@ extension RunningMapViewController {
             $0.centerX.equalTo(storeListButton)
         }
         
-        cafeButton.snp.makeConstraints {
+        coffeeAndBakeryFranchisesButton.snp.makeConstraints {
             $0.top.equalTo(convenienceStoreButton.snp.bottom).offset(20)
+            $0.centerX.equalTo(storeListButton)
+        }
+        
+        healthyEatingOptionsButton.snp.makeConstraints {
+            $0.top.equalTo(coffeeAndBakeryFranchisesButton.snp.bottom).offset(20)
             $0.centerX.equalTo(storeListButton)
         }
     }
@@ -848,7 +972,7 @@ extension RunningMapViewController: StoreViewControllerDelegate {
 //MARK: - Weather Setup
 extension RunningMapViewController {
 
-    func bindViewModel() {
+    func weatherDatabindViewModel() {
         // 현재 위치 정보가 있는지 확인
         if let location = self.currentLocation {
             print("현재 위치: 위도 \(location.coordinate.latitude), 경도 \(location.coordinate.longitude)")

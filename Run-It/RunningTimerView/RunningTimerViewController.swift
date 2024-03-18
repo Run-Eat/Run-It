@@ -184,8 +184,8 @@ extension RunningTimerViewController {
         timeNumberLabel.text = String(format: "%01d:%02d:%02d", hours, minutes, seconds)
         
         if distance > 0 {
-            let paceMinutes = Int(pace) / 60
-            let paceSeconds = Int(pace) % 60
+            let paceMinutes = Int(round(pace)) / 60
+            let paceSeconds = Int(round(pace)) % 60
             paceNumberLabel.text = String(format: "%02d:%02d", paceMinutes, paceSeconds)
             distanceNumberLabel.text = String(format: "%.2f", distance / 1000)
             print("거리: \(String(describing: distanceNumberLabel.text))")

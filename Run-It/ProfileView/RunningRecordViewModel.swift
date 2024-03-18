@@ -30,9 +30,10 @@ class RunningRecordViewModel {
         self.labelText = runningRecord.label ?? dayFormatter.string(from: runningRecord.date ?? Date())
         self.distanceText = String(format: "%.2f", runningRecord.distance / 1000)
         self.timeText = RunningRecordViewModel.timeFormatter.string(from: TimeInterval(runningRecord.time)) ?? "N/A"
-        if runningRecord.pace > 0 {
-            let paceMinutes = Int(runningRecord.pace) / 60
-            let paceSeconds = Int(runningRecord.pace) % 60
+        if runningRecord.pace.isFinite {
+            let roundedPace = Int(round(runningRecord.pace))
+            let paceMinutes = roundedPace / 60
+            let paceSeconds = roundedPace % 60
             self.paceText = String(format: "%02d:%02d", paceMinutes, paceSeconds)
         } else {
             self.paceText = "N/A"
