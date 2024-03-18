@@ -5,15 +5,15 @@
 //  Created by Jason Yang on 2/23/24.
 //
 protocol PauseRunningHalfModalViewControllerDelegate: AnyObject {
-    func didDismissPauseRunningHalfModalViewController()
+    func pauseRunningHalfModalViewControllerDidRequestResume(_ controller: PauseRunningHalfModalViewController)
+    func pauseRunningHalfModalViewControllerDidRequestStop(_ controller: PauseRunningHalfModalViewController)
+    func pauseRunningHalfModalViewControllerDidRequestReset(_ controller: PauseRunningHalfModalViewController)
 }
 
 import UIKit
 import CoreLocation
 
 class PauseRunningHalfModalViewController: UIViewController {
-    
-    let runningTimer = RunningTimer()
     
     weak var delegate: PauseRunningHalfModalViewControllerDelegate?
     //MARK: - UI properties
@@ -156,9 +156,9 @@ class PauseRunningHalfModalViewController: UIViewController {
     // MARK: - @objc
     @objc private func restartRunning() {
         print("TappedButton - restartRunning()")
-        self.runningTimer.restart()
-        self.dismiss(animated: true) {
-            self.delegate?.didDismissPauseRunningHalfModalViewController()
+        DispatchQueue.main.async {
+            self.delegate?.pauseRunningHalfModalViewControllerDidRequestResume(self)
+            self.dismiss(animated: true, completion: nil)
         }
         
         
@@ -169,13 +169,10 @@ class PauseRunningHalfModalViewController: UIViewController {
         // 운동 기록 정보 출력
         print("TappedButton - stopRunning()")
         print("stop Time: \(self.time), Distance: \(self.distance), Pace: \(self.pace), routeImage: String(\(self.routeImage))")
-        
-        // 타이머와 위치 업데이트 중지
-        self.runningTimer.stop()
-        RunningTimerLocationManager.shared.stopUpdatingLocation()
-        
         // 운동 완료 알림창 표시
-        presentCompletionAlert()
+        DispatchQueue.main.async {
+            self.presentCompletionAlert()
+        }
     }
     
     func presentCompletionAlert() {
@@ -184,7 +181,8 @@ class PauseRunningHalfModalViewController: UIViewController {
             let deleteAlert = UIAlertController(title: "기록을 삭제할까요?", message: "운동 거리가 0km로 기록됩니다.", preferredStyle: .alert)
             
             deleteAlert.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-
+                
+                self.delegate?.pauseRunningHalfModalViewControllerDidRequestReset(self)
                 let mainTabBarVC = MainTabBarViewController()
                 mainTabBarVC.modalPresentationStyle = .fullScreen
                 self.present(mainTabBarVC, animated: true)
@@ -213,10 +211,12 @@ class PauseRunningHalfModalViewController: UIViewController {
                         print("Failed to save running record with route image.")
                     }
                 }
-                
-                let mainTabBarViewController = MainTabBarViewController()
-                mainTabBarViewController.modalPresentationStyle = .fullScreen
-                self.present(mainTabBarViewController, animated: true)
+                DispatchQueue.main.async {
+                    self.delegate?.pauseRunningHalfModalViewControllerDidRequestStop(self)
+                    let mainTabBarViewController = MainTabBarViewController()
+                    mainTabBarViewController.modalPresentationStyle = .fullScreen
+                    self.present(mainTabBarViewController, animated: true)
+                }
             }))
             
             alert.addAction(UIAlertAction(title: "취소하기", style: .destructive, handler: nil))
