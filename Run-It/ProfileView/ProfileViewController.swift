@@ -20,7 +20,7 @@ class ProfileViewController: UIViewController
     var persistentContainer: NSPersistentContainer? {
         (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer
     }
-    
+    private var stackView: UIStackView!
     // 총 뛴 거리
     var totalRunningDistance: Double = 0
 
@@ -132,7 +132,7 @@ class ProfileViewController: UIViewController
         return lineView
     }()
     
-    lazy var totalRunningDistanceLabel = createLabel("", 15)
+    lazy var totalRunningDistanceLabel = createLabel("", 16)
     
     lazy var weeklyButton: UIButton =
     {
@@ -156,20 +156,21 @@ class ProfileViewController: UIViewController
         return button
     }()
     
-    lazy var thisWeek_MonthLabel = createLabel("이번 주", 15)
-    lazy var lastWeek_MonthLabel = createLabel("지난 주", 15)
+    lazy var nonLabel = createLabel("구분", 16)
+    lazy var thisWeek_MonthLabel = createLabel("이번 주", 16)
+    lazy var lastWeek_MonthLabel = createLabel("지난 주", 16)
     
-    lazy var distanceTextLabel = createLabel("거리(km)", 17)
-    lazy var thisWeek_MonthDistanceLabel = createLabel("", 17)
-    lazy var lastWeek_MonthDistanceLabel = createLabel("", 17)
+    lazy var distanceTextLabel = createLabel("거리(km)", 18)
+    lazy var thisWeek_MonthDistanceLabel = createLabel("", 18)
+    lazy var lastWeek_MonthDistanceLabel = createLabel("", 18)
     
-    lazy var paceAveragTextLabel = createLabel("평균 페이스", 17)
-    lazy var thisWeek_MonthPaceLabel = createLabel("", 17)
-    lazy var lastWeek_MonthPaceLabel = createLabel("", 17)
+    lazy var paceAveragTextLabel = createLabel("평균 페이스", 18)
+    lazy var thisWeek_MonthPaceLabel = createLabel("", 18)
+    lazy var lastWeek_MonthPaceLabel = createLabel("", 18)
     
-    lazy var runningCountTextLabel = createLabel("활동", 17)
-    lazy var thisWeek_MonthRunningCountLabel = createLabel("", 17)
-    lazy var lastWeek_MonthRunningCountLabel = createLabel("", 17)
+    lazy var runningCountTextLabel = createLabel("활동", 18)
+    lazy var thisWeek_MonthRunningCountLabel = createLabel("", 18)
+    lazy var lastWeek_MonthRunningCountLabel = createLabel("", 18)
     
     lazy var resetButton: UIButton =
     {
@@ -192,6 +193,7 @@ class ProfileViewController: UIViewController
         addScrollView()
         setLayout()
         setupProfileUI()
+        setupRecordStackView()
     }
     
     override func viewDidLayoutSubviews() {
@@ -240,17 +242,6 @@ class ProfileViewController: UIViewController
         scrollView.addSubview(totalRunningDistanceLabel)
         scrollView.addSubview(weeklyButton)
         scrollView.addSubview(monthlyButton)
-        scrollView.addSubview(thisWeek_MonthLabel)
-        scrollView.addSubview(lastWeek_MonthLabel)
-        scrollView.addSubview(distanceTextLabel)
-        scrollView.addSubview(thisWeek_MonthDistanceLabel)
-        scrollView.addSubview(lastWeek_MonthDistanceLabel)
-        scrollView.addSubview(paceAveragTextLabel)
-        scrollView.addSubview(thisWeek_MonthPaceLabel)
-        scrollView.addSubview(lastWeek_MonthPaceLabel)
-        scrollView.addSubview(runningCountTextLabel)
-        scrollView.addSubview(thisWeek_MonthRunningCountLabel)
-        scrollView.addSubview(lastWeek_MonthRunningCountLabel)
         scrollView.addSubview(userRecord)
         scrollView.addSubview(uiView)
         scrollView.addSubview(resetButton)
@@ -354,77 +345,59 @@ class ProfileViewController: UIViewController
             make.top.equalTo(weeklyButton.snp.top).offset(0)
             make.trailing.equalTo(weeklyButton.snp.trailing).offset(150)
         }
-        
-        thisWeek_MonthLabel.snp.makeConstraints
-        {   make in
-            make.top.equalTo(weeklyButton.snp.bottom).offset(25)
-            make.centerX.equalTo(view.snp.centerX)
-        }
-        
-        lastWeek_MonthLabel.snp.makeConstraints
-        {   make in
-            make.top.equalTo(weeklyButton.snp.bottom).offset(25)
-            make.leading.equalTo(thisWeek_MonthLabel.snp.leading).offset(120)
-        }
-        
-        distanceTextLabel.snp.makeConstraints
-        {   make in
-            make.top.equalTo(thisWeek_MonthLabel.snp.bottom).offset(30)
-            make.leading.equalTo(view.snp.leading).inset(20)
-        }
-        
-        thisWeek_MonthDistanceLabel.snp.makeConstraints
-        {   make in
-            make.top.equalTo(thisWeek_MonthLabel.snp.bottom).offset(30)
-            make.centerX.equalTo(view.snp.centerX)
-        }
-        
-        lastWeek_MonthDistanceLabel.snp.makeConstraints
-        {   make in
-            make.top.equalTo(thisWeek_MonthLabel.snp.bottom).offset(30)
-            make.leading.equalTo(thisWeek_MonthLabel.snp.leading).offset(120)
-        }
-        
-        paceAveragTextLabel.snp.makeConstraints
-        {   make in
-            make.top.equalTo(distanceTextLabel.snp.bottom).offset(30)
-            make.leading.equalTo(view.snp.leading).inset(20)
-        }
-        
-        thisWeek_MonthPaceLabel.snp.makeConstraints
-        {   make in
-            make.top.equalTo(thisWeek_MonthDistanceLabel.snp.bottom).offset(30)
-            make.centerX.equalTo(view.snp.centerX)
-        }
-        
-        lastWeek_MonthPaceLabel.snp.makeConstraints
-        {   make in
-            make.top.equalTo(lastWeek_MonthDistanceLabel.snp.bottom).offset(30)
-            make.leading.equalTo(thisWeek_MonthPaceLabel.snp.leading).offset(120)
-        }
-        
-        runningCountTextLabel.snp.makeConstraints
-        {   make in
-            make.top.equalTo(paceAveragTextLabel.snp.bottom).offset(30)
-            make.leading.equalTo(view.snp.leading).inset(20)
-        }
-        
-        thisWeek_MonthRunningCountLabel.snp.makeConstraints
-        {   make in
-            make.top.equalTo(thisWeek_MonthPaceLabel.snp.bottom).offset(30)
-            make.centerX.equalTo(view.snp.centerX)
-        }
-        
-        lastWeek_MonthRunningCountLabel.snp.makeConstraints
-        {   make in
-            make.top.equalTo(thisWeek_MonthPaceLabel.snp.bottom).offset(30)
-            make.leading.equalTo(thisWeek_MonthRunningCountLabel.snp.leading).offset(120)
-        }
-        
+
         resetButton.snp.makeConstraints
         {   make in
             make.centerY.equalTo(pointImage.snp.centerY)
             make.leading.equalTo(view.snp.leading).inset(30)
+        }
+    }
+    
+    func setupRecordStackView() {
+        let labelInfoStackView = UIStackView(arrangedSubviews: [nonLabel,distanceTextLabel,paceAveragTextLabel,runningCountTextLabel])
+        labelInfoStackView.axis = .vertical
+        labelInfoStackView.spacing = 20.0
+        labelInfoStackView.distribution = .fillEqually
+        
+        let thisWeekInfoStackView = UIStackView(arrangedSubviews: [thisWeek_MonthLabel,thisWeek_MonthDistanceLabel,thisWeek_MonthPaceLabel,thisWeek_MonthRunningCountLabel])
+        thisWeekInfoStackView.axis = .vertical
+        thisWeekInfoStackView.spacing = 20.0
+        thisWeekInfoStackView.alignment = .trailing
+        
+        let lastWeekInfoStackView = UIStackView(arrangedSubviews: [lastWeek_MonthLabel,lastWeek_MonthDistanceLabel,lastWeek_MonthPaceLabel,lastWeek_MonthRunningCountLabel])
+        lastWeekInfoStackView.axis = .vertical
+        lastWeekInfoStackView.spacing = 22.0
+        lastWeekInfoStackView.alignment = .trailing
+        
+        stackView = UIStackView(arrangedSubviews: [labelInfoStackView, thisWeekInfoStackView,lastWeekInfoStackView])
+        stackView.axis = .horizontal
+        stackView.distribution = .fillEqually
+        stackView.spacing = 40.0
+        
+        scrollView.addSubview(stackView)
+        
+        stackView.snp.makeConstraints { make in
+            make.top.equalTo(weeklyButton.snp.bottom).offset(25)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
+        }
+        
+        userRecord.snp.makeConstraints { make in
+            make.top.equalTo(stackView.snp.bottom).offset(20)
+            make.leading.equalToSuperview().offset(20)
+        }
+        uiView.snp.makeConstraints { make in
+            make.top.equalTo(userRecord.snp.bottom).offset(16)
+            make.leading.equalTo(view.snp.leading)
+            make.trailing.equalTo(view.snp.trailing)
+            make.height.equalTo(runningRecords.count * 170 + 16)
+        }
+        
+        tableView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(8)
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().offset(-16)
+            self.tableViewHeightConstraint = make.height.equalTo(runningRecords.count * 170).constraint
         }
     }
     
@@ -785,26 +758,6 @@ extension ProfileViewController {
         tableView.backgroundColor = UIColor.systemGray6
         tableView.isScrollEnabled = false
         uiView.backgroundColor = UIColor.systemGray6
-        
-        userRecord.snp.makeConstraints { make in
-            make.top.equalTo(runningCountTextLabel.snp.bottom).offset(30)
-            make.leading.equalTo(view.snp.leading).inset(20)
-            make.height.equalTo(20)
-        }
-        
-        uiView.snp.makeConstraints { make in
-            make.top.equalTo(userRecord.snp.bottom).offset(16)
-            make.leading.equalTo(view.snp.leading)
-            make.trailing.equalTo(view.snp.trailing)
-            make.height.equalTo(runningRecords.count * 170 + 16)
-        }
-        
-        tableView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(8)
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().offset(-16)
-            self.tableViewHeightConstraint = make.height.equalTo(runningRecords.count * 170).constraint
-        }
     }
     
     func updateTableViewHeight() {
