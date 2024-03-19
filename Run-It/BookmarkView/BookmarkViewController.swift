@@ -83,6 +83,21 @@ class BookmarkViewController: UIViewController, UITableViewDataSource, UITableVi
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let favorite = favoriteRecords[indexPath.row]
+        print("Selected Favorite: \(favorite)")
+        print("Latitude: \(favorite.latitude), Longitude: \(favorite.longitude)")
+        print("BookmarkViewController: didSelectRowAt 호출됨, favorite: \(String(describing: favorite.storeName))")
+
+        if let navigationController = tabBarController?.viewControllers?[0] as? UINavigationController,
+           let runningMapVC = navigationController.viewControllers.first as? RunningMapViewController {
+            
+            runningMapVC.didSelectFavorite(favorite)
+
+            tabBarController?.selectedViewController = navigationController
+        }
+    }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 130
     }
