@@ -15,6 +15,7 @@ import KakaoSDKAuth
 import KakaoSDKUser
 import SwiftJWT
 import Alamofire
+import KeychainAccess
 
 
 class ProfileViewController: UIViewController
@@ -778,7 +779,35 @@ class ProfileViewController: UIViewController
             
             let jwtString = self.makeJWT()
             
-            guard let taCode = UserDefaults.standard.string(forKey: "theAuthorizationCode") else { return }
+            // JWT 값 저장
+            let keychain = Keychain(service: "com.team5.Run-It")
+            
+            do
+            {
+                try keychain.set(jwtString, key: "secret")
+            }
+            catch
+            {
+                print("키 체인 저장 실패 - \(error)")
+            }
+            
+            // authorizationCode 불러오기
+            do {
+                if let savedSecret = try keychain.get("authorizationCode") 
+                {
+                    guard let taCode = savedSecret else { return }
+                    print("authorizationCode: \(savedSecret)")
+                }
+                else
+                {
+                    print("authorizationCode이 저장되지 않았습니다.")
+                }
+            } 
+            catch
+            {
+                print("Error fetching from Keychain: \(error)")
+            }
+            
             self.getAppleRefreshToken(code: taCode, completionHandler: { output in
             
                 let clientSecret = jwtString

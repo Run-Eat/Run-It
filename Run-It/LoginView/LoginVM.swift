@@ -13,7 +13,7 @@ import AuthenticationServices
 import CryptoKit
 import SwiftJWT
 import Alamofire
-
+import KeychainAccess
 
 
 // MARK: - Firebase 로그인
@@ -257,6 +257,17 @@ class LoginVM: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationContr
                let authCodeString = String(data: authorizationCode, encoding: .utf8),
                let tokenString = String(data: identityToken, encoding: .utf8)
             {
+                let keychain = Keychain(service: "com.team5.Run-It")
+                
+                do
+                {
+                    try keychain.set(authorizationCode, key: "authorizationCode")
+                }
+                catch
+                {
+                    print("키 체인 저장 실패 - \(error)")
+                }
+                
                 print("authorizationCode : \(authorizationCode)")
                 print("identityToken : \(identityToken)")
                 print("authCodeString : \(authCodeString)")
