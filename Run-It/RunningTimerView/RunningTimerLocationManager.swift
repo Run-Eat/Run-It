@@ -13,6 +13,7 @@ import CoreLocation
 class RunningTimerLocationManager: NSObject, CLLocationManagerDelegate {
     
     static let shared = RunningTimerLocationManager()
+    
     var locations: [CLLocation] = []
     var locationManager: CLLocationManager = CLLocationManager()
     var previousLocation: CLLocation?
@@ -21,6 +22,9 @@ class RunningTimerLocationManager: NSObject, CLLocationManagerDelegate {
     var pace: Double = 0
     var updateLocationClosure: ((CLLocation) -> Void)?
     var state: LocationManagerState = .stopped
+    
+    var lastActivityTime: Date?
+    var activityTimer: Timer?
     
     enum LocationManagerState {
         case started
@@ -35,6 +39,7 @@ class RunningTimerLocationManager: NSObject, CLLocationManagerDelegate {
         locationManager.distanceFilter = 3
         locationManager.showsBackgroundLocationIndicator = true
         locationManager.pausesLocationUpdatesAutomatically = false
+        resetActivityTimer()
     }
     
     //위치사용 권한 요청
@@ -123,6 +128,7 @@ class RunningTimerLocationManager: NSObject, CLLocationManagerDelegate {
 
         // 위치 업데이트 클로저 호출 (새 위치 데이터 전달)
         updateLocationClosure?(location)
+        resetActivityTimer()
     }
 
     func getLocations() -> [CLLocation] {
@@ -133,5 +139,21 @@ class RunningTimerLocationManager: NSObject, CLLocationManagerDelegate {
         locations.removeAll()
         totalDistance = 0.0
         previousLocation = nil
+    }
+    
+    func resetActivityTimer() {
+        // 이전 타이머가 있으면 무효화
+        activityTimer?.invalidate()
+        // 마지막 활동 시간 업데이트
+        lastActivityTime = Date()
+        // 30분 후에 checkActivity를 호출하는 타이머 설정
+        activityTimer = Timer.scheduledTimer(timeInterval: 1800, target: self, selector: #selector(checkActivity), userInfo: nil, repeats: false)
+    }
+
+    @objc func checkActivity() {
+        if let lastActivityTime = lastActivityTime, Date().timeIntervalSince(lastActivityTime) >= 3600 {
+            // 위치 추적 중단
+            locationManager.stopUpdatingLocation()
+        }
     }
 }
