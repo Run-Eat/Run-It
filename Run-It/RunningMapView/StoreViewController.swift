@@ -21,12 +21,7 @@ struct AnnotationInfo {
     var isFavorite: Bool
 }
 
-protocol StoreViewControllerDelegate: AnyObject {
-    func didCloseStoreViewController()
-}
-
 class StoreViewController: UIViewController {
-    weak var delegate: StoreViewControllerDelegate?
     
     
     var RecommandatedLocation: UILabel = {
@@ -53,7 +48,6 @@ class StoreViewController: UIViewController {
         setupStoreListUI()
         tableView.reloadData()
         view.isUserInteractionEnabled = true
-//        setupCloseButton()
         setGesture()
     }
     private func setGesture() {
@@ -70,24 +64,7 @@ class StoreViewController: UIViewController {
                 // 드래그가 일정 거리 이상이거나 속도가 충분히 빠를 경우 모달 닫기
                 dismiss(animated: true, completion: nil)
             }
-//            delegate?.didCloseStoreViewController()
         }
-    }
-    
-//    func setupCloseButton() {
-//        let closeButton = UIButton(type: .system)
-//        closeButton.setTitle("닫기", for: .normal)
-//        closeButton.addTarget(self, action: #selector(closeAction), for: .touchUpInside)
-//        view.addSubview(closeButton)
-//        closeButton.snp.makeConstraints { make in
-//            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(5)
-//            make.trailing.equalToSuperview().offset(-20)
-//        }
-//    }
-//    
-    @objc func closeAction() {
-        delegate?.didCloseStoreViewController()
-        dismiss(animated: true, completion: nil)
     }
     
     func setupStoreListUI() {
@@ -113,15 +90,6 @@ class StoreViewController: UIViewController {
             make.left.right.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }
-    
-//    override func viewWillLayoutSubviews() {
-//        super.viewWillLayoutSubviews()
-//        
-//        if let parentView = self.presentingViewController?.view {
-//            let halfHeight = parentView.frame.height
-//            self.view.frame = CGRect(x: 0, y: parentView.frame.height - halfHeight, width: parentView.frame.width, height: halfHeight)
-//        }
-//    }
     
     func updateTableView(for mode: DisplayMode, with stores: [AnnotationInfo]) {
         self.displayMode = mode

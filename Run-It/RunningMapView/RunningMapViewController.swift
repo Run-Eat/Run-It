@@ -30,8 +30,6 @@ enum PresentView {
 class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRecognizerDelegate {
     weak var parentVC: RunningTimerToMapViewPageController?
     
-    weak var delegate: StoreViewControllerDelegate?
-    
     var weatherViewModel = WeatherViewModel()
     var cancellables = Set<AnyCancellable>()
     
@@ -259,10 +257,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     var presentationState = PresentView.completed
     
     var loadingIndicator: UIActivityIndicatorView?
-    
-    // Debounce 프로퍼티 추가
-    var searchDebounceTimer: Timer?
-    
+
     
     //MARK: - LifeCycle
     override func viewDidLoad() {
@@ -274,11 +269,8 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         locationManager.delegate = self
         RunningTimerLocationManager.shared.getLocationUsagePermission() //viewDidLoad 되었을 때 권한요청을 할 것인지, 현재 위치를 눌렀을 때 권한요청을 할 것인지
         favoritesViewModel = FavoritesViewModel()
+        RunningTimerLocationManager.shared.resetActivityTimer()
         mapView.setUserTrackingMode(.followWithHeading, animated: true)
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-//        RunningTimerLocationManager.shared.stopUpdatingLocation()  // 러닝 중에 지도가 보인다면, viewWillDisappear 할 때 stopUpdatingLocation()가 호출되면 안됨.
     }
     
     //MARK: - @objc functions
@@ -295,6 +287,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     }
     
     @objc private func backToRunningTimerView() {
+        closeModal()
         if let firstViewController = parentVC?.viewControllers.first {
             parentVC?.pageViewController.setViewControllers([firstViewController], direction: .reverse, animated: true, completion: nil)
         }
@@ -313,11 +306,6 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         isActive.toggle()
     }
     
-    @objc func presentStoreAnnotationButton() {
-//        getAnnotationLocation()
-//        searchConvenienceStores() // 모달뷰로 변경
-    }
-    
     // 유저에게 편의전 옵션을 주고, 편의점 옵션을 선택해서 하프모달로 노출
     @objc func presentConvenienceStoreAnnotations() {
 
@@ -326,26 +314,20 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
 
         for convenienceStore in convenienceStores {
             getAnnotations(forQuery: convenienceStore, category: category)
-            //            searchAndPresentStores(with: convenienceStore)
         }
     }
 
     @objc func presentcoffeeAndBakeryFranchisesAnnotations() {
         
-//        let coffeeAndBakeryFranchises = ["Cafe", "coffee", "투썸플레이스", "컴포즈커피",
-//                                         "스타벅스", "파리바게뜨", "뚜레쥬르", "할리스커피",
-//                                         "이디야커피", "메가커피", "브레드톡"]
+        let coffeeAndBakeryFranchises = ["Cafe", "coffee", "투썸플레이스", "컴포즈커피",
+                                         "스타벅스", "파리바게뜨", "뚜레쥬르", "할리스커피",
+                                         "이디야커피", "메가커피", "브레드톡"]
         
-        let coffeeAndBakeryFranchises = ["Cafe", "coffee"]
         let category = "카페/베이커리"
-        // currentLocation이 nil인 경우를 처리
 
-        
         for coffeeAndBakeryFranchise in coffeeAndBakeryFranchises {
             getAnnotations(forQuery: coffeeAndBakeryFranchise, category: category)
-            //            searchAndPresentStores(with: coffeeAndBakeryFranchise)
         }
-        
     }
     
     @objc func presenthealthyEatingOptionsAnnotations() {
@@ -355,15 +337,10 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         
         for healthyEatingOption in healthyEatingOptions {
             getAnnotations(forQuery: healthyEatingOption, category: category)
-//            DispatchQueue.main.async {
-//                                self.searchAndPresentStores(with: healthyEatingOption)
-//            }
         }
     }
     
 }
-
-
 //MARK: - Annotation Setup
 extension RunningMapViewController {
     
@@ -379,14 +356,7 @@ extension RunningMapViewController {
         // mapView.overlays 배열에서 currentCircle를 제외하고 모두 제거
         let overlaysToRemove = mapView.overlays.filter { $0 !== currentCircle }
         mapView.removeOverlays(overlaysToRemove)
-        
-        
-//        if let cachedResults = searchResultsCache[query] {
-//            //TODO: 캐시된 결과가 있으면 해당 결과를 사용하여 어노테이션을 추가
-//            addAnnotationsToMap(mapItems: cachedResults, category: category)
-//            return
-//        }
-        
+
         //TODO: 사용자의 현재 위치를 가져오기
         guard let currentLocation = self.mapView.userLocation.location else {
             print("Failed to get user location")
@@ -514,7 +484,6 @@ extension RunningMapViewController {
         }
         
         let storeVC = StoreViewController()
-        storeVC.delegate = self
         storeVC.stores = places // 데이터 전달
         storeVC.modalPresentationStyle = .formSheet
         storeVC.modalTransitionStyle = .coverVertical
@@ -576,6 +545,7 @@ extension RunningMapViewController: CLLocationManagerDelegate {
             }
         }
         weatherDatabindViewModel()
+        RunningTimerLocationManager.shared.resetActivityTimer()
     }
     
     // 사용자의 현재 위치를 기반으로 경로를 계산하고 지도에 표시하는 메서드
@@ -738,12 +708,6 @@ extension RunningMapViewController: CLLocationManagerDelegate {
         self.present(storeVC, animated: true, completion: nil)
     }
 
-    
-    func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
-        
-    }
-    
-    
     // 지도에 경로 및 주변원을 표시하기 위한 MKMapViewDelegate에서 MKPolylineRenderer, MKCircleRenderer를 설정
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         let isDarkMode = traitCollection.userInterfaceStyle == .dark
@@ -960,13 +924,6 @@ extension RunningMapViewController {
     }
     
     
-}
-
-extension RunningMapViewController: StoreViewControllerDelegate {
-    func didCloseStoreViewController() {
-        getAnnotations(forQuery: "GS25", category:
-        "GS25")
-    }
 }
 
 //MARK: - Weather Setup

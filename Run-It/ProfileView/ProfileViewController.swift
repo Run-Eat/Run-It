@@ -137,9 +137,11 @@ class ProfileViewController: UIViewController
     lazy var weeklyButton: UIButton =
     {
         let button = UIButton()
-        button.setTitle("매 주", for: .normal)
-        button.setTitleColor(.label, for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
+        button.setTitle("주 간", for: .normal)
+        button.backgroundColor = .systemBlue
+        button.layer.cornerRadius = 14
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         button.addTarget(self, action: #selector(touchedWeeklyButton), for: .touchUpInside)
         
         return button
@@ -148,9 +150,11 @@ class ProfileViewController: UIViewController
     lazy var monthlyButton: UIButton =
     {
         let button = UIButton()
-        button.setTitle("매 달", for: .normal)
-        button.setTitleColor(.label, for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
+        button.setTitle("월 간", for: .normal)
+        button.backgroundColor = .systemBlue
+        button.layer.cornerRadius = 14
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         button.addTarget(self, action: #selector(touchedMonthlyButton), for: .touchUpInside)
         
         return button
@@ -336,12 +340,16 @@ class ProfileViewController: UIViewController
         
         weeklyButton.snp.makeConstraints
         {   make in
+            make.width.equalTo(100)
+            make.height.equalTo(30)
             make.top.equalTo(totalRunningDistanceLabel.snp.bottom).offset(20)
             make.leading.equalTo(view.snp.leading).inset(100)
         }
         
         monthlyButton.snp.makeConstraints
         {   make in
+            make.width.equalTo(100)
+            make.height.equalTo(30)
             make.top.equalTo(weeklyButton.snp.top).offset(0)
             make.trailing.equalTo(weeklyButton.snp.trailing).offset(150)
         }
@@ -628,6 +636,8 @@ class ProfileViewController: UIViewController
     
     @objc func touchedWeeklyButton()
     {
+        weeklyButton.backgroundColor = .systemBlue
+        monthlyButton.backgroundColor = .gray
         thisWeek_MonthLabel.text = "이번 주"
         thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisWeekDistance))"
         thisWeek_MonthPaceLabel.text = String(format: "%.2f", thisWeekPace)
@@ -641,6 +651,8 @@ class ProfileViewController: UIViewController
     
     @objc func touchedMonthlyButton()
     {
+        monthlyButton.backgroundColor = .systemBlue
+        weeklyButton.backgroundColor =  .gray
         thisWeek_MonthLabel.text = "이번 달"
         thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisMonthDistance))"
         thisWeek_MonthPaceLabel.text = String(format: "%.2f", thisMonthPace)
