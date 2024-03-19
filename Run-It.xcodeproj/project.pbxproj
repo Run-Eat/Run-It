@@ -51,6 +51,7 @@
 		6CBBE2D52B8DB7C100F909EE /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 6CBBE2D42B8DB7C100F909EE /* FirebaseStorageCombine-Community */; };
 		6CBC73292BA9824F008271D6 /* SwiftJWT in Frameworks */ = {isa = PBXBuildFile; productRef = 6CBC73282BA9824F008271D6 /* SwiftJWT */; };
 		6CBC732B2BA9AD50008271D6 /* AuthKey_CMKV35Z7JD.p8 in Resources */ = {isa = PBXBuildFile; fileRef = 6CBC732A2BA9AD50008271D6 /* AuthKey_CMKV35Z7JD.p8 */; };
+		6CBC73382BA9EBEE008271D6 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 6CBC73372BA9EBEE008271D6 /* KeychainAccess */; };
 		6CF4D5FE2B90669A0069A9B2 /* SignupVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CF4D5FD2B9066990069A9B2 /* SignupVM.swift */; };
 		6CF4D6002B9073A10069A9B2 /* LoginVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CF4D5FF2B9073A10069A9B2 /* LoginVM.swift */; };
 		C82CEDC92B86FCB200B619AD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDC82B86FCB200B619AD /* AppDelegate.swift */; };
@@ -147,6 +148,7 @@
 				6CBBE2C72B8DB7C100F909EE /* FirebaseInstallations in Frameworks */,
 				6CBBE2A72B8DB7C100F909EE /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 				C8D903F12B8731870008C15E /* KakaoSDKAuth in Frameworks */,
+				6CBC73382BA9EBEE008271D6 /* KeychainAccess in Frameworks */,
 				6CBBE2BD2B8DB7C100F909EE /* FirebaseFirestoreSwift in Frameworks */,
 				6CBBE2D52B8DB7C100F909EE /* FirebaseStorageCombine-Community in Frameworks */,
 				6CBBE2B52B8DB7C100F909EE /* FirebaseDatabaseSwift in Frameworks */,
@@ -345,6 +347,7 @@
 				6CBBE2D42B8DB7C100F909EE /* FirebaseStorageCombine-Community */,
 				C85561402B9F19E9004CA358 /* SnapKit */,
 				6CBC73282BA9824F008271D6 /* SwiftJWT */,
+				6CBC73372BA9EBEE008271D6 /* KeychainAccess */,
 			);
 			productName = "Run-It";
 			productReference = C82CEDC52B86FCB200B619AD /* Run-It.app */;
@@ -379,6 +382,7 @@
 				6CBBE29F2B8DB7C100F909EE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				C855613F2B9F19E9004CA358 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				6CBC73272BA9824F008271D6 /* XCRemoteSwiftPackageReference "Swift-JWT" */,
+				6CBC73362BA9EBEE008271D6 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 			);
 			productRefGroup = C82CEDC62B86FCB200B619AD /* Products */;
 			projectDirPath = "";
@@ -690,6 +694,14 @@
 				minimumVersion = 4.0.1;
 			};
 		};
+		6CBC73362BA9EBEE008271D6 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		C855613F2B9F19E9004CA358 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
@@ -848,6 +860,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6CBC73272BA9824F008271D6 /* XCRemoteSwiftPackageReference "Swift-JWT" */;
 			productName = SwiftJWT;
+		};
+		6CBC73372BA9EBEE008271D6 /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6CBC73362BA9EBEE008271D6 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
 		};
 		C85561402B9F19E9004CA358 /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;
