@@ -24,8 +24,8 @@ class RunningTimerViewController: UIViewController {
     let timeLabel: UILabel = {
         let label = UILabel()
         label.text = "시간"
-        label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 30)
+        label.textColor = .darkGray
+        label.font = UIFont.systemFont(ofSize: 22)
         return label
     }()
     
@@ -33,7 +33,7 @@ class RunningTimerViewController: UIViewController {
         let label = UILabel()
         label.text = "0:00:00"
         label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 45)
+        label.font = UIFont.boldSystemFont(ofSize: 45)
         return label
     }()
     
@@ -48,22 +48,22 @@ class RunningTimerViewController: UIViewController {
     let topSplitLine: UIView = {
         let line = UIView()
         line.alpha = 0.5
-        line.backgroundColor = .gray
+        line.backgroundColor = .darkGray
         return line
     }()
     
     let middleSplitLine: UIView = {
         let line = UIView()
         line.alpha = 0.5
-        line.backgroundColor = .gray
+        line.backgroundColor = .darkGray
         return line
     }()
     
     let paceLabel: UILabel = {
         let label = UILabel()
         label.text = "페이스"
-        label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 30)
+        label.textColor = .darkGray
+        label.font = UIFont.systemFont(ofSize: 22)
         return label
     }()
     
@@ -71,15 +71,15 @@ class RunningTimerViewController: UIViewController {
         let label = UILabel()
         label.text = "0:00"
         label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 45)
+        label.font = UIFont.boldSystemFont(ofSize: 45)
         return label
     }()
     
     let distanceLabel: UILabel = {
         let label = UILabel()
         label.text = "거리"
-        label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 30)
+        label.textColor = .darkGray
+        label.font = UIFont.systemFont(ofSize: 22)
         return label
     }()
     
@@ -95,8 +95,8 @@ class RunningTimerViewController: UIViewController {
     let kilometerLabel: UILabel = {
         let label = UILabel()
         label.text = "킬로미터"
-        label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 30)
+        label.textColor = .darkGray
+        label.font = UIFont.boldSystemFont(ofSize: 30)
         return label
     }()
     
@@ -108,7 +108,7 @@ class RunningTimerViewController: UIViewController {
         if let image = UIImage(systemName: "pause.fill", withConfiguration: configuration) {
             button.setImage(image, for: .normal)
         }
-        button.backgroundColor = .systemBlue
+        button.backgroundColor = .systemTeal
         button.layer.shadowRadius = 15
         button.layer.shadowOpacity = 0.3
         button.layer.cornerRadius = 50

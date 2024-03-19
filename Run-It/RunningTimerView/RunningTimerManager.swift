@@ -86,7 +86,7 @@ class RunningTimer {
                 // 이동 거리와 페이스 계산은 위치 업데이트 클로저 내에서 처리
                 
                 // 로그 출력 및 UI 업데이트
-                print("running properties : \(self.time), \(self.distance), \(self.pace)")
+//                print("running properties : \(self.time), \(self.distance), \(self.pace)")
                 
                 DispatchQueue.main.async { [weak self] in
                     self?.updateUI?()

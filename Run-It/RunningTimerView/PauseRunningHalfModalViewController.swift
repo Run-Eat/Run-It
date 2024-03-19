@@ -105,12 +105,12 @@ class PauseRunningHalfModalViewController: UIViewController {
     lazy var restartRunningButton: UIButton = {
         let button = UIButton()
         button.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
-        button.tintColor = .white
+        button.tintColor = .systemYellow
         let configuration = UIImage.SymbolConfiguration(pointSize: 50)
         if let image = UIImage(systemName: "restart", withConfiguration: configuration) {
             button.setImage(image, for: .normal)
         }
-        button.backgroundColor = .systemBlue
+        button.backgroundColor = .systemTeal
         button.layer.shadowRadius = 15
         button.layer.shadowOpacity = 0.3
         button.layer.cornerRadius = 50
