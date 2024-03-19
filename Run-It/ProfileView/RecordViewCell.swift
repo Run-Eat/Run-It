@@ -13,7 +13,7 @@ class RecordViewCell: UITableViewCell {
     // MARK: - Properties
     lazy var dateLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 16)
+        label.font = UIFont.systemFont(ofSize: 17)
         label.textAlignment = .left
         label.textColor = UIColor.label
         return label
@@ -21,7 +21,7 @@ class RecordViewCell: UITableViewCell {
     
     lazy var userLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 16)
+        label.font = UIFont.systemFont(ofSize: 17)
         label.textColor = UIColor.secondaryLabel
         label.textAlignment = .left
         return label
@@ -186,13 +186,29 @@ class RecordViewCell: UITableViewCell {
 
 extension RecordViewCell {
     func configure(with viewModel: RunningRecordViewModel) {
-        dateLabel.text = viewModel.dateText
-        userLabel.text = viewModel.labelText
-        recordDistance.text = viewModel.distanceText
-        recordTime.text = viewModel.timeText
-        userPace.text = viewModel.paceText
-        if let imageData = viewModel.routeImageData {
-            routeImage.image = UIImage(data: imageData)
+        if dateLabel.text != viewModel.dateText {
+            dateLabel.text = viewModel.dateText
         }
+        if userLabel.text != viewModel.labelText {
+            userLabel.text = viewModel.labelText
+        }
+        if recordDistance.text != viewModel.distanceText {
+            recordDistance.text = viewModel.distanceText
+        }
+        if recordTime.text != viewModel.timeText {
+            recordTime.text = viewModel.timeText
+        }
+        if userPace.text != viewModel.paceText {
+            userPace.text = viewModel.paceText
+        }
+        if let imageData = viewModel.routeImageData {
+            DispatchQueue.global(qos: .userInitiated).async {
+                let image = UIImage(data: imageData)
+                DispatchQueue.main.async {
+                    self.routeImage.image = image
+                }
+            }
+        }
+        
     }
 }

@@ -151,7 +151,7 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
         
         let stackView = UIStackView(arrangedSubviews: [userInfoStackView, distanceStackView,timeStackView,paceStackView])
         stackView.axis = .vertical
-        stackView.spacing = 16.0
+        stackView.spacing = 8.0
         
         view.addSubview(stackView)
         
