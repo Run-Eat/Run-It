@@ -15,6 +15,7 @@ import SwiftJWT
 import Alamofire
 
 
+
 // MARK: - Firebase 로그인
 func signInUser(email: String, password: String)
     {
@@ -254,12 +255,12 @@ class LoginVM: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationContr
             if let authorizationCode = appleIDCredential.authorizationCode,
                let identityToken = appleIDCredential.identityToken,
                let authCodeString = String(data: authorizationCode, encoding: .utf8),
-               let identifyTokenString = String(data: identityToken, encoding: .utf8)
+               let tokenString = String(data: identityToken, encoding: .utf8)
             {
                 print("authorizationCode : \(authorizationCode)")
                 print("identityToken : \(identityToken)")
                 print("authCodeString : \(authCodeString)")
-                print("identifyTokenString : \(identifyTokenString)")
+                print("tokenString : \(tokenString)")
             }
             
             print("userIdentifier : \(userIdentifier)")

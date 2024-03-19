@@ -13,6 +13,8 @@ import FirebaseCore
 import FirebaseAppCheck
 import KakaoSDKAuth
 import KakaoSDKUser
+import SwiftJWT
+import Alamofire
 
 
 class ProfileViewController: UIViewController
@@ -655,7 +657,8 @@ class ProfileViewController: UIViewController
     }
     
 //MARK: - 이메일 회원 탈퇴
-    func deleteAccount() {
+    func deleteAccount() 
+    {
         if  let user = Auth.auth().currentUser {
             user.delete
             {   [self] error in
@@ -772,6 +775,36 @@ class ProfileViewController: UIViewController
         let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
         let confirm = UIAlertAction(title: "확인", style: .default) { _ in
             self.deleteAccount()
+            
+            let jwtString = self.makeJWT()
+            
+            guard let taCode = UserDefaults.standard.string(forKey: "theAuthorizationCode") else { return }
+            self.getAppleRefreshToken(code: taCode, completionHandler: { output in
+            
+                let clientSecret = jwtString
+                if let refreshToken = output
+                {
+                    print("Client_secret - \(clientSecret)")
+                    print("refresh_token - \(refreshToken)")
+                    
+                    self.revokeAppleToken(clientSecret: clientSecret, token: refreshToken)
+                    {
+                        print("Apple revokeToken Success")
+                    }
+                    
+                    self.dismiss(animated: true)
+                }
+                
+                else
+                {
+                    let dialog = UIAlertController(title: "error", message: "회원탈퇴 실패", preferredStyle: .alert)
+                    let okayAction = UIAlertAction(title: "확인", style: .default, handler: {_ in
+                        self.dismiss(animated: true)
+                    })
+                    dialog.addAction(okayAction)
+                    self.present(dialog, animated: true, completion: nil)
+                }
+            })
         }
         
         alertController.addAction(cancel)
@@ -956,4 +989,128 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+}
+
+// MARK: - 애플 엑세스 토큰 발급 응답 모델
+extension ProfileViewController
+{
+    struct AppleTokenResponse: Codable 
+    {
+        var access_token: String?
+        var token_type: String?
+        var expires_in: Int?
+        var refresh_token: String?
+        var id_token: String?
+        
+        enum CodingKeys: String, CodingKey
+        {
+            case refresh_token = "refresh_token"
+        }
+    }
+            
+    func makeJWT() -> String    //client_secret
+    {
+        let myHeader = Header(kid: "CMKV35Z7JD")
+        struct MyClaims: Claims
+        {
+            let iss: String
+            let iat: Int
+            let exp: Int
+            let aud: String
+            let sub: String
+        }
+        
+        let nowDate = Date()
+        var dateComponent = DateComponents()
+        dateComponent.month = 6
+        let sixDate = Calendar.current.date(byAdding: dateComponent, to: nowDate) ?? Date()
+        let iat = Int(Date().timeIntervalSince1970)
+        let exp = iat + 3600
+        let myClaims = MyClaims(iss: "335MYJGX88", iat: iat, exp: exp, aud: "https://appleid.apple.com", sub: "com.team5.Run-It")
+        
+        var myJWT = JWT(header: myHeader, claims: myClaims)
+        
+        guard let url = Bundle.main.url(forResource: "AuthKey_CMKV35Z7JD", withExtension: "p8") else { return "키 파일 찾기 실패" }
+        
+        guard let privateKey = try? Data(contentsOf: url) else { return "키 파일 읽기 실패" }
+        
+        let jwtSigner = JWTSigner.es256(privateKey: privateKey)
+        let signedJWT = try! myJWT.sign(using: jwtSigner)
+        
+        print("signed JWT - \(signedJWT)")
+        
+        return signedJWT
+    }
+    
+    
+    func getAppleRefreshToken(code: String, completionHandler: @escaping (String?) -> Void)
+    {
+        guard let secret = UserDefaults.standard.string(forKey: "AppleClientSecret") else {return}
+        
+        let url = "https://appleid.apple.com/auth/token?client_id=YOUR_BUNDLE_ID&client_secret=\(secret)&code=\(code)&grant_type=authorization_code"
+        let header: HTTPHeaders = ["Content-Type": "application/x-www-form-urlencoded"]
+        
+        print("🗝 clientSecret - \(String(describing: UserDefaults.standard.string(forKey: "AppleClientSecret")))")
+        print("🗝 authCode - \(code)")
+        
+        let a = AF.request(url, method: .post, encoding: JSONEncoding.default, headers: header)
+            .validate(statusCode: 200..<500)
+            .responseData { response in
+                print("🗝 response - \(response.description)")
+                
+                switch response.result
+                {
+                case .success(let output):
+                    //                print("🗝 ouput - \(output)")
+                    let decoder = JSONDecoder()
+                    if let decodedData = try? decoder.decode(AppleTokenResponse.self, from: output)
+                    {
+                        //                    print("🗝 output2 - \(decodedData.refresh_token)")
+                        
+                        if decodedData.refresh_token == nil
+                        {
+                            let dialog = UIAlertController(title: "error", message: "토큰 생성 실패", preferredStyle: .alert)
+                            let okayAction = UIAlertAction(title: "확인", style: .default, handler: {_ in
+                                self.dismiss(animated: true)
+                            })
+                            dialog.addAction(okayAction)
+                            self.present(dialog, animated: true, completion: nil)
+                        }
+                        
+                        else
+                        {
+                            completionHandler(decodedData.refresh_token)
+                        }
+                    }
+                    
+                case .failure(_):
+                    //로그아웃 후 재로그인하여
+                    print("애플 토큰 발급 실패 - \(response.error.debugDescription)")
+                    let dialog = UIAlertController(title: "error", message: "토큰 생성 실패", preferredStyle: .alert)
+                    let okayAction = UIAlertAction(title: "확인", style: .default, handler: {_ in
+                        self.dismiss(animated: true)
+                    })
+                    dialog.addAction(okayAction)
+                    self.present(dialog, animated: true, completion: nil)
+                }
+            }
+    }
+    
+    func revokeAppleToken(clientSecret: String, token: String, completionHandler: @escaping () -> Void)
+    {
+        let url = "https://appleid.apple.com/auth/revoke?client_id=YOUR_BUNDLE_ID&client_secret=\(clientSecret)&token=\(token)&token_type_hint=refresh_token"
+        let header: HTTPHeaders = ["Content-Type": "application/x-www-form-urlencoded"]
+        
+        AF.request(url,
+                   method: .post,
+                   headers: header)
+        .validate(statusCode: 200..<600)
+        .responseData { response in
+            guard let statusCode = response.response?.statusCode else { return }
+            if statusCode == 200 {
+                print("애플 토큰 삭제 성공!")
+                completionHandler()
+            }
+        }
+    }
 }
