@@ -55,9 +55,19 @@ class LoginViewController: UIViewController
         textField.autocapitalizationType = .none
         textField.autocorrectionType = .no
         textField.spellCheckingType = .no
+        textField.isSecureTextEntry = true
         textField.layer.borderWidth = 0.7
         textField.layer.cornerRadius = 7
         return textField
+    }()
+    
+    lazy var passwordShowHideButton: UIButton =
+    {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(systemName: "eye.slash"), for: .normal)
+        button.addTarget(self, action: #selector(showHidePassword), for: .touchUpInside)
+        button.tintColor = .lightGray
+        return button
     }()
     
     lazy var loginButton: UIButton =
@@ -171,6 +181,7 @@ class LoginViewController: UIViewController
         view.addSubview(loginLogo)
         view.addSubview(emailTextField)
         view.addSubview(passwordTextField)
+        view.addSubview(passwordShowHideButton)
         view.addSubview(loginButton)
         view.addSubview(findEmailButton)
         view.addSubview(resetPasswordButton)
@@ -208,6 +219,14 @@ class LoginViewController: UIViewController
             make.centerX.equalTo(view.snp.centerX)
             make.width.equalTo(350)
             make.height.equalTo(40)
+        }
+        
+        passwordShowHideButton.snp.makeConstraints
+        {   make in
+            make.centerY.equalTo(passwordTextField.snp.centerY)
+            make.trailing.equalTo(passwordTextField).offset(-10)
+            make.width.equalTo(30)
+            make.height.equalTo(30)
         }
         
         loginButton.snp.makeConstraints
@@ -338,43 +357,62 @@ class LoginViewController: UIViewController
     }
     
 // MARK: - 버튼 함수
+    @objc func showHidePassword()
+    {
+        passwordTextField.isSecureTextEntry.toggle()
+        
+        if passwordTextField.isSecureTextEntry
+        {
+            passwordShowHideButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
+        }
+        
+        else
+        {
+            passwordShowHideButton.setImage(UIImage(systemName: "eye.fill"), for: .normal)
+        }
+    }
+    
     @objc func touchedLoginButton()
     {
         guard let email = emailTextField.text   else { return }
         guard let password = passwordTextField.text   else { return }
-        signInUser(email: email, password: password)
         checkData(loginType: "Email", email: email)
+        signInUser(email: email, password: password)
     }
     
     @objc func touchedKakaoLoginButton()
     {
-        UserApi.shared.me
-        {   user, error in
-            guard let email = user?.kakaoAccount?.email else { return }
-            
-            if user == nil
-            {
-                print("이메일 가져오기 실패")
-                if let error = error
+        var email: String = ""
+        
+            UserApi.shared.me
+            {   user, error in
+                
+                guard let useremail = user?.kakaoAccount?.email else { return }
+
+                if user == nil
                 {
-                    print(error)
+                    print("이메일 가져오기 실패")
+                    if let error = error
+                    {
+                        print(error)
+                    }
+                }
+                
+                else if user != nil
+                {
+                    email = useremail
+                    print("이메일 가져오기 성공")
                 }
             }
-            
-            else if user != nil
-            {
-                print("이메일 가져오기 성공")
-                self.checkData(loginType: "Kakao", email: email)
-            }
-        }
+        self.checkData(loginType: "Kakao", email: email)
         kakaoLogin()
     }
     
     @objc func touchedAppleLoginButton()
     {
+        self.checkData(loginType: "Apple", email: "appleLogin")
         loginVM.setPresentationAnchor(self.view.window!)
         loginVM.appleLogin()
-        self.checkData(loginType: "Apple", email: "apple")
     }
     
     @objc func touchedFindEmailButton()
