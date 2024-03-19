@@ -11,6 +11,8 @@ import KakaoSDKAuth
 import KakaoSDKUser
 import AuthenticationServices
 import CryptoKit
+import SwiftJWT
+import Alamofire
 
 
 // MARK: - Firebase 로그인
@@ -51,7 +53,7 @@ func kakaoLogin()
     {
         UserApi.shared.accessTokenInfo
         {   _, error in
-            if let error = error    // 토큰이 유효하지 않은 경우
+            if error != nil    // 토큰이 유효하지 않은 경우
             {
                 openKakaoService()
             }
@@ -88,14 +90,14 @@ func kakaoLoginInApp()  // 카카오톡 앱이 설치되어있을 경우
 {
     UserApi.shared.loginWithKakaoTalk
     {   oauthToken, error in
-        if let error = error
+        if error != nil
         {
             print("카카오톡 로그인 실패")
         }
         
         else
         {
-            if let token = oauthToken
+            if oauthToken != nil
             {
                 bringKakaoInfo()
             }
@@ -107,14 +109,14 @@ func kakaoLoginInWeb()  // 카카오톡 앱이 설치되어있지 않거나 열�
 {
     UserApi.shared.loginWithKakaoAccount
     {   oauthToken, error in
-        if let error = error
+        if error != nil
         {
             print("카카오톡 로그인 실패")
         }
         
         else
         {
-            if let token = oauthToken
+            if oauthToken != nil
             {
                 bringKakaoInfo()
             }
@@ -126,7 +128,7 @@ func bringKakaoInfo()
 {
     UserApi.shared.me
     {   user, error in
-        if let error = error
+        if error != nil
         {
             print("카카오 사용자 정보 불러오기 실패")
             return
@@ -188,7 +190,6 @@ class LoginVM: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationContr
         {
             fatalError("presentationAnchor 가 설정되지 않음")
         }
-        sendTask(task: "successLogin")
     }
     
     func sha256(_ input: String) -> String
@@ -238,6 +239,45 @@ class LoginVM: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationContr
         }
         
         return result
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) 
+    {
+        switch authorization.credential
+        {
+        case
+            let appleIDCredential as ASAuthorizationAppleIDCredential:
+            let userIdentifier = appleIDCredential.user
+            let fullName = appleIDCredential.fullName
+            let email = appleIDCredential.email
+            
+            if let authorizationCode = appleIDCredential.authorizationCode,
+               let identityToken = appleIDCredential.identityToken,
+               let authCodeString = String(data: authorizationCode, encoding: .utf8),
+               let identifyTokenString = String(data: identityToken, encoding: .utf8)
+            {
+                print("authorizationCode : \(authorizationCode)")
+                print("identityToken : \(identityToken)")
+                print("authCodeString : \(authCodeString)")
+                print("identifyTokenString : \(identifyTokenString)")
+            }
+            
+            print("userIdentifier : \(userIdentifier)")
+            print("fullName : \(String(describing: fullName))")
+            print("email : \(String(describing: email))")
+            
+        case
+            let passwordCredential as ASPasswordCredential:
+            let username = passwordCredential.user
+            let password = passwordCredential.password
+            
+            print("username : \(username)")
+            print("password : \(password)")
+            
+        default:
+            break
+        }
+        sendTask(task: "successLogin")
     }
     
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor

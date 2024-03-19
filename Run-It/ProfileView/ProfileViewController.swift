@@ -677,7 +677,7 @@ class ProfileViewController: UIViewController
 
     
 // MARK: - 버튼 함수
-    @objc func selectImage()
+    @objc func selectImage()    // 프로필 사진
     {
         let imagePickerController = UIImagePickerController()
         imagePickerController.delegate = self
@@ -685,7 +685,7 @@ class ProfileViewController: UIViewController
         present(imagePickerController, animated: true, completion: nil)
     }
     
-    @objc func touchedLogoutButton()
+    @objc func touchedLogoutButton()    // 로그아웃 버튼
     {
         kakaoLogout()
         emailLogout()
@@ -693,7 +693,7 @@ class ProfileViewController: UIViewController
         dismiss(animated: true)
     }
     
-    @objc func touchedWeeklyButton()
+    @objc func touchedWeeklyButton()    // 주별 기록
     {
         thisWeek_MonthLabel.text = "이번 주"
         thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisWeekDistance))"
@@ -706,7 +706,7 @@ class ProfileViewController: UIViewController
         lastWeek_MonthRunningCountLabel.text = "\(lastWeekRunningCount) 회"
     }
     
-    @objc func touchedMonthlyButton()
+    @objc func touchedMonthlyButton()       // 월별 기록
     {
         thisWeek_MonthLabel.text = "이번 달"
         thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisMonthDistance))"
@@ -719,40 +719,64 @@ class ProfileViewController: UIViewController
         lastWeek_MonthRunningCountLabel.text = "\(lastMonthRunningCount) 회"
     }
     
-    @objc func noticeButtonTapped()
+    @objc func noticeButtonTapped()     // 공지 버튼 present
     {
         let eventVC = EventViewController()
         self.navigationController?.pushViewController(eventVC, animated: true)
     }
     // 추후 coreData 활용 데이터 관리 코드 작성
     
-    @objc func resetRecord()
+    @objc func resetRecord()    // 러닝 기록 초기화
     {
         print("러닝 기록 초기화")
-        guard let context = persistentContainer?.viewContext else { return }
-        
-        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "RunningRecord")
-        
-        do
-        {
-            let datas = try context.fetch(fetchRequest)
-            for data in datas
+        let alertController = UIAlertController(title: "알림", message: "러닝 기록을 초기화 하시겠습니까?", preferredStyle: .alert)
+        let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
+        let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+            guard let context = self.persistentContainer?.viewContext else { return }
+            
+            let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "RunningRecord")
+            
+            do
             {
-                guard let removeData = data as? NSManagedObject else { continue }
-                context.delete(removeData)
+                let datas = try context.fetch(fetchRequest)
+                for data in datas
+                {
+                    guard let removeData = data as? NSManagedObject else { continue }
+                    context.delete(removeData)
+                }
+                
+                try context.save()
+            }
+            catch
+            {
+                print("error")
             }
             
-            try context.save()
+            self.thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", 0))"
+            self.thisWeek_MonthPaceLabel.text = String(format: "%.2f", 0)
+            self.thisWeek_MonthRunningCountLabel.text = "0 회"
+            
+            self.lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", 0))"
+            self.lastWeek_MonthPaceLabel.text = String(format: "%.2f", 0)
+            self.lastWeek_MonthRunningCountLabel.text = "0 회"
         }
-        catch
-        {
-            print("error")
-        }
+        alertController.addAction(cancel)
+        alertController.addAction(confirm)
+        present(alertController, animated: true, completion: nil)
+        
     }
     
     @objc func withdrawal()     // 회원탈퇴
     {
-        deleteAccount()
+        let alertController = UIAlertController(title: "알림", message: "회원 탈퇴를 하시겠습니까?", preferredStyle: .alert)
+        let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
+        let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+            self.deleteAccount()
+        }
+        
+        alertController.addAction(cancel)
+        alertController.addAction(confirm)
+        present(alertController, animated: true, completion: nil)
     }
 }
 
