@@ -6,12 +6,14 @@
 //
 
 import UIKit
-
+import AVFoundation
 import SnapKit
 
 class RunningTimerViewController: UIViewController {
 
     let runningTimer = RunningTimer()
+
+    
     //MARK: - UI properties
     
     var distance: Double = 0
@@ -162,9 +164,9 @@ class RunningTimerViewController: UIViewController {
         pauseRunningHalfModalViewController.distance = self.distance
         pauseRunningHalfModalViewController.pace = self.pace
         pauseRunningHalfModalViewController.delegate = self
-
         
         showMyViewControllerInACustomizedSheet(pauseRunningHalfModalViewController)
+        SpeechService.shared.speakTimeDistancePace(time: self.time, distance: self.distance, pace: Int(self.pace))
     }
     
     func didDismissPauseRunningHalfModalViewController() {
@@ -188,7 +190,7 @@ extension RunningTimerViewController {
             let paceSeconds = Int(round(pace)) % 60
             paceNumberLabel.text = String(format: "%02d:%02d", paceMinutes, paceSeconds)
             distanceNumberLabel.text = String(format: "%.2f", distance / 1000)
-            print("거리: \(String(describing: distanceNumberLabel.text))")
+//            print("거리: \(String(describing: distanceNumberLabel.text))")
         } else {
             paceNumberLabel.text = "--:--"
             distanceNumberLabel.text = "0.00"

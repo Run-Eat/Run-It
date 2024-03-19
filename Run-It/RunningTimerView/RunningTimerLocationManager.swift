@@ -104,8 +104,8 @@ class RunningTimerLocationManager: NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last, state == .started else { return }
         // 현재 위치 정보 출력
-        print("Current location: \(location.coordinate.latitude), \(location.coordinate.longitude)")
-        print("Locations array count: \(self.locations.count)")
+//        print("Current location: \(location.coordinate.latitude), \(location.coordinate.longitude)")
+//        print("Locations array count: \(self.locations.count)")
 
         if let previousLocation = self.previousLocation {
             // 이전 위치와 현재 위치 사이의 거리 계산
@@ -113,8 +113,8 @@ class RunningTimerLocationManager: NSObject, CLLocationManagerDelegate {
             totalDistance += distance
 
             // 계산된 거리 정보 출력
-            print("Distance from previous location: \(distance) meters")
-            print("Total distance: \(totalDistance) meters")
+//            print("Distance from previous location: \(distance) meters")
+//            print("Total distance: \(totalDistance) meters")
         } else {
             // 이전 위치 정보가 없을 경우, 처음 위치 업데이트를 받은 것임
             print("Starting location updates...")

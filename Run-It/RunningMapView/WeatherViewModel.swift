@@ -25,7 +25,6 @@ class WeatherViewModel: ObservableObject {
                 
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
-                    print("날씨기호 이름: \(self.weathersymbolName), 온도: \(self.currentTemperature)°C, 습도: \(self.currenthumidity)%, 풍속: \(self.windspeed)m/s, UV 지수: \(self.uvIndexcategory)")
                     self.weathersymbolName = weather.currentWeather.symbolName
                     self.currentTemperature = weather.currentWeather.temperature.converted(to: .celsius).value
                     self.currenthumidity = weather.currentWeather.humidity

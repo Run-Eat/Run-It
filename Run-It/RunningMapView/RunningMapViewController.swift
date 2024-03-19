@@ -1039,7 +1039,6 @@ extension RunningMapViewController {
     func weatherDatabindViewModel() {
         // 현재 위치 정보가 있는지 확인
         if let location = self.currentLocation {
-            print("현재 위치: 위도 \(location.coordinate.latitude), 경도 \(location.coordinate.longitude)")
             // 위치 정보가 있을 경우, 해당 위치를 사용하여 날씨 정보를 업데이트
             weatherViewModel.getWeather(location: location)
             

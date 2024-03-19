@@ -61,6 +61,7 @@
 		C82CEDE22B86FD7C00B619AD /* RunningMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDE12B86FD7C00B619AD /* RunningMapViewController.swift */; };
 		C82CEDE92B86FDE800B619AD /* RunningTimerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDE82B86FDE800B619AD /* RunningTimerViewController.swift */; };
 		C83F1FC02B9959EC00D309CC /* RunningTimerToMapViewPageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C83F1FBF2B9959EC00D309CC /* RunningTimerToMapViewPageController.swift */; };
+		C842321B2BAA2F1A003408C3 /* AVSpeechSyncthesizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C842321A2BAA2F1A003408C3 /* AVSpeechSyncthesizer.swift */; };
 		C85561412B9F19E9004CA358 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = C85561402B9F19E9004CA358 /* SnapKit */; };
 		C85561432B9F2FB1004CA358 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C85561422B9F2FB1004CA358 /* GoogleService-Info.plist */; };
 		C879CD032B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C879CD022B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift */; };
@@ -107,6 +108,7 @@
 		C82CEDE12B86FD7C00B619AD /* RunningMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningMapViewController.swift; sourceTree = "<group>"; };
 		C82CEDE82B86FDE800B619AD /* RunningTimerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningTimerViewController.swift; sourceTree = "<group>"; };
 		C83F1FBF2B9959EC00D309CC /* RunningTimerToMapViewPageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningTimerToMapViewPageController.swift; sourceTree = "<group>"; };
+		C842321A2BAA2F1A003408C3 /* AVSpeechSyncthesizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVSpeechSyncthesizer.swift; sourceTree = "<group>"; };
 		C85561422B9F2FB1004CA358 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Desktop/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C879CD022B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseRunningHalfModalViewController.swift; sourceTree = "<group>"; };
 		C879CD042B8880F200DBFB82 /* PauseViewHalfModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseViewHalfModal.swift; sourceTree = "<group>"; };
@@ -256,6 +258,7 @@
 				C879CD042B8880F200DBFB82 /* PauseViewHalfModal.swift */,
 				C879CD022B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift */,
 				2B4653592B9B1D2D0040B146 /* MapSnapshotManager.swift */,
+				C842321A2BAA2F1A003408C3 /* AVSpeechSyncthesizer.swift */,
 			);
 			path = RunningTimerView;
 			sourceTree = "<group>";
@@ -412,6 +415,7 @@
 				C82CEDC92B86FCB200B619AD /* AppDelegate.swift in Sources */,
 				C87BF1122BA194320066073C /* WeatherViewModel.swift in Sources */,
 				C879CD092B8B405E00DBFB82 /* RunningTimerLocationManager.swift in Sources */,
+				C842321B2BAA2F1A003408C3 /* AVSpeechSyncthesizer.swift in Sources */,
 				C82CEDE22B86FD7C00B619AD /* RunningMapViewController.swift in Sources */,
 				6C7A43E52B8C904500A14291 /* SignUpViewController.swift in Sources */,
 				6CF4D5FE2B90669A0069A9B2 /* SignupVM.swift in Sources */,
