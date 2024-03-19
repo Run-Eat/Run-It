@@ -426,11 +426,28 @@ class LoginViewController: UIViewController
     
     @objc func touchedResetPasswordButton()
     {
-        //추후 구현 사항
-//        let VC = resetPasswordController()
-//        
-//        VC.modalPresentationStyle = .fullScreen
-//        present(VC, animated: true, completion: nil)
+        let alertController = UIAlertController(title: "비밀번호 찾기", message: "이메일을 입력해주세요", preferredStyle: .alert)
+        alertController.addTextField 
+        {   textField in
+            textField.placeholder = "이메일"
+            textField.keyboardType = .emailAddress
+        }
+        
+        let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
+        let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+            
+            guard let email = alertController.textFields?.first?.text else { return }
+            Auth.auth().sendPasswordReset(withEmail: email) { _ in
+                
+                let successAlertController = UIAlertController(title: "이메일 전송 완료", message: "비밀번호 재설정 이메일을 보냈습니다.", preferredStyle: .alert)
+                let okayAction = UIAlertAction(title: "확인", style: .default, handler: nil)
+                successAlertController.addAction(okayAction)
+                self.present(successAlertController, animated: true, completion: nil)
+            }
+        }
+        alertController.addAction(cancel)
+        alertController.addAction(confirm)
+        self.present(alertController, animated: true, completion: nil)
     }
     
     @objc func touchedSignUpButton()
