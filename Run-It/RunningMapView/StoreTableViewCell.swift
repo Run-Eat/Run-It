@@ -48,7 +48,8 @@ class StoreTableViewCell: UITableViewCell {
     lazy var storeAdressLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
-        label.textAlignment = .right
+        label.textAlignment = .left
+        label.numberOfLines = 0
         return label
     }()
     
@@ -118,9 +119,10 @@ class StoreTableViewCell: UITableViewCell {
         }
         
         storeAdressLabel.snp.makeConstraints { make in
-            make.top.equalTo(isOpenLabel.snp.bottom).offset(10)
-            make.leading.equalTo(storeDistanceLabel.snp.trailing).offset(10)
-            make.height.equalTo(18)
+            make.top.equalTo(isOpenLabel.snp.bottom).offset(8)
+            make.leading.equalTo(storeDistanceLabel.snp.trailing).offset(8)
+            make.trailing.equalToSuperview().offset(-18)
+//            make.height.equalTo(18)
         }
     }
     

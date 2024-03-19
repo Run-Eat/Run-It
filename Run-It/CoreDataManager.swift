@@ -103,6 +103,8 @@ class CoreDataManager {
         favorite.setValue(address, forKey: "address")
         favorite.setValue(category, forKey: "category")
         favorite.setValue(distance, forKey: "distance")
+        favorite.setValue(latitude, forKey: "latitude")
+        favorite.setValue(longitude, forKey: "longitude")
         favorite.setValue(Date(), forKey: "addedDate")
         
         do {

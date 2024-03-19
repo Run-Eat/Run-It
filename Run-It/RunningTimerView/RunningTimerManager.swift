@@ -72,9 +72,11 @@ class RunningTimer {
     
     func start() {
         guard state != .resumed else { return }
-        if state == .suspended || state == .finished {
-            locationManger.startUpdatingLocation()
-            print("Stopping: locationManager is \(locationManger), timer is \(String(describing: timer))")
+        
+        locationManger.startUpdatingLocation()
+        
+            if timer == nil {
+                
             timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global(qos: .background))
             timer?.schedule(deadline: .now(), repeating: .seconds(1))
             timer?.setEventHandler { [weak self] in
@@ -86,9 +88,8 @@ class RunningTimer {
                 // 로그 출력 및 UI 업데이트
                 print("running properties : \(self.time), \(self.distance), \(self.pace)")
                 
-                DispatchQueue.main.async {
-                    // updateUI 클로져를 호출
-                    self.updateUI?()
+                DispatchQueue.main.async { [weak self] in
+                    self?.updateUI?()
                 }
             }
             timer?.resume()
@@ -97,14 +98,44 @@ class RunningTimer {
     }
     
     func pause() {
-        if state == .resumed {
-            locationManger.pauseLocationUpdates()
-            if state == .resumed {
-                timer?.suspend()
-                state = .suspended
-                pauseTime = Date()
-                print("pause properties : \(self.time), \(self.distance), \(self.pace)")
-            }
+        guard state == .resumed else { return }
+        
+        locationManger.pauseLocationUpdates()
+        
+        timer?.suspend()
+        
+        pauseTime = Date()
+        
+        state = .suspended
+        
+        print("pause properties : \(self.time), \(self.distance), \(self.pace)")
+    }
+    
+    func restart() {
+        guard state == .suspended else { return }
+        
+        locationManger.resumeLocationUpdates()
+        
+        timer?.resume()
+        
+        restartTime = Date()
+        
+        if let pTime = pauseTime, let rTime = restartTime {
+            pauseDuration += Int(rTime.timeIntervalSince(pTime))
+        }
+        
+        state = .resumed
+        
+        //현지시간 출력
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        let restartTimeString = dateFormatter.string(from: restartTime ?? Date())
+        
+        print("Restart Time: \(restartTimeString)")
+        print("restart properties : \(self.time), \(self.distance), \(self.pace)")
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.updateUI?()
         }
     }
     
@@ -115,30 +146,6 @@ class RunningTimer {
             backgroundTime = Date()
         }
         print(backgroundTime ?? Date())
-    }
-    
-    
-    func restart() {
-        guard state == .suspended else { return }
-        locationManger.resumeLocationUpdates()
-        //            timer?.activate()
-        timer?.resume()
-        state = .resumed
-        restartTime = Date()
-        
-        //현지시간 출력
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        let restartTimeString = dateFormatter.string(from: restartTime ?? Date())
-        print("Restart Time: \(restartTimeString)")
-        
-        if let pTime = pauseTime, let rTime = restartTime {
-            pauseDuration += Int(rTime.timeIntervalSince(pTime))
-        }
-        print("restart properties : \(self.time), \(self.distance), \(self.pace)")
-        DispatchQueue.main.async {
-            self.updateUI?()
-        }
     }
     
     func timerWillEnterForeground() {
@@ -158,8 +165,10 @@ class RunningTimer {
     }
     
     func stop() {
+        
+        locationManger.stopUpdatingLocation()
+        
         if state == .resumed || state == .suspended {
-            locationManger.stopUpdatingLocation()
             print("Stopping: locationManager is \(locationManger), timer is \(String(describing: timer))")
             
             if let timer = timer {
@@ -171,28 +180,22 @@ class RunningTimer {
 
     
     func reset() {
-        // 타이머를 중지
         timer?.cancel()
 
-        // 상태를 초기 상태로 설정
-        state = .suspended
-
-        // 시간, 거리, 페이스 등의 변수를 초기화
         time = 0
         distance = 0.0
         pace = 0.0
         pauseDuration = 0
 
-        // 시작 시간과 일시 정지/재시작 시간을 nil로 설정
         startTime = Date()
         pauseTime = nil
         restartTime = nil
         backgroundTime = nil
 
-        // 위치 관리자의 상태도 리셋 (예: 위치 배열을 비우고 총 거리를 0으로 설정)
         locationManger.resetLocationData()
-
-        // UI 업데이트 클로저를 nil로 설정하거나, UI를 초기 상태로 설정하는 로직을 호출
+        
+        state = .suspended
+        
         updateUI?()
     }
     
@@ -202,5 +205,3 @@ class RunningTimer {
     }
     
 }
-
-

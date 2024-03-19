@@ -620,7 +620,7 @@ extension RunningMapViewController: CLLocationManagerDelegate {
         
         let name = mapItem.name ?? "Unknown"
         let address = mapItem.placemark.title ?? "No Address"
-        let category = "편의점" // 확장 필요
+        let category = customAnnotation.category ?? "Unknown"
 
         // 어노테이션까지 거리 계산
         let userLocation = CLLocation(latitude: mapView.userLocation.coordinate.latitude, longitude: mapView.userLocation.coordinate.longitude)
@@ -756,6 +756,113 @@ extension RunningMapViewController: CLLocationManagerDelegate {
         default:
             return nil
         }
+    }
+    
+    func didSelectFavorite(_ favorite: Favorite) {
+        DispatchQueue.main.async {
+            // 기존에 맵에 추가된 어노테이션 중 같은 이름의 어노테이션이 있는지 확인
+            if let existingAnnotations = self.mapView.annotations as? [CustomAnnotation],
+               let index = existingAnnotations.firstIndex(where: { $0.title == favorite.storeName }) {
+                // 이미 같은 이름의 어노테이션이 있으면 지도 중심을 그 어노테이션으로 이동
+                let annotation = existingAnnotations[index]
+                self.mapView.selectAnnotation(annotation, animated: true)
+                self.mapView.centerCoordinate = annotation.coordinate
+            } else {
+                // 같은 이름의 어노테이션이 없으면 새로 생성하고 맵에 추가
+                let annotation = CustomAnnotation()
+                annotation.name = favorite.storeName
+                annotation.category = favorite.category
+                annotation.address = favorite.address
+                annotation.coordinate = CLLocationCoordinate2D(latitude: favorite.latitude, longitude: favorite.longitude)
+                // 사용자 위치 어노테이션을 제외한 모든 어노테이션 제거
+                let annotationsToRemove = self.mapView.annotations.filter { !($0 is MKUserLocation) }
+                self.mapView.removeAnnotations(annotationsToRemove)
+                self.mapView.addAnnotation(annotation)
+                
+                self.mapView.selectAnnotation(annotation, animated: true)
+                self.mapView.centerCoordinate = annotation.coordinate
+            }
+            
+            DispatchQueue.main.async {
+                let userLocation = CLLocation(latitude: self.mapView.userLocation.coordinate.latitude, longitude: self.mapView.userLocation.coordinate.longitude)
+
+                let annotationLocation = CLLocation(latitude: favorite.latitude, longitude: favorite.longitude)
+
+                let distance = userLocation.distance(from: annotationLocation)
+                
+                let info = AnnotationInfo(
+                    name: favorite.storeName ?? "",
+                    category: favorite.category ?? "",
+                    address: favorite.address ?? "",
+                    url: "", // 필요하다면 URL 정보 추가
+                    latitude: favorite.latitude,
+                    longitude: favorite.longitude,
+                    isOpenNow: true, // 실제 상태에 따라 설정
+                    distance: Int(distance),
+                    isFavorite: true
+                )
+
+                let sourceCoordinate = self.mapView.userLocation.coordinate
+                let destinationCoordinate = annotationLocation.coordinate
+
+                let sourcePlacemark = MKPlacemark(coordinate: sourceCoordinate)
+                let destinationPlacemark = MKPlacemark(coordinate: destinationCoordinate)
+
+                let sourceItem = MKMapItem(placemark: sourcePlacemark)
+                let destinationItem = MKMapItem(placemark: destinationPlacemark)
+
+                let directionRequest = MKDirections.Request()
+                directionRequest.source = sourceItem
+                directionRequest.destination = destinationItem
+                directionRequest.transportType = .walking
+
+                let directions = MKDirections(request: directionRequest)
+                directions.calculate { (response, error) in
+                    guard let response = response else {
+                        if let error = error {
+                            print("Error: \(error)")
+                        }
+                        return
+                    }
+                    
+                    let route = response.routes[0]
+                    self.mapView.removeOverlays(self.mapView.overlays)
+                    self.mapView.addOverlay(route.polyline, level: .aboveRoads)
+                    
+                    let rect = route.polyline.boundingMapRect
+
+                    let edgePadding = UIEdgeInsets(top: 100, left: 100, bottom: 100, right: 100)
+
+                    self.mapView.setVisibleMapRect(rect, edgePadding: edgePadding, animated: true)
+                }
+                
+                if let currentModal = self.presentedViewController {
+                    currentModal.dismiss(animated: true)
+                }
+                
+                let storeVC = StoreViewController()
+                storeVC.stores = [info]
+                storeVC.view.backgroundColor = UIColor.systemBackground
+                
+                if let sheet = storeVC.presentationController as? UISheetPresentationController {
+                    let customDetentIdentifier = UISheetPresentationController.Detent.Identifier("customBottomBarHeight")
+                    let customDetent = UISheetPresentationController.Detent.custom(identifier: customDetentIdentifier) { _ in
+                        return 150
+                    }
+                    
+                    sheet.detents = [customDetent]
+                    sheet.prefersGrabberVisible = true
+                    sheet.largestUndimmedDetentIdentifier = customDetentIdentifier
+                    sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+                    sheet.prefersEdgeAttachedInCompactHeight = true
+                    sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true
+                    sheet.presentingViewController.modalTransitionStyle = .coverVertical
+                }
+                
+                self.present(storeVC, animated: true, completion: nil)
+            }
+        }
+        print("\(favorite.latitude),\(favorite.longitude)")
     }
     
 }

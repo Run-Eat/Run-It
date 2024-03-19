@@ -130,3 +130,17 @@ extension FavoritesViewModel {
 
 }
 
+extension FavoritesViewModel {
+    func imageForCategory() -> String {
+        switch categoryText {
+        case "편의점":
+            return "CvImage"
+        case "카페/베이커리":
+            return "CafeImage"
+        case "건강식":
+            return "HealthImage"
+        default:
+            return "defaultIcon"
+        }
+    }
+}

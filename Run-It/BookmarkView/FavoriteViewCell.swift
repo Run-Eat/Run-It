@@ -66,12 +66,8 @@ class FavoriteViewCell: UITableViewCell {
         nameLabel.text = viewModel.storeText
         adressLabel.text = viewModel.addressText
         categoryLabel.text = viewModel.categoryText
-        storeImage.image = UIImage(named: "LogoGs25")
-        // If you're storing the distance as a String or a Number, make sure to convert it to a String.
-        // The following assumes distance is stored as an NSNumber or Int and converts it to String.
-//        if let distance = favorite.distance as? NSNumber {
-//            storeDistanceLabel.text = "\(distance.stringValue) m"
-//        }
+        let imageName = viewModel.imageForCategory()
+        storeImage.image = UIImage(named: imageName)
     }
     private func setupLayout() {
         
