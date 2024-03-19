@@ -97,7 +97,7 @@ func kakaoSignupInApp()  // 카카오톡 앱이 설치되어있을 경우
 {
     UserApi.shared.loginWithKakaoTalk
     {   oauthToken, error in
-        if let error = error
+        if error != nil
         {
             print("카카오톡 로그인 실패")
         }
@@ -105,7 +105,7 @@ func kakaoSignupInApp()  // 카카오톡 앱이 설치되어있을 경우
         else
         {
             print("카카오톡 로그인 실패")
-            if let token = oauthToken
+            if oauthToken != nil
             {
                 createUserByKakao()
             }
@@ -117,14 +117,14 @@ func kakaoSignupInWeb()  // 카카오톡 앱이 설치되어있지 않거나 열
 {
     UserApi.shared.loginWithKakaoAccount
     {   oauthToken, error in
-        if let error = error
+        if error != nil
         {
             print("카카오톡 로그인 실패")
         }
         
         else
         {
-            if let token = oauthToken
+            if oauthToken != nil
             {
                 createUserByKakao()
             }
@@ -136,7 +136,7 @@ func createUserByKakao()
 {
     UserApi.shared.me()
     {   user, error in
-        if let error = error
+        if error != nil
         {
             print("카카오 사용자 정보 가져오기 실패")
         }
@@ -150,11 +150,11 @@ func createUserByKakao()
             
             Auth.auth().createUser(withEmail: email, password: "\(pw)")
             {   result, error in
-                if let error = error
+                if error != nil
                 {
                     print("사용자 생성 실패")
                 }
-                if let result = result
+                if result != nil
                 {
                     print("사용자 생성 성공")
                     

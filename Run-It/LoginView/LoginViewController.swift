@@ -15,13 +15,14 @@ import KakaoSDKUser
 import AuthenticationServices
 import CryptoKit
 
-var currentNonce: String?
 
 class LoginViewController: UIViewController
 {
     var persistentContainer: NSPersistentContainer? {
         (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer
     }
+    
+    let loginVM = LoginVM()
     
     let loginLogo = UIImageView(image: UIImage(named: "LoginLogo"))
     
@@ -54,9 +55,19 @@ class LoginViewController: UIViewController
         textField.autocapitalizationType = .none
         textField.autocorrectionType = .no
         textField.spellCheckingType = .no
+        textField.isSecureTextEntry = true
         textField.layer.borderWidth = 0.7
         textField.layer.cornerRadius = 7
         return textField
+    }()
+    
+    lazy var passwordShowHideButton: UIButton =
+    {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(systemName: "eye.slash"), for: .normal)
+        button.addTarget(self, action: #selector(showHidePassword), for: .touchUpInside)
+        button.tintColor = .lightGray
+        return button
     }()
     
     lazy var loginButton: UIButton =
@@ -170,6 +181,7 @@ class LoginViewController: UIViewController
         view.addSubview(loginLogo)
         view.addSubview(emailTextField)
         view.addSubview(passwordTextField)
+        view.addSubview(passwordShowHideButton)
         view.addSubview(loginButton)
         view.addSubview(findEmailButton)
         view.addSubview(resetPasswordButton)
@@ -207,6 +219,14 @@ class LoginViewController: UIViewController
             make.centerX.equalTo(view.snp.centerX)
             make.width.equalTo(350)
             make.height.equalTo(40)
+        }
+        
+        passwordShowHideButton.snp.makeConstraints
+        {   make in
+            make.centerY.equalTo(passwordTextField.snp.centerY)
+            make.trailing.equalTo(passwordTextField).offset(-10)
+            make.width.equalTo(30)
+            make.height.equalTo(30)
         }
         
         loginButton.snp.makeConstraints
@@ -337,46 +357,62 @@ class LoginViewController: UIViewController
     }
     
 // MARK: - 버튼 함수
+    @objc func showHidePassword()
+    {
+        passwordTextField.isSecureTextEntry.toggle()
+        
+        if passwordTextField.isSecureTextEntry
+        {
+            passwordShowHideButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
+        }
+        
+        else
+        {
+            passwordShowHideButton.setImage(UIImage(systemName: "eye.fill"), for: .normal)
+        }
+    }
+    
     @objc func touchedLoginButton()
     {
         guard let email = emailTextField.text   else { return }
         guard let password = passwordTextField.text   else { return }
-        signInUser(email: email, password: password)
         checkData(loginType: "Email", email: email)
+        signInUser(email: email, password: password)
     }
     
     @objc func touchedKakaoLoginButton()
     {
-        UserApi.shared.me
-        {   user, error in
-            guard let email = user?.kakaoAccount?.email else { return }
-            
-            if user == nil
-            {
-                print("이메일 가져오기 실패")
-                if let error = error
+        var email: String = ""
+        
+            UserApi.shared.me
+            {   user, error in
+                
+                guard let useremail = user?.kakaoAccount?.email else { return }
+
+                if user == nil
                 {
-                    print(error)
+                    print("이메일 가져오기 실패")
+                    if let error = error
+                    {
+                        print(error)
+                    }
+                }
+                
+                else if user != nil
+                {
+                    email = useremail
+                    print("이메일 가져오기 성공")
                 }
             }
-            
-            else if user != nil
-            {
-                print("이메일 가져오기 성공")
-                self.checkData(loginType: "Kakao", email: email)
-            }
-        }
+        self.checkData(loginType: "Kakao", email: email)
         kakaoLogin()
     }
     
     @objc func touchedAppleLoginButton()
     {
-        appleLogin()
-        self.checkData(loginType: "Apple", email: "apple")
-        let VC = MainTabBarViewController()
-        
-        VC.modalPresentationStyle = .fullScreen
-        self.present(VC, animated: true, completion: nil)
+        self.checkData(loginType: "Apple", email: "appleLogin")
+        loginVM.setPresentationAnchor(self.view.window!)
+        loginVM.appleLogin()
     }
     
     @objc func touchedFindEmailButton()
@@ -390,11 +426,28 @@ class LoginViewController: UIViewController
     
     @objc func touchedResetPasswordButton()
     {
-        //추후 구현 사항
-//        let VC = resetPasswordController()
-//        
-//        VC.modalPresentationStyle = .fullScreen
-//        present(VC, animated: true, completion: nil)
+        let alertController = UIAlertController(title: "비밀번호 찾기", message: "이메일을 입력해주세요", preferredStyle: .alert)
+        alertController.addTextField 
+        {   textField in
+            textField.placeholder = "이메일"
+            textField.keyboardType = .emailAddress
+        }
+        
+        let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
+        let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+            
+            guard let email = alertController.textFields?.first?.text else { return }
+            Auth.auth().sendPasswordReset(withEmail: email) { _ in
+                
+                let successAlertController = UIAlertController(title: "이메일 전송 완료", message: "비밀번호 재설정 이메일을 보냈습니다.", preferredStyle: .alert)
+                let okayAction = UIAlertAction(title: "확인", style: .default, handler: nil)
+                successAlertController.addAction(okayAction)
+                self.present(successAlertController, animated: true, completion: nil)
+            }
+        }
+        alertController.addAction(cancel)
+        alertController.addAction(confirm)
+        self.present(alertController, animated: true, completion: nil)
     }
     
     @objc func touchedSignUpButton()
@@ -507,103 +560,4 @@ extension LoginViewController: UITextFieldDelegate
         passwordTextField.becomeFirstResponder()
     }
 
-}
-
-extension LoginViewController: ASAuthorizationControllerDelegate
-{
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) 
-    {
-        if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential
-        {
-            guard let nonce = currentNonce  else { fatalError("로그인 요청이 전송되지 않았습니다") }
-            
-            guard let appleIDToken = appleIDCredential.identityToken    else { print("토큰을 가져올 수 없습니다"); return }
-            
-            guard let idTokenString = String(data: appleIDToken, encoding: .utf8)   else { print("토큰 문자열을 직렬화 할 수 없습니다"); return }
-            
-            let credential = OAuthProvider.credential(withProviderID: "apple.com", idToken: idTokenString, rawNonce: nonce)
-            
-            Auth.auth().signIn(with: credential)
-            {   authResult, error in
-                if let error = error
-                {
-                    print("애플 로그인 오류: \(error)")
-                    return
-                }
-                
-            }
-        }
-    }
-}
-
-extension LoginViewController: ASAuthorizationControllerPresentationContextProviding
-{
-    func appleLogin()
-    {
-        let nonce = randomNonceString()
-        currentNonce = nonce
-        let appleIDProvider = ASAuthorizationAppleIDProvider()
-        let request = appleIDProvider.createRequest()
-        request.requestedScopes = [.fullName, .email]
-        request.nonce = sha256(nonce)
-        
-        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
-        authorizationController.delegate = self
-        authorizationController.presentationContextProvider = self
-        authorizationController.performRequests()
-    }
-    
-    func sha256(_ input: String) -> String
-    {
-        let inputData = Data(input.utf8)
-        let hashedData = SHA256.hash(data: inputData)
-        let hashString = hashedData.compactMap {
-            return String(format: "%02x", $0)
-        }.joined()
-        
-        return hashString
-    }
-    
-    func randomNonceString(length: Int = 32) -> String
-    {
-        precondition(length > 0)
-        let charset: Array<Character> =
-        Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
-        var result = ""
-        var remainingLength = length
-        
-        while remainingLength > 0 {
-            let randoms: [UInt8] = (0 ..< 16).map
-            { _ in
-                var random: UInt8 = 0
-                let errorCode = SecRandomCopyBytes(kSecRandomDefault, 1, &random)
-                if errorCode != errSecSuccess
-                {
-                    fatalError("nonce를 생성 실패 - \(errorCode)")
-                }
-                return random
-            }
-            
-            randoms.forEach
-            {   random in
-                if remainingLength == 0
-                {
-                    return
-                }
-                
-                if random < charset.count
-                {
-                    result.append(charset[Int(random)])
-                    remainingLength -= 1
-                }
-            }
-        }
-        
-        return result
-    }
-    
-    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor
-    {
-        return self.view.window!
-    }
 }

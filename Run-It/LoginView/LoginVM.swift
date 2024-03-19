@@ -9,6 +9,11 @@ import Foundation
 import FirebaseAuth
 import KakaoSDKAuth
 import KakaoSDKUser
+import AuthenticationServices
+import CryptoKit
+import SwiftJWT
+import Alamofire
+import KeychainAccess
 
 
 // MARK: - Firebase 로그인
@@ -49,7 +54,7 @@ func kakaoLogin()
     {
         UserApi.shared.accessTokenInfo
         {   _, error in
-            if let error = error    // 토큰이 유효하지 않은 경우
+            if error != nil    // 토큰이 유효하지 않은 경우
             {
                 openKakaoService()
             }
@@ -86,14 +91,14 @@ func kakaoLoginInApp()  // 카카오톡 앱이 설치되어있을 경우
 {
     UserApi.shared.loginWithKakaoTalk
     {   oauthToken, error in
-        if let error = error
+        if error != nil
         {
             print("카카오톡 로그인 실패")
         }
         
         else
         {
-            if let token = oauthToken
+            if oauthToken != nil
             {
                 bringKakaoInfo()
             }
@@ -105,14 +110,14 @@ func kakaoLoginInWeb()  // 카카오톡 앱이 설치되어있지 않거나 열�
 {
     UserApi.shared.loginWithKakaoAccount
     {   oauthToken, error in
-        if let error = error
+        if error != nil
         {
             print("카카오톡 로그인 실패")
         }
         
         else
         {
-            if let token = oauthToken
+            if oauthToken != nil
             {
                 bringKakaoInfo()
             }
@@ -124,7 +129,7 @@ func bringKakaoInfo()
 {
     UserApi.shared.me
     {   user, error in
-        if let error = error
+        if error != nil
         {
             print("카카오 사용자 정보 불러오기 실패")
             return
@@ -153,6 +158,147 @@ func bringKakaoInfo()
     }
 }
 
+//MARK: - 애플 로그인
+class LoginVM: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding
+{
+    
+    var currentNonce: String?
+    var presentationAnchor: ASPresentationAnchor?
+    
+    func setPresentationAnchor(_ anchor: ASPresentationAnchor) 
+    {
+        presentationAnchor = anchor
+    }
+
+    func appleLogin() 
+    {
+        let nonce = randomNonceString()
+        currentNonce = nonce
+        let appleIDProvider = ASAuthorizationAppleIDProvider()
+        let request = appleIDProvider.createRequest()
+        request.requestedScopes = [.fullName, .email]
+        request.nonce = sha256(nonce)
+        
+        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+        authorizationController.delegate = self
+        if presentationAnchor != nil
+        {
+            authorizationController.presentationContextProvider = self
+            authorizationController.performRequests()
+        }
+        
+        else
+        {
+            fatalError("presentationAnchor 가 설정되지 않음")
+        }
+    }
+    
+    func sha256(_ input: String) -> String
+    {
+        let inputData = Data(input.utf8)
+        let hashedData = SHA256.hash(data: inputData)
+        let hashString = hashedData.compactMap {
+            return String(format: "%02x", $0)
+        }.joined()
+        
+        return hashString
+    }
+    
+    func randomNonceString(length: Int = 32) -> String
+    {
+        precondition(length > 0)
+        let charset: Array<Character> =
+        Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        var result = ""
+        var remainingLength = length
+        
+        while remainingLength > 0 {
+            let randoms: [UInt8] = (0 ..< 16).map
+            {   _ in
+                var random: UInt8 = 0
+                let errorCode = SecRandomCopyBytes(kSecRandomDefault, 1, &random)
+                if errorCode != errSecSuccess
+                {
+                    fatalError("nonce를 생성 실패 - \(errorCode)")
+                }
+                return random
+            }
+            
+            randoms.forEach
+            {   random in
+                if remainingLength == 0
+                {
+                    return
+                }
+                
+                if random < charset.count
+                {
+                    result.append(charset[Int(random)])
+                    remainingLength -= 1
+                }
+            }
+        }
+        
+        return result
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) 
+    {
+        switch authorization.credential
+        {
+        case
+            let appleIDCredential as ASAuthorizationAppleIDCredential:
+            let userIdentifier = appleIDCredential.user
+            let fullName = appleIDCredential.fullName
+            let email = appleIDCredential.email
+            
+            if let authorizationCode = appleIDCredential.authorizationCode,
+               let identityToken = appleIDCredential.identityToken,
+               let authCodeString = String(data: authorizationCode, encoding: .utf8),
+               let tokenString = String(data: identityToken, encoding: .utf8)
+            {
+                let keychain = Keychain(service: "com.team5.Run-It")
+                
+                do
+                {
+                    try keychain.set(authorizationCode, key: "authorizationCode")
+                }
+                catch
+                {
+                    print("키 체인 저장 실패 - \(error)")
+                }
+                
+                print("authorizationCode : \(authorizationCode)")
+                print("identityToken : \(identityToken)")
+                print("authCodeString : \(authCodeString)")
+                print("tokenString : \(tokenString)")
+            }
+            
+            print("userIdentifier : \(userIdentifier)")
+            print("fullName : \(String(describing: fullName))")
+            print("email : \(String(describing: email))")
+            
+        case
+            let passwordCredential as ASPasswordCredential:
+            let username = passwordCredential.user
+            let password = passwordCredential.password
+            
+            print("username : \(username)")
+            print("password : \(password)")
+            
+        default:
+            break
+        }
+        sendTask(task: "successLogin")
+    }
+    
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor
+    {
+        guard let anchor = presentationAnchor else { fatalError("presentationAnchor 가 설정되지 않음") }
+        
+        return anchor
+    }
+}
 
 // MARK: - Notification
 func sendTask(task: String)
