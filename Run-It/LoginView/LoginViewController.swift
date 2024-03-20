@@ -411,13 +411,26 @@ class LoginViewController: UIViewController
     @objc func touchedAppleLoginButton()
     {
         self.checkData(loginType: "Apple", email: "appleLogin")
-        loginVM.setPresentationAnchor(self.view.window!)
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+        {
+            if let keyWindow = windowScene.windows.first 
+            {
+                loginVM.setPresentationAnchor(keyWindow)
+            }
+        }
+        
+        else
+        {
+            print("Key window not found")
+        }
+        
         loginVM.appleLogin()
     }
     
     @objc func touchedFindEmailButton()
     {
-        //추후 구현 사항
+        // 추후 구현 사항 - 휴대폰 번호를 받거나 본인 인증을 해야 구현 가능
 //        let VC = FindEmailController()
 //
 //        VC.modalPresentationStyle = .fullScreen
@@ -486,6 +499,7 @@ class LoginViewController: UIViewController
         
         else if result == "needSignup"
         {
+            ProfileViewController().kakaoLogout()
             let alertController = UIAlertController(title: "로그인 실패", message: "회원 가입을 먼저 진행해주세요.", preferredStyle: .alert)
             let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
             alertController.addAction(confirm)
@@ -500,6 +514,19 @@ class LoginViewController: UIViewController
             self.present(VC, animated: true, completion: nil)
             emailTextField.text = ""
             passwordTextField.text = ""
+        }
+        
+        else if result == "KakaoSignupSucces"
+        {
+            let alertController = UIAlertController(title: "알림", message: "카카오 계정 회원가입에 성공하였습니다.", preferredStyle: .alert)
+            let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
+            alertController.addAction(confirm)
+            self.present(alertController, animated: true, completion: nil)
+        }
+        
+        else if result == "signupToAppleLogin"
+        {
+            touchedAppleLoginButton()
         }
     }
 }

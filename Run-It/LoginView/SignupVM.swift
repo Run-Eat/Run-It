@@ -157,7 +157,7 @@ func createUserByKakao()
                 if result != nil
                 {
                     print("사용자 생성 성공")
-                    
+                    sendTask(task: "KakaoSignupSucces")
                 }
                 
             }

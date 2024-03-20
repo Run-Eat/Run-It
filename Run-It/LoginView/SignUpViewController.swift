@@ -350,16 +350,16 @@ class SignUpViewController: UIViewController
         
         else 
         {
-            // 토큰이 없는 상태 로그인 필요
             kakaoSignup()
+            dismiss(animated: true)
         }
     }
     
     @objc func touchedAppleSignupButton()
     {
-        // 추후 애플 로그인 구현
+        dismiss(animated: true)
+        sendTask(task: "signupToAppleLogin")
     }
-    
 }
 
 // MARK: - TextFieldDelegate extension
