@@ -199,7 +199,7 @@ class ProfileViewController: UIViewController
     {
         let button = UIButton()
         button.setTitle("회원 탈퇴", for: .normal)
-        button.backgroundColor = .systemRed
+        button.backgroundColor = .lightGray
         button.layer.cornerRadius = 14
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
@@ -385,8 +385,8 @@ class ProfileViewController: UIViewController
         
         withdrawButton.snp.makeConstraints
         {   make in
-            make.centerX.equalTo(view.snp.centerX)
-            make.top.equalTo(tableView.snp.bottom).offset(70)
+            make.trailing.equalTo(view.snp.trailing).inset(30)
+            make.top.equalTo(noticeButton.snp.bottom).offset(10)
             make.width.equalTo(70)
         }
         
@@ -746,10 +746,16 @@ class ProfileViewController: UIViewController
     
     @objc func touchedLogoutButton()    // 로그아웃 버튼
     {
-        kakaoLogout()
-        emailLogout()
-        
-        dismiss(animated: true)
+        let alertController = UIAlertController(title: "알림", message: "로그아웃을 하시겠습니까?", preferredStyle: .alert)
+        let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
+        let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+            self.kakaoLogout()
+            self.emailLogout()
+            self.dismiss(animated: true)
+        }
+        alertController.addAction(cancel)
+        alertController.addAction(confirm)
+        self.present(alertController, animated: true, completion: nil)
     }
     
     @objc func touchedWeeklyButton()    // 주별 기록
