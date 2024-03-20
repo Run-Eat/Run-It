@@ -196,7 +196,7 @@ class PauseRunningHalfModalViewController: UIViewController {
             
             self.present(deleteAlert, animated: true, completion: nil)
         } else {
-            let alert = UIAlertController(title: "운동을 완료하시겠습니까?", message: "근처 편의점에서 물 한잔 어떻신가요?", preferredStyle: .alert)
+            let alert = UIAlertController(title: "운동을 완료하시겠습니까?", message: "근처 편의점에서 물 한잔 어떠신가요?", preferredStyle: .alert)
             
             alert.addAction(UIAlertAction(title: "운동 완료하기", style: .default, handler: { _ in
                 let locations = RunningTimerLocationManager.shared.getLocations()
