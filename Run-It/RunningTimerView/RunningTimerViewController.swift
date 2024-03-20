@@ -125,6 +125,8 @@ class RunningTimerViewController: UIViewController {
     
     let generator = UIImpactFeedbackGenerator(style: .heavy)
     
+    var lastAnnouncedDistance = 0.0
+    
     //MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -192,7 +194,15 @@ extension RunningTimerViewController {
             let paceSeconds = Int(round(pace)) % 60
             paceNumberLabel.text = String(format: "%02d:%02d", paceMinutes, paceSeconds)
             distanceNumberLabel.text = String(format: "%.2f", distance / 1000)
-//            print("거리: \(String(describing: distanceNumberLabel.text))")
+            // 거리가 이전에 음성 안내를 한 거리에서 1km 증가했는지 확인
+            if (distance / 1000 - lastAnnouncedDistance) >= 1.0 {
+                // 마지막으로 안내된 거리 업데이트
+                lastAnnouncedDistance += 1.0
+                
+                let speechText = "\(Int(lastAnnouncedDistance))킬로미터를 달리는데 걸린 시간은 \(hours)시간 \(minutes)분 \(seconds)초이며, 페이스는 \(paceMinutes)분 \(paceSeconds)초입니다."
+                SpeechService.shared.speak(speechText)
+            }
+            
         } else {
             paceNumberLabel.text = "--:--"
             distanceNumberLabel.text = "0.00"
