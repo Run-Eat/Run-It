@@ -10,8 +10,12 @@ import SnapKit
 import CoreData
 import FirebaseAuth
 import FirebaseCore
+import FirebaseAppCheck
 import KakaoSDKAuth
 import KakaoSDKUser
+import SwiftJWT
+import Alamofire
+import KeychainAccess
 
 
 class ProfileViewController: UIViewController
@@ -187,25 +191,30 @@ class ProfileViewController: UIViewController
         return button
     }()
     
+
     let generator = UIImpactFeedbackGenerator(style: .heavy)
+    lazy var withdrawButton: UIButton =
+    {
+        let button = UIButton()
+        button.setTitle("회원 탈퇴", for: .normal)
+        button.setTitleColor(.label, for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
+        button.addTarget(self, action: #selector(withdrawal), for: .touchUpInside)
+        
+        return button
+    }()
+
 // MARK: - Life Cycle
     override func viewDidLoad()
     {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         view.addSubview(scrollView)
+        scrollView.contentSize = CGSize(width: view.frame.width, height: 2000)
         addScrollView()
         setLayout()
         setupProfileUI()
         setupRecordStackView()
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        let uiViewHeight = CGFloat(runningRecords.count) * 170.0 + 16.0
-        let contentHeight = 671.33 + 44 + 8 + uiViewHeight
-        scrollView.contentSize = CGSize(width: view.frame.width, height: contentHeight)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -249,6 +258,7 @@ class ProfileViewController: UIViewController
         scrollView.addSubview(userRecord)
         scrollView.addSubview(uiView)
         scrollView.addSubview(resetButton)
+        scrollView.addSubview(withdrawButton)
 
     }
     
@@ -359,6 +369,12 @@ class ProfileViewController: UIViewController
             make.centerY.equalTo(pointImage.snp.centerY)
             make.leading.equalTo(view.snp.leading).inset(30)
         }
+        
+        withdrawButton.snp.makeConstraints
+        {   make in
+            make.centerY.equalTo(pointImage.snp.centerY)
+            make.leading.equalTo(resetButton.snp.leading).offset(130)
+        }
     }
     
     func setupRecordStackView() {
@@ -467,6 +483,11 @@ class ProfileViewController: UIViewController
         {
             print("로그아웃 에러")
         }
+    }
+    
+    func appleLogout()
+    {
+        
     }
  
 // MARK: - 프로필 사진 관리 메서드
@@ -618,8 +639,31 @@ class ProfileViewController: UIViewController
         }
     }
     
+//MARK: - 이메일 회원 탈퇴
+    func deleteAccount() 
+    {
+        if  let user = Auth.auth().currentUser {
+            user.delete
+            {   [self] error in
+                if let error = error
+                {
+                    print("Firebase Error : ",error)
+                }
+                else
+                {
+                    print("회원탈퇴 성공!")
+                }
+            }
+        }
+        else
+        {
+            print("로그인 정보가 존재하지 않습니다")
+        }
+    }
+
+    
 // MARK: - 버튼 함수
-    @objc func selectImage()
+    @objc func selectImage()    // 프로필 사진
     {
         let imagePickerController = UIImagePickerController()
         imagePickerController.delegate = self
@@ -627,14 +671,15 @@ class ProfileViewController: UIViewController
         present(imagePickerController, animated: true, completion: nil)
     }
     
-    @objc func touchedLogoutButton()
+    @objc func touchedLogoutButton()    // 로그아웃 버튼
     {
         kakaoLogout()
         emailLogout()
+        
         dismiss(animated: true)
     }
     
-    @objc func touchedWeeklyButton()
+    @objc func touchedWeeklyButton()    // 주별 기록
     {
         generator.impactOccurred()
         weeklyButton.backgroundColor = .systemBlue
@@ -650,7 +695,7 @@ class ProfileViewController: UIViewController
         lastWeek_MonthRunningCountLabel.text = "\(lastWeekRunningCount) 회"
     }
     
-    @objc func touchedMonthlyButton()
+    @objc func touchedMonthlyButton()       // 월별 기록
     {
         generator.impactOccurred()
         monthlyButton.backgroundColor = .systemBlue
@@ -666,40 +711,118 @@ class ProfileViewController: UIViewController
         lastWeek_MonthRunningCountLabel.text = "\(lastMonthRunningCount) 회"
     }
     
-    @objc func noticeButtonTapped()
+    @objc func noticeButtonTapped()     // 공지 버튼 present
     {
         let eventVC = EventViewController()
         self.navigationController?.pushViewController(eventVC, animated: true)
     }
     // 추후 coreData 활용 데이터 관리 코드 작성
     
-    @objc func resetRecord()
+    @objc func resetRecord()    // 러닝 기록 초기화
     {
         print("러닝 기록 초기화")
-        guard let context = persistentContainer?.viewContext else { return }
-        
-        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "RunningRecord")
-        
-        do
-        {
-            let datas = try context.fetch(fetchRequest)
-            for data in datas
+        let alertController = UIAlertController(title: "알림", message: "러닝 기록을 초기화 하시겠습니까?", preferredStyle: .alert)
+        let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
+        let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+            guard let context = self.persistentContainer?.viewContext else { return }
+            
+            let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "RunningRecord")
+            
+            do
             {
-                guard let removeData = data as? NSManagedObject else { continue }
-                context.delete(removeData)
+                let datas = try context.fetch(fetchRequest)
+                for data in datas
+                {
+                    guard let removeData = data as? NSManagedObject else { continue }
+                    context.delete(removeData)
+                }
+                
+                try context.save()
+            }
+            catch
+            {
+                print("error")
             }
             
-            try context.save()
+            self.thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", 0))"
+            self.thisWeek_MonthPaceLabel.text = String(format: "%.2f", 0)
+            self.thisWeek_MonthRunningCountLabel.text = "0 회"
+            
+            self.lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", 0))"
+            self.lastWeek_MonthPaceLabel.text = String(format: "%.2f", 0)
+            self.lastWeek_MonthRunningCountLabel.text = "0 회"
         }
-        catch
-        {
-            print("error")
-        }
+        alertController.addAction(cancel)
+        alertController.addAction(confirm)
+        present(alertController, animated: true, completion: nil)
+        
     }
     
     @objc func withdrawal()     // 회원탈퇴
     {
+        let alertController = UIAlertController(title: "알림", message: "회원 탈퇴를 하시겠습니까?", preferredStyle: .alert)
+        let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
+        let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+            self.deleteAccount()
+            
+            let jwtString = self.makeJWT()
+            // JWT 값 저장
+            let keychain = Keychain(service: "com.team5.Run-It")
+            
+            do
+            {
+                try keychain.set(jwtString, key: "secret")
+            }
+            catch
+            {
+                print("키 체인 저장 실패 - \(error)")
+            }
+            
+            // authorizationCode 불러오기
+            do {
+                if let taCode = try keychain.get("authorizationCode")
+                {
+                    print("authorizationCode: \(taCode)")
+                    
+                    self.getAppleRefreshToken(code: taCode, completionHandler: { output in
+                    
+                        let clientSecret = jwtString
+                        if let refreshToken = output
+                        {
+                            print("Client_secret - \(clientSecret)")
+                            print("refresh_token - \(refreshToken)")
+                            
+                            self.revokeAppleToken(clientSecret: clientSecret, token: refreshToken)
+                            {
+                                print("Apple revokeToken Success")
+                            }
+                            
+                            self.dismiss(animated: true)
+                        }
+                        
+                        else
+                        {
+                            let dialog = UIAlertController(title: "error", message: "회원탈퇴 실패", preferredStyle: .alert)
+                            let okayAction = UIAlertAction(title: "확인", style: .default, handler: {_ in})
+                            dialog.addAction(okayAction)
+                            self.present(dialog, animated: true, completion: nil)
+                        }
+                    })
+                }
+                else
+                {
+                    print("authorizationCode이 저장되지 않았습니다.")
+                }
+            } 
+            catch
+            {
+                print("Error fetching from Keychain: \(error)")
+            }
+        }
         
+        alertController.addAction(cancel)
+        alertController.addAction(confirm)
+        present(alertController, animated: true, completion: nil)
     }
 }
 
@@ -859,4 +982,153 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+}
+
+// MARK: - 애플 엑세스 토큰 발급 응답 모델
+extension ProfileViewController
+{
+    struct AppleTokenResponse: Codable 
+    {
+        var access_token: String?
+        var token_type: String?
+        var expires_in: Int?
+        var refresh_token: String?
+        var id_token: String?
+        
+        enum CodingKeys: String, CodingKey
+        {
+            case refresh_token = "refresh_token"
+        }
+    }
+            
+    func makeJWT() -> String    //client_secret
+    {
+        let myHeader = Header(kid: "CMKV35Z7JD")
+        struct MyClaims: Claims
+        {
+            let iss: String
+            let iat: Int
+            let exp: Int
+            let aud: String
+            let sub: String
+        }
+        
+        let nowDate = Date()
+        var dateComponent = DateComponents()
+        dateComponent.month = 6
+        let sixDate = Calendar.current.date(byAdding: dateComponent, to: nowDate) ?? Date()
+        let iat = Int(Date().timeIntervalSince1970)
+        let exp = iat + 3600
+        let myClaims = MyClaims(iss: "335MYJGX88", iat: iat, exp: exp, aud: "https://appleid.apple.com", sub: "com.team5.Run-It")
+        
+        var myJWT = JWT(header: myHeader, claims: myClaims)
+        
+        guard let url = Bundle.main.url(forResource: "AuthKey_CMKV35Z7JD", withExtension: "p8") else { return "키 파일 찾기 실패" }
+        
+        guard let privateKey = try? Data(contentsOf: url) else { return "키 파일 읽기 실패" }
+        
+        let jwtSigner = JWTSigner.es256(privateKey: privateKey)
+        let signedJWT = try! myJWT.sign(using: jwtSigner)
+        
+        print("signed JWT - \(signedJWT)")
+        
+        return signedJWT
+    }
+    
+    
+    func getAppleRefreshToken(code: String, completionHandler: @escaping (String?) -> Void)
+    {
+        let keychain = Keychain(service: "com.team5.Run-It")
+        
+        // jwt 불러오기
+        do {
+            if let savedSecret = try keychain.get("secret")
+            {
+                print("secret: \(savedSecret)")
+                
+                let url = "https://appleid.apple.com/auth/token?client_id=com.team5.Run-It&client_secret=\(savedSecret)&code=\(code)&grant_type=authorization_code"
+                let header: HTTPHeaders = ["Content-Type": "application/x-www-form-urlencoded"]
+                
+                print("🗝 clientSecret - \(savedSecret)")
+                print("🗝 authCode - \(code)")
+                
+                print("🗝 url - \(url)")
+                
+                let a = AF.request(url, method: .post, encoding: JSONEncoding.default, headers: header)
+                    .validate(statusCode: 200..<500)
+                    .responseData { response in
+                        print("🗝 response - \(response.description)")
+                        
+                        switch response.result
+                        {
+                        case .success(let output):
+                            print("🗝 ouput - \(output)")
+                            let decoder = JSONDecoder()
+                            do
+                            {
+                                let decodedData = try decoder.decode(AppleTokenResponse.self, from: output)
+                                print("🗝 output2 - \(String(describing: decodedData.refresh_token))")
+                                
+                                if let refreshToken = decodedData.refresh_token
+                                {
+                                    completionHandler(refreshToken)
+                                }
+                                else 
+                                {
+                                    let alert = UIAlertController(title: "Error", message: "토큰 생성 실패", preferredStyle: .alert)
+                                    let okayAction = UIAlertAction(title: "확인", style: .default, handler: {_ in})
+                                    alert.addAction(okayAction)
+                                    self.present(alert, animated: true, completion: nil)
+                                }
+                            }
+                            
+                            catch
+                            {
+                                print("Error decoding JSON: \(error)")
+                                let alert = UIAlertController(title: "Error", message: "JSON 디코딩 실패", preferredStyle: .alert)
+                                let okayAction = UIAlertAction(title: "확인", style: .default, handler: {_ in})
+                                alert.addAction(okayAction)
+                                self.present(alert, animated: true, completion: nil)
+                            }
+                            
+                        case .failure(_):
+                            //로그아웃 후 재로그인하여
+                            print("애플 토큰 발급 실패 - \(response.error.debugDescription)")
+                            let alert = UIAlertController(title: "error", message: "토큰 생성 실패", preferredStyle: .alert)
+                            let okayAction = UIAlertAction(title: "확인", style: .default, handler: {_ in})
+                            alert.addAction(okayAction)
+                            self.present(alert, animated: true, completion: nil)
+                        }
+                    }
+            }
+            else
+            {
+                print("secret이 저장되지 않았습니다.")
+            }
+        }
+        catch
+        {
+            print("Error fetching from Keychain: \(error)")
+        }
+        
+        
+    }
+    
+    func revokeAppleToken(clientSecret: String, token: String, completionHandler: @escaping () -> Void)
+    {
+        let url = "https://appleid.apple.com/auth/revoke?client_id=com.team5.Run-It&client_secret=\(clientSecret)&token=\(token)&token_type_hint=refresh_token"
+        let header: HTTPHeaders = ["Content-Type": "application/x-www-form-urlencoded"]
+        
+        AF.request(url,
+                   method: .post,
+                   headers: header)
+        .validate(statusCode: 200..<600)
+        .responseData { response in
+            guard let statusCode = response.response?.statusCode else { return }
+            if statusCode == 200 {
+                print("애플 토큰 삭제 성공!")
+                completionHandler()
+            }
+        }
+    }
 }

@@ -49,6 +49,9 @@
 		6CBBE2D12B8DB7C100F909EE /* FirebaseRemoteConfigSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 6CBBE2D02B8DB7C100F909EE /* FirebaseRemoteConfigSwift */; };
 		6CBBE2D32B8DB7C100F909EE /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 6CBBE2D22B8DB7C100F909EE /* FirebaseStorage */; };
 		6CBBE2D52B8DB7C100F909EE /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 6CBBE2D42B8DB7C100F909EE /* FirebaseStorageCombine-Community */; };
+		6CBC73292BA9824F008271D6 /* SwiftJWT in Frameworks */ = {isa = PBXBuildFile; productRef = 6CBC73282BA9824F008271D6 /* SwiftJWT */; };
+		6CBC732B2BA9AD50008271D6 /* AuthKey_CMKV35Z7JD.p8 in Resources */ = {isa = PBXBuildFile; fileRef = 6CBC732A2BA9AD50008271D6 /* AuthKey_CMKV35Z7JD.p8 */; };
+		6CBC73382BA9EBEE008271D6 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 6CBC73372BA9EBEE008271D6 /* KeychainAccess */; };
 		6CF4D5FE2B90669A0069A9B2 /* SignupVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CF4D5FD2B9066990069A9B2 /* SignupVM.swift */; };
 		6CF4D6002B9073A10069A9B2 /* LoginVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CF4D5FF2B9073A10069A9B2 /* LoginVM.swift */; };
 		C82CEDC92B86FCB200B619AD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82CEDC82B86FCB200B619AD /* AppDelegate.swift */; };
@@ -94,6 +97,7 @@
 		2B9888542B90C7AC00B2BC74 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		6C7A43E22B8C903100A14291 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		6C7A43E42B8C904500A14291 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
+		6CBC732A2BA9AD50008271D6 /* AuthKey_CMKV35Z7JD.p8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = AuthKey_CMKV35Z7JD.p8; path = "Run-It/ProfileView/AuthKey_CMKV35Z7JD.p8"; sourceTree = SOURCE_ROOT; };
 		6CF4D5FD2B9066990069A9B2 /* SignupVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupVM.swift; sourceTree = "<group>"; };
 		6CF4D5FF2B9073A10069A9B2 /* LoginVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVM.swift; sourceTree = "<group>"; };
 		C82CEDC52B86FCB200B619AD /* Run-It.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Run-It.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -109,7 +113,7 @@
 		C82CEDE82B86FDE800B619AD /* RunningTimerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningTimerViewController.swift; sourceTree = "<group>"; };
 		C83F1FBF2B9959EC00D309CC /* RunningTimerToMapViewPageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningTimerToMapViewPageController.swift; sourceTree = "<group>"; };
 		C842321A2BAA2F1A003408C3 /* AVSpeechSyncthesizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVSpeechSyncthesizer.swift; sourceTree = "<group>"; };
-		C85561422B9F2FB1004CA358 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Desktop/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		C85561422B9F2FB1004CA358 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C879CD022B88807B00DBFB82 /* PauseRunningHalfModalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseRunningHalfModalViewController.swift; sourceTree = "<group>"; };
 		C879CD042B8880F200DBFB82 /* PauseViewHalfModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseViewHalfModal.swift; sourceTree = "<group>"; };
 		C879CD062B8AA9B400DBFB82 /* StartRunningViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartRunningViewController.swift; sourceTree = "<group>"; };
@@ -144,6 +148,7 @@
 				6CBBE2C72B8DB7C100F909EE /* FirebaseInstallations in Frameworks */,
 				6CBBE2A72B8DB7C100F909EE /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 				C8D903F12B8731870008C15E /* KakaoSDKAuth in Frameworks */,
+				6CBC73382BA9EBEE008271D6 /* KeychainAccess in Frameworks */,
 				6CBBE2BD2B8DB7C100F909EE /* FirebaseFirestoreSwift in Frameworks */,
 				6CBBE2D52B8DB7C100F909EE /* FirebaseStorageCombine-Community in Frameworks */,
 				6CBBE2B52B8DB7C100F909EE /* FirebaseDatabaseSwift in Frameworks */,
@@ -157,6 +162,7 @@
 				6CBBE2AF2B8DB7C100F909EE /* FirebaseAuthCombine-Community in Frameworks */,
 				6CBBE2B72B8DB7C100F909EE /* FirebaseDynamicLinks in Frameworks */,
 				6CBBE2C52B8DB7C100F909EE /* FirebaseInAppMessagingSwift-Beta in Frameworks */,
+				6CBC73292BA9824F008271D6 /* SwiftJWT in Frameworks */,
 				6CBBE2B92B8DB7C100F909EE /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -219,6 +225,7 @@
 			isa = PBXGroup;
 			children = (
 				2B46533C2B97527D0040B146 /* ProfileViewController.swift */,
+				6CBC732A2BA9AD50008271D6 /* AuthKey_CMKV35Z7JD.p8 */,
 				2B9888292B8C770900B2BC74 /* RecordViewCell.swift */,
 				2B9888462B904D8500B2BC74 /* RunningRecordViewController.swift */,
 				2B4652F82B96B64F0040B146 /* RunningRecordViewModel.swift */,
@@ -339,6 +346,8 @@
 				6CBBE2D22B8DB7C100F909EE /* FirebaseStorage */,
 				6CBBE2D42B8DB7C100F909EE /* FirebaseStorageCombine-Community */,
 				C85561402B9F19E9004CA358 /* SnapKit */,
+				6CBC73282BA9824F008271D6 /* SwiftJWT */,
+				6CBC73372BA9EBEE008271D6 /* KeychainAccess */,
 			);
 			productName = "Run-It";
 			productReference = C82CEDC52B86FCB200B619AD /* Run-It.app */;
@@ -372,6 +381,8 @@
 				C8D903ED2B8731870008C15E /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
 				6CBBE29F2B8DB7C100F909EE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				C855613F2B9F19E9004CA358 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				6CBC73272BA9824F008271D6 /* XCRemoteSwiftPackageReference "Swift-JWT" */,
+				6CBC73362BA9EBEE008271D6 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 			);
 			productRefGroup = C82CEDC62B86FCB200B619AD /* Products */;
 			projectDirPath = "";
@@ -388,6 +399,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C82CEDD82B86FCB300B619AD /* LaunchScreen.storyboard in Resources */,
+				6CBC732B2BA9AD50008271D6 /* AuthKey_CMKV35Z7JD.p8 in Resources */,
 				C85561432B9F2FB1004CA358 /* GoogleService-Info.plist in Resources */,
 				C82CEDD52B86FCB300B619AD /* Assets.xcassets in Resources */,
 			);
@@ -575,9 +587,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Run-It/Run-It.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 335MYJGX88;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 335MYJGX88;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Run-It/Info.plist";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "\"사용자의 위치 정보를 받아오려고 합니다\"";
@@ -596,6 +610,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.team5.Run-It";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = RunItProvisionProfile;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -609,9 +624,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Run-It/Run-It.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 335MYJGX88;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 335MYJGX88;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Run-It/Info.plist";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "\"사용자의 위치 정보를 받아오려고 합니다\"";
@@ -630,6 +647,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.team5.Run-It";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = RunItProvisionProfile;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -666,6 +684,22 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 10.21.0;
+			};
+		};
+		6CBC73272BA9824F008271D6 /* XCRemoteSwiftPackageReference "Swift-JWT" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Kitura/Swift-JWT.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.1;
+			};
+		};
+		6CBC73362BA9EBEE008271D6 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess.git";
+			requirement = {
+				branch = master;
+				kind = branch;
 			};
 		};
 		C855613F2B9F19E9004CA358 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
@@ -821,6 +855,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6CBBE29F2B8DB7C100F909EE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseStorageCombine-Community";
+		};
+		6CBC73282BA9824F008271D6 /* SwiftJWT */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6CBC73272BA9824F008271D6 /* XCRemoteSwiftPackageReference "Swift-JWT" */;
+			productName = SwiftJWT;
+		};
+		6CBC73372BA9EBEE008271D6 /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6CBC73362BA9EBEE008271D6 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
 		};
 		C85561402B9F19E9004CA358 /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;
