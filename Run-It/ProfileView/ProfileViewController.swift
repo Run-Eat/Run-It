@@ -666,7 +666,10 @@ class ProfileViewController: UIViewController
                 }
                 else
                 {
-                    dismiss(animated: true)
+//                    dismiss(animated: true)
+                    let VC = LoginViewController()
+                    VC.modalPresentationStyle = .fullScreen
+                    self.present(VC, animated: true)
                     print("회원탈퇴 성공!")
                 }
             }
@@ -711,7 +714,10 @@ class ProfileViewController: UIViewController
                             print("Apple revokeToken Success")
                         }
                         
-                        self.dismiss(animated: true)
+//                        self.dismiss(animated: true)
+                        let VC = LoginViewController()
+                        VC.modalPresentationStyle = .fullScreen
+                        self.present(VC, animated: true)
                     }
                     
                     else
@@ -751,7 +757,9 @@ class ProfileViewController: UIViewController
         let confirm = UIAlertAction(title: "확인", style: .default) { _ in
             self.kakaoLogout()
             self.emailLogout()
-            self.dismiss(animated: true)
+            let VC = LoginViewController()
+            VC.modalPresentationStyle = .fullScreen
+            self.present(VC, animated: true)
         }
         alertController.addAction(cancel)
         alertController.addAction(confirm)
