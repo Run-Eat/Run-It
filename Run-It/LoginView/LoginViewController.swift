@@ -81,15 +81,16 @@ class LoginViewController: UIViewController
         return button
     }()
     
-    lazy var findEmailButton: UIButton =
-    {
-        let button = UIButton()
-        button.setTitle("이메일 찾기", for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
-        button.addTarget(self, action: #selector(touchedFindEmailButton), for: .touchUpInside)
-        return button
-    }()
+    // 추후 재설정
+//    lazy var findEmailButton: UIButton =
+//    {
+//        let button = UIButton()
+//        button.setTitle("이메일 찾기", for: .normal)
+//        button.setTitleColor(.black, for: .normal)
+//        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
+//        button.addTarget(self, action: #selector(touchedFindEmailButton), for: .touchUpInside)
+//        return button
+//    }()
     
     lazy var resetPasswordButton: UIButton =
     {
@@ -183,7 +184,7 @@ class LoginViewController: UIViewController
         view.addSubview(passwordTextField)
         view.addSubview(passwordShowHideButton)
         view.addSubview(loginButton)
-        view.addSubview(findEmailButton)
+//        view.addSubview(findEmailButton)
         view.addSubview(resetPasswordButton)
         view.addSubview(signUpButton)
         view.addSubview(leftLine_verticality)
@@ -240,32 +241,32 @@ class LoginViewController: UIViewController
         resetPasswordButton.snp.makeConstraints
         {   make in
             make.top.equalTo(loginButton.snp.bottom).offset(10)
-            make.centerX.equalTo(view.snp.centerX)
+            make.trailing.equalTo(rightLine_verticality.snp.trailing).offset(-15)
             make.width.equalTo(100)
         }
         
-        leftLine_verticality.snp.makeConstraints
-        {   make in
-            make.centerY.equalTo(resetPasswordButton.snp.centerY)
-            make.leading.equalTo(resetPasswordButton.snp.leading).offset(-15)
-            make.width.equalTo(1)
-            make.height.equalTo(10)
-        }
+//        leftLine_verticality.snp.makeConstraints
+//        {   make in
+//            make.centerY.equalTo(resetPasswordButton.snp.centerY)
+//            make.leading.equalTo(resetPasswordButton.snp.leading).offset(-15)
+//            make.width.equalTo(1)
+//            make.height.equalTo(10)
+//        }
         
         rightLine_verticality.snp.makeConstraints
         {   make in
             make.centerY.equalTo(resetPasswordButton.snp.centerY)
-            make.trailing.equalTo(resetPasswordButton.snp.trailing).offset(15)
+            make.centerX.equalTo(view.snp.centerX)
             make.width.equalTo(1)
             make.height.equalTo(10)
         }
         
-        findEmailButton.snp.makeConstraints
-        {   make in
-            make.centerY.equalTo(resetPasswordButton.snp.centerY)
-            make.leading.equalTo(leftLine_verticality.snp.leading).offset(-85)
-            make.width.equalTo(70)
-        }
+//        findEmailButton.snp.makeConstraints
+//        {   make in
+//            make.centerY.equalTo(resetPasswordButton.snp.centerY)
+//            make.leading.equalTo(leftLine_verticality.snp.leading).offset(-85)
+//            make.width.equalTo(70)
+//        }
         
         signUpButton.snp.makeConstraints
         {   make in
