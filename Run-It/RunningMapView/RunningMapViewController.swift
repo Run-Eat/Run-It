@@ -323,7 +323,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
 
     @objc func presentcoffeeAndBakeryFranchisesAnnotations() {
         generator.impactOccurred()
-        let coffeeAndBakeryFranchises = ["Cafe", "coffee", "투썸플레이스", "컴포즈커피",
+        let coffeeAndBakeryFranchises = ["Cafe", "coffee", "bakery", "투썸플레이스", "컴포즈커피",
                                          "스타벅스", "파리바게뜨", "뚜레쥬르", "할리스커피",
                                          "이디야커피", "메가커피", "브레드톡"]
         
