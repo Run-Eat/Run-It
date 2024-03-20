@@ -29,7 +29,7 @@ class LoginViewController: UIViewController
     let emailTextField: UITextField =
     {
         let textField = UITextField()
-        textField.placeholder = "이메일 주소"
+        textField.attributedPlaceholder = NSAttributedString(string: "이메일 주소", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         textField.borderStyle = .roundedRect
         textField.keyboardType = .emailAddress
         textField.returnKeyType = .continue
@@ -40,13 +40,14 @@ class LoginViewController: UIViewController
         textField.spellCheckingType = .no
         textField.layer.borderWidth = 0.7
         textField.layer.cornerRadius = 7
+        textField.backgroundColor = UIColor.white
         return textField
     }()
     
     let passwordTextField: UITextField =
     {
         let textField = UITextField()
-        textField.placeholder = "비밀번호"
+        textField.attributedPlaceholder = NSAttributedString(string: "비밀번호", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         textField.borderStyle = .roundedRect
         textField.keyboardType = .default
         textField.returnKeyType = .go
@@ -58,6 +59,7 @@ class LoginViewController: UIViewController
         textField.isSecureTextEntry = true
         textField.layer.borderWidth = 0.7
         textField.layer.cornerRadius = 7
+        textField.backgroundColor = UIColor.white
         return textField
     }()
     
@@ -81,15 +83,16 @@ class LoginViewController: UIViewController
         return button
     }()
     
-    lazy var findEmailButton: UIButton =
-    {
-        let button = UIButton()
-        button.setTitle("이메일 찾기", for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
-        button.addTarget(self, action: #selector(touchedFindEmailButton), for: .touchUpInside)
-        return button
-    }()
+    // 추후 재설정
+//    lazy var findEmailButton: UIButton =
+//    {
+//        let button = UIButton()
+//        button.setTitle("이메일 찾기", for: .normal)
+//        button.setTitleColor(.black, for: .normal)
+//        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
+//        button.addTarget(self, action: #selector(touchedFindEmailButton), for: .touchUpInside)
+//        return button
+//    }()
     
     lazy var resetPasswordButton: UIButton =
     {
@@ -130,6 +133,7 @@ class LoginViewController: UIViewController
         let label = UILabel()
         label.text = "또는 소셜 계정으로 로그인"
         label.font = UIFont.systemFont(ofSize: CGFloat(14))
+        label.textColor = UIColor.black
         return label
     }()
     
@@ -183,7 +187,7 @@ class LoginViewController: UIViewController
         view.addSubview(passwordTextField)
         view.addSubview(passwordShowHideButton)
         view.addSubview(loginButton)
-        view.addSubview(findEmailButton)
+//        view.addSubview(findEmailButton)
         view.addSubview(resetPasswordButton)
         view.addSubview(signUpButton)
         view.addSubview(leftLine_verticality)
@@ -240,32 +244,32 @@ class LoginViewController: UIViewController
         resetPasswordButton.snp.makeConstraints
         {   make in
             make.top.equalTo(loginButton.snp.bottom).offset(10)
-            make.centerX.equalTo(view.snp.centerX)
+            make.trailing.equalTo(rightLine_verticality.snp.trailing).offset(-15)
             make.width.equalTo(100)
         }
         
-        leftLine_verticality.snp.makeConstraints
-        {   make in
-            make.centerY.equalTo(resetPasswordButton.snp.centerY)
-            make.leading.equalTo(resetPasswordButton.snp.leading).offset(-15)
-            make.width.equalTo(1)
-            make.height.equalTo(10)
-        }
+//        leftLine_verticality.snp.makeConstraints
+//        {   make in
+//            make.centerY.equalTo(resetPasswordButton.snp.centerY)
+//            make.leading.equalTo(resetPasswordButton.snp.leading).offset(-15)
+//            make.width.equalTo(1)
+//            make.height.equalTo(10)
+//        }
         
         rightLine_verticality.snp.makeConstraints
         {   make in
             make.centerY.equalTo(resetPasswordButton.snp.centerY)
-            make.trailing.equalTo(resetPasswordButton.snp.trailing).offset(15)
+            make.centerX.equalTo(view.snp.centerX)
             make.width.equalTo(1)
             make.height.equalTo(10)
         }
         
-        findEmailButton.snp.makeConstraints
-        {   make in
-            make.centerY.equalTo(resetPasswordButton.snp.centerY)
-            make.leading.equalTo(leftLine_verticality.snp.leading).offset(-85)
-            make.width.equalTo(70)
-        }
+//        findEmailButton.snp.makeConstraints
+//        {   make in
+//            make.centerY.equalTo(resetPasswordButton.snp.centerY)
+//            make.leading.equalTo(leftLine_verticality.snp.leading).offset(-85)
+//            make.width.equalTo(70)
+//        }
         
         signUpButton.snp.makeConstraints
         {   make in
@@ -411,13 +415,26 @@ class LoginViewController: UIViewController
     @objc func touchedAppleLoginButton()
     {
         self.checkData(loginType: "Apple", email: "appleLogin")
-        loginVM.setPresentationAnchor(self.view.window!)
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+        {
+            if let keyWindow = windowScene.windows.first 
+            {
+                loginVM.setPresentationAnchor(keyWindow)
+            }
+        }
+        
+        else
+        {
+            print("Key window not found")
+        }
+        
         loginVM.appleLogin()
     }
     
     @objc func touchedFindEmailButton()
     {
-        //추후 구현 사항
+        // 추후 구현 사항 - 휴대폰 번호를 받거나 본인 인증을 해야 구현 가능
 //        let VC = FindEmailController()
 //
 //        VC.modalPresentationStyle = .fullScreen
@@ -484,6 +501,15 @@ class LoginViewController: UIViewController
             self.present(alertController, animated: true, completion: nil)
         }
         
+        else if result == "needSignup"
+        {
+            ProfileViewController().kakaoLogout()
+            let alertController = UIAlertController(title: "로그인 실패", message: "회원 가입을 먼저 진행해주세요.", preferredStyle: .alert)
+            let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
+            alertController.addAction(confirm)
+            self.present(alertController, animated: true, completion: nil)
+        }
+        
         else if result == "successLogin"
         {
             let VC = MainTabBarViewController()
@@ -492,6 +518,19 @@ class LoginViewController: UIViewController
             self.present(VC, animated: true, completion: nil)
             emailTextField.text = ""
             passwordTextField.text = ""
+        }
+        
+        else if result == "KakaoSignupSucces"
+        {
+            let alertController = UIAlertController(title: "알림", message: "카카오 계정 회원가입에 성공하였습니다.", preferredStyle: .alert)
+            let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
+            alertController.addAction(confirm)
+            self.present(alertController, animated: true, completion: nil)
+        }
+        
+        else if result == "signupToAppleLogin"
+        {
+            touchedAppleLoginButton()
         }
     }
 }

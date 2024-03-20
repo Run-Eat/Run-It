@@ -82,7 +82,7 @@ class ProfileViewController: UIViewController
         return button
     }()
     
-    lazy var imageName = setImage()
+    lazy var imageName = loginType()
     
     lazy var loginTypeIcon = UIImageView(image: UIImage(named: imageName + "Logo"))
     
@@ -184,7 +184,9 @@ class ProfileViewController: UIViewController
     {
         let button = UIButton()
         button.setTitle("러닝 기록 초기화", for: .normal)
-        button.setTitleColor(.label, for: .normal)
+        button.backgroundColor = .systemRed
+        button.layer.cornerRadius = 14
+        button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
         button.addTarget(self, action: #selector(resetRecord), for: .touchUpInside)
         
@@ -197,7 +199,9 @@ class ProfileViewController: UIViewController
     {
         let button = UIButton()
         button.setTitle("회원 탈퇴", for: .normal)
-        button.setTitleColor(.label, for: .normal)
+        button.backgroundColor = .lightGray
+        button.layer.cornerRadius = 14
+        button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
         button.addTarget(self, action: #selector(withdrawal), for: .touchUpInside)
         
@@ -376,13 +380,16 @@ class ProfileViewController: UIViewController
         {   make in
             make.centerY.equalTo(pointImage.snp.centerY)
             make.leading.equalTo(view.snp.leading).inset(30)
+            make.width.equalTo(120)
         }
         
         withdrawButton.snp.makeConstraints
         {   make in
-            make.centerY.equalTo(pointImage.snp.centerY)
-            make.leading.equalTo(resetButton.snp.leading).offset(130)
+            make.trailing.equalTo(view.snp.trailing).inset(30)
+            make.top.equalTo(noticeButton.snp.bottom).offset(10)
+            make.width.equalTo(70)
         }
+        
     }
     
     func setupRecordStackView() {
@@ -444,7 +451,7 @@ class ProfileViewController: UIViewController
     }
     
 // MARK: - 로그인 방식 가져오기
-    func setImage() -> String
+    func loginType() -> String
     {
         guard let context = self.persistentContainer?.viewContext else { return "" }
         let request: NSFetchRequest<User> = User.fetchRequest()
@@ -659,6 +666,7 @@ class ProfileViewController: UIViewController
                 }
                 else
                 {
+                    dismiss(animated: true)
                     print("회원탈퇴 성공!")
                 }
             }
@@ -666,6 +674,63 @@ class ProfileViewController: UIViewController
         else
         {
             print("로그인 정보가 존재하지 않습니다")
+        }
+    }
+    
+    func deleteAppleAccount()
+    {
+        let jwtString = self.makeJWT()
+        // JWT 값 저장
+        let keychain = Keychain(service: "com.team5.Run-It")
+        
+        do
+        {
+            try keychain.set(jwtString, key: "secret")
+        }
+        catch
+        {
+            print("키 체인 저장 실패 - \(error)")
+        }
+        
+        // authorizationCode 불러오기
+        do {
+            if let taCode = try keychain.get("authorizationCode")
+            {
+                print("authorizationCode: \(taCode)")
+                
+                self.getAppleRefreshToken(code: taCode, completionHandler: { output in
+                
+                    let clientSecret = jwtString
+                    if let refreshToken = output
+                    {
+                        print("Client_secret - \(clientSecret)")
+                        print("refresh_token - \(refreshToken)")
+                        
+                        self.revokeAppleToken(clientSecret: clientSecret, token: refreshToken)
+                        {
+                            print("Apple revokeToken Success")
+                        }
+                        
+                        self.dismiss(animated: true)
+                    }
+                    
+                    else
+                    {
+                        let dialog = UIAlertController(title: "error", message: "회원탈퇴 실패", preferredStyle: .alert)
+                        let okayAction = UIAlertAction(title: "확인", style: .default, handler: {_ in})
+                        dialog.addAction(okayAction)
+                        self.present(dialog, animated: true, completion: nil)
+                    }
+                })
+            }
+            else
+            {
+                print("authorizationCode이 저장되지 않았습니다.")
+            }
+        }
+        catch
+        {
+            print("Error fetching from Keychain: \(error)")
         }
     }
 
@@ -681,10 +746,16 @@ class ProfileViewController: UIViewController
     
     @objc func touchedLogoutButton()    // 로그아웃 버튼
     {
-        kakaoLogout()
-        emailLogout()
-        
-        dismiss(animated: true)
+        let alertController = UIAlertController(title: "알림", message: "로그아웃을 하시겠습니까?", preferredStyle: .alert)
+        let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
+        let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+            self.kakaoLogout()
+            self.emailLogout()
+            self.dismiss(animated: true)
+        }
+        alertController.addAction(cancel)
+        alertController.addAction(confirm)
+        self.present(alertController, animated: true, completion: nil)
     }
     
     @objc func touchedWeeklyButton()    // 주별 기록
@@ -771,61 +842,10 @@ class ProfileViewController: UIViewController
         let alertController = UIAlertController(title: "알림", message: "회원 탈퇴를 하시겠습니까?", preferredStyle: .alert)
         let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
         let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-            self.deleteAccount()
-            
-            let jwtString = self.makeJWT()
-            // JWT 값 저장
-            let keychain = Keychain(service: "com.team5.Run-It")
-            
-            do
-            {
-                try keychain.set(jwtString, key: "secret")
-            }
-            catch
-            {
-                print("키 체인 저장 실패 - \(error)")
-            }
-            
-            // authorizationCode 불러오기
-            do {
-                if let taCode = try keychain.get("authorizationCode")
-                {
-                    print("authorizationCode: \(taCode)")
-                    
-                    self.getAppleRefreshToken(code: taCode, completionHandler: { output in
-                    
-                        let clientSecret = jwtString
-                        if let refreshToken = output
-                        {
-                            print("Client_secret - \(clientSecret)")
-                            print("refresh_token - \(refreshToken)")
-                            
-                            self.revokeAppleToken(clientSecret: clientSecret, token: refreshToken)
-                            {
-                                print("Apple revokeToken Success")
-                            }
-                            
-                            self.dismiss(animated: true)
-                        }
-                        
-                        else
-                        {
-                            let dialog = UIAlertController(title: "error", message: "회원탈퇴 실패", preferredStyle: .alert)
-                            let okayAction = UIAlertAction(title: "확인", style: .default, handler: {_ in})
-                            dialog.addAction(okayAction)
-                            self.present(dialog, animated: true, completion: nil)
-                        }
-                    })
-                }
-                else
-                {
-                    print("authorizationCode이 저장되지 않았습니다.")
-                }
-            } 
-            catch
-            {
-                print("Error fetching from Keychain: \(error)")
-            }
+            let loginType = self.loginType()
+            loginType == "Email" || loginType == "Kakao" ? self.deleteAccount() : self.deleteAppleAccount()
+            self.kakaoLogout()
+            self.emailLogout()
         }
         
         alertController.addAction(cancel)
