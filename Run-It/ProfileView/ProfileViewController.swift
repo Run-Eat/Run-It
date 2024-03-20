@@ -184,7 +184,9 @@ class ProfileViewController: UIViewController
     {
         let button = UIButton()
         button.setTitle("러닝 기록 초기화", for: .normal)
-        button.setTitleColor(.label, for: .normal)
+        button.backgroundColor = .systemRed
+        button.layer.cornerRadius = 14
+        button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
         button.addTarget(self, action: #selector(resetRecord), for: .touchUpInside)
         
@@ -197,7 +199,9 @@ class ProfileViewController: UIViewController
     {
         let button = UIButton()
         button.setTitle("회원 탈퇴", for: .normal)
-        button.setTitleColor(.label, for: .normal)
+        button.backgroundColor = .systemRed
+        button.layer.cornerRadius = 14
+        button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
         button.addTarget(self, action: #selector(withdrawal), for: .touchUpInside)
         
@@ -368,13 +372,16 @@ class ProfileViewController: UIViewController
         {   make in
             make.centerY.equalTo(pointImage.snp.centerY)
             make.leading.equalTo(view.snp.leading).inset(30)
+            make.width.equalTo(120)
         }
         
         withdrawButton.snp.makeConstraints
         {   make in
-            make.centerY.equalTo(pointImage.snp.centerY)
-            make.leading.equalTo(resetButton.snp.leading).offset(130)
+            make.centerX.equalTo(view.snp.centerX)
+            make.top.equalTo(tableView.snp.bottom).offset(70)
+            make.width.equalTo(70)
         }
+        
     }
     
     func setupRecordStackView() {
