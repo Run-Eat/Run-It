@@ -34,7 +34,7 @@ class SpeechService {
         speak(speechText)
     }
     
-    private func speak(_ text: String) {
+    public func speak(_ text: String) {
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(language: "ko-KR")
         utterance.rate = 0.4

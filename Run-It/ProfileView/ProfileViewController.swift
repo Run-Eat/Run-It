@@ -187,7 +187,7 @@ class ProfileViewController: UIViewController
         return button
     }()
     
-    
+    let generator = UIImpactFeedbackGenerator(style: .heavy)
 // MARK: - Life Cycle
     override func viewDidLoad()
     {
@@ -636,6 +636,7 @@ class ProfileViewController: UIViewController
     
     @objc func touchedWeeklyButton()
     {
+        generator.impactOccurred()
         weeklyButton.backgroundColor = .systemBlue
         monthlyButton.backgroundColor = .gray
         thisWeek_MonthLabel.text = "이번 주"
@@ -651,6 +652,7 @@ class ProfileViewController: UIViewController
     
     @objc func touchedMonthlyButton()
     {
+        generator.impactOccurred()
         monthlyButton.backgroundColor = .systemBlue
         weeklyButton.backgroundColor =  .gray
         thisWeek_MonthLabel.text = "이번 달"

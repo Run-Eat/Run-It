@@ -24,6 +24,8 @@ class StartRunningViewController: UIViewController {
         label.isHidden = true
         return label
     }()
+    
+    let generator = UIImpactFeedbackGenerator(style: .heavy)
 
     //MARK: - Life Cycle
     override func viewDidLoad() {
@@ -43,6 +45,9 @@ class StartRunningViewController: UIViewController {
         print("TappedstartRunningButton()")
         timerCounterView.isHidden = false // 타이머 뷰를 보여줍니다
         startCountdownTimer()
+        SpeechService.shared.speak("러닝을 시작합니다.")
+        // 햅틱 피드백 생성 및 발생
+        generator.impactOccurred()
     }
 
 

@@ -123,6 +123,8 @@ class RunningTimerViewController: UIViewController {
     
     let bottomView = UIView()
     
+    let generator = UIImpactFeedbackGenerator(style: .heavy)
+    
     //MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -158,7 +160,7 @@ class RunningTimerViewController: UIViewController {
     @objc private func pauseRunning() {
         print("TappedButton - pauseRunning()")
         self.runningTimer.pause()
-        
+        generator.impactOccurred()
         let pauseRunningHalfModalViewController = PauseRunningHalfModalViewController()
         pauseRunningHalfModalViewController.time = self.time
         pauseRunningHalfModalViewController.distance = self.distance
