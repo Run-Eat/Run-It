@@ -238,12 +238,12 @@ class ProfileViewController: UIViewController
         totalRunningDistanceLabel.text = "총 거리 : \(String(format: "%.2f", totalRunningDistance / 1000))km"
 
         
-        thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisWeekDistance / 1000))"
-        thisWeek_MonthPaceLabel.text = String(format: "%.2f", thisWeekPace / 60)
+        thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisWeekDistance))"
+        thisWeek_MonthPaceLabel.text = String(format: "%.2f", thisWeekPace)
         thisWeek_MonthRunningCountLabel.text = "\(thisWeekRunningCount) 회"
         
-        lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", lastWeekDistance / 1000))"
-        lastWeek_MonthPaceLabel.text = String(format: "%.2f", lastWeekPace / 60)
+        lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", lastWeekDistance))"
+        lastWeek_MonthPaceLabel.text = String(format: "%.2f", lastWeekPace)
         lastWeek_MonthRunningCountLabel.text = "\(lastWeekRunningCount) 회"
     }
     
@@ -577,6 +577,10 @@ class ProfileViewController: UIViewController
             
             do {
                 let records = try context.fetch(fetchRequest)
+                var thisWeekTotalTime: TimeInterval = 0
+                var lastWeekTotalTime: TimeInterval = 0
+                var thisMonthTotalTime: TimeInterval = 0
+                var lastMonthTotalTime: TimeInterval = 0
                 
                 for record in records
                 {
@@ -591,40 +595,41 @@ class ProfileViewController: UIViewController
                     // 이번 주 데이터
                     if recordWeekOfYear == currentWeekOfYear
                     {
-                        thisWeekDistance += record.distance
-                        thisWeekPace += record.pace
+                        thisWeekDistance += record.distance / 1000
+                        thisWeekTotalTime += Double(record.time)
                         thisWeekRunningCount += 1
                     }
                     
                     // 지난 주 데이터
                     else if recordWeekOfYear == currentWeekOfYear - 1
                     {
-                        lastWeekDistance += record.distance
-                        lastWeekPace += record.pace
+                        lastWeekDistance += record.distance / 1000
+                        lastWeekTotalTime += Double(record.time)
                         lastWeekRunningCount += 1
                     }
                     
                     // 이번 달 데이터
                     if recordMonth == currentMonth
                     {
-                        thisMonthDistance += record.distance
-                        thisMonthPace += record.pace
+                        thisMonthDistance += record.distance / 1000
+                        thisMonthTotalTime += Double(record.time)
                         thisMonthRunningCount += 1
                     }
                     
                     // 지난 달 데이터
                     else if recordMonth == currentMonth - 1
                     {
-                        lastMonthDistance += record.distance
-                        lastMonthPace += record.pace
+                        lastMonthDistance += record.distance / 1000
+                        lastMonthTotalTime += Double(record.time)
                         lastMonthRunningCount += 1
                     }
                     
                 }
-                thisWeekPace /= Double(thisWeekRunningCount)
-                lastWeekPace /= Double(lastWeekRunningCount)
-                thisMonthPace /= Double(thisMonthRunningCount)
-                lastMonthPace /= Double(lastMonthRunningCount)
+                // 주간, 월간 페이스 계산
+                thisWeekPace = (thisWeekRunningCount > 0) ? (thisWeekTotalTime / 60) / (thisWeekDistance) : 0
+                lastWeekPace = (lastWeekRunningCount > 0) ? (lastWeekTotalTime / 60) / lastWeekDistance : 0
+                thisMonthPace = (thisMonthRunningCount > 0) ? (thisMonthTotalTime / 60) / thisMonthDistance : 0
+                lastMonthPace = (lastMonthRunningCount > 0) ? (lastMonthTotalTime / 60 ) / lastMonthDistance : 0
             }
             catch
             {
