@@ -221,6 +221,14 @@ class ProfileViewController: UIViewController
         setupRecordStackView()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        let uiViewHeight = CGFloat(runningRecords.count) * 170.0 + 16.0
+        let contentHeight = 671.33 + 44 + 8 + uiViewHeight
+        scrollView.contentSize = CGSize(width: view.frame.width, height: contentHeight)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         loadRunningRecords()
