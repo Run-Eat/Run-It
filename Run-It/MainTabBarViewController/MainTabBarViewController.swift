@@ -13,7 +13,7 @@ class MainTabBarViewController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        view.backgroundColor = .systemBackground
         let runningMapVC = RunningMapViewController()
         let runningMapViewNavigationController = UINavigationController(rootViewController: runningMapVC)
         runningMapViewNavigationController.tabBarItem = UITabBarItem(title: "러닝", image: UIImage(systemName: "figure.run"), tag: 0)

@@ -24,7 +24,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let tabBarController = UITabBarController()
         let loginViewController = LoginViewController()
         tabBarController.viewControllers = [RunningMapViewController(), BookmarkViewController(), ProfileViewController()]
-        window?.rootViewController = loginViewController  // 코드작업 간 자신의 ViewController로 변경하되, github commit 간에는 unstaged 처리
+        window?.rootViewController = MainTabBarViewController()  // 코드작업 간 자신의 ViewController로 변경하되, github commit 간에는 unstaged 처리
         window?.makeKeyAndVisible()
     }
     
