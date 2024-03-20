@@ -18,12 +18,14 @@ class StartRunningViewController: UIViewController {
     
     lazy var timerCounterView: UILabel = {
         let label = UILabel()
-        label.font = UIFont.boldSystemFont(ofSize: 150)
+        label.font = UIFont(name: "Arial Rounded MT Bold", size: 200)
         label.textColor = .systemYellow
         label.textAlignment = .center
         label.isHidden = true
         return label
     }()
+    
+    let generator = UIImpactFeedbackGenerator(style: .heavy)
 
     //MARK: - Life Cycle
     override func viewDidLoad() {
@@ -43,6 +45,9 @@ class StartRunningViewController: UIViewController {
         print("TappedstartRunningButton()")
         timerCounterView.isHidden = false // 타이머 뷰를 보여줍니다
         startCountdownTimer()
+        SpeechService.shared.speak("러닝을 시작합니다.")
+        // 햅틱 피드백 생성 및 발생
+        generator.impactOccurred()
     }
 
 
@@ -56,7 +61,7 @@ extension StartRunningViewController {
 
     }
     private func setupUI() {
-        view.backgroundColor = .systemBlue
+        view.backgroundColor = .systemTeal
     }
     private func setLayout() {
         

@@ -105,12 +105,12 @@ class PauseRunningHalfModalViewController: UIViewController {
     lazy var restartRunningButton: UIButton = {
         let button = UIButton()
         button.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
-        button.tintColor = .white
+        button.tintColor = .systemYellow
         let configuration = UIImage.SymbolConfiguration(pointSize: 50)
         if let image = UIImage(systemName: "restart", withConfiguration: configuration) {
             button.setImage(image, for: .normal)
         }
-        button.backgroundColor = .systemBlue
+        button.backgroundColor = .systemTeal
         button.layer.shadowRadius = 15
         button.layer.shadowOpacity = 0.3
         button.layer.cornerRadius = 50
@@ -139,6 +139,7 @@ class PauseRunningHalfModalViewController: UIViewController {
         return button
     }()
     
+    let generator = UIImpactFeedbackGenerator(style: .heavy)
     //MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -155,6 +156,7 @@ class PauseRunningHalfModalViewController: UIViewController {
     
     // MARK: - @objc
     @objc private func restartRunning() {
+        generator.impactOccurred()
         print("TappedButton - restartRunning()")
         DispatchQueue.main.async {
             self.delegate?.pauseRunningHalfModalViewControllerDidRequestResume(self)
@@ -166,6 +168,7 @@ class PauseRunningHalfModalViewController: UIViewController {
     
     
     @objc private func stopRunning() {
+        generator.impactOccurred()
         // 운동 기록 정보 출력
         print("TappedButton - stopRunning()")
         print("stop Time: \(self.time), Distance: \(self.distance), Pace: \(self.pace), routeImage: String(\(self.routeImage))")
@@ -176,6 +179,7 @@ class PauseRunningHalfModalViewController: UIViewController {
     }
     
     func presentCompletionAlert() {
+        SpeechService.shared.speak("러닝을 종료하시겠습니까?")
         // 거리가 0이면 삭제 여부를 묻는 알림창을 표시
         if self.distance == 0 {
             let deleteAlert = UIAlertController(title: "기록을 삭제할까요?", message: "운동 거리가 0km로 기록됩니다.", preferredStyle: .alert)

@@ -39,21 +39,21 @@ class RunningTimer {
     var locationManger = RunningTimerLocationManager.shared
     
     init() {
-        setupLocationUpdateHandling()
+//        setupLocationUpdateHandling()
         setupLocationUpdateListener()
     }
-    private func setupLocationUpdateHandling() {
-        locationManger.updateLocationClosure = { [weak self] location in
-            // 여기에서 위치 업데이트에 대한 처리를 정의
-            // 예: self?.distance += 계산된 거리
-        }
-    }
+//    private func setupLocationUpdateHandling() {
+//        locationManger.updateLocationClosure = { [weak self] location in
+//            // 여기에서 위치 업데이트에 대한 처리를 정의
+//            // 예: self?.distance += 계산된 거리
+//        }
+//    }
     
     private func setupLocationUpdateListener() {
-        RunningTimerLocationManager.shared.updateLocationClosure = { [weak self] newLocation in
+        locationManger.updateLocationClosure = { [weak self] newLocation in
             guard let self = self, self.state == .resumed else { return }
             // RunningTimerLocationManager에서 제공하는 totalDistance를 사용하여 거리 업데이트
-            self.distance = RunningTimerLocationManager.shared.totalDistance
+            self.distance = locationManger.totalDistance
             
             // 경과 시간을 기반으로 페이스 계산
             let elapsedTime = Date().timeIntervalSince(self.startTime) - Double(self.pauseDuration)
@@ -81,12 +81,11 @@ class RunningTimer {
             timer?.schedule(deadline: .now(), repeating: .seconds(1))
             timer?.setEventHandler { [weak self] in
                 guard let self = self else { return }
-                // Int(Date().timeIntervalSince(startTime))
                 self.time = Int(Date().timeIntervalSince(startTime)) - self.pauseDuration
                 // 이동 거리와 페이스 계산은 위치 업데이트 클로저 내에서 처리
                 
                 // 로그 출력 및 UI 업데이트
-                print("running properties : \(self.time), \(self.distance), \(self.pace)")
+//                print("running properties : \(self.time), \(self.distance), \(self.pace)")
                 
                 DispatchQueue.main.async { [weak self] in
                     self?.updateUI?()
@@ -109,6 +108,7 @@ class RunningTimer {
         state = .suspended
         
         print("pause properties : \(self.time), \(self.distance), \(self.pace)")
+        
     }
     
     func restart() {
@@ -145,7 +145,6 @@ class RunningTimer {
             state = .suspended
             backgroundTime = Date()
         }
-        print(backgroundTime ?? Date())
     }
     
     func timerWillEnterForeground() {

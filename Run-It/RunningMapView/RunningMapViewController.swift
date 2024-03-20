@@ -205,12 +205,12 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     lazy var startRunningButton: UIButton = {
         let button = UIButton()
         button.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
-        button.tintColor = .white
+        button.tintColor = .systemYellow
         let configuration = UIImage.SymbolConfiguration(pointSize: 50)
         if let image = UIImage(systemName: "figure.run", withConfiguration: configuration) {
             button.setImage(image, for: .normal)
         }
-        button.backgroundColor = .systemBlue
+        button.backgroundColor = .systemTeal
         button.layer.shadowRadius = 15
         button.layer.shadowOpacity = 0.3
         button.layer.cornerRadius = 45
@@ -223,12 +223,12 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     lazy var backToRunningTimerViewButton: UIButton = {
         let button = UIButton()
         button.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
-        button.tintColor = .white
+        button.tintColor = .systemYellow
         let configuration = UIImage.SymbolConfiguration(pointSize: 50)
         if let image = UIImage(systemName: "restart", withConfiguration: configuration) {
             button.setImage(image, for: .normal)
         }
-        button.backgroundColor = .systemBlue
+        button.backgroundColor = .systemTeal
         button.layer.shadowRadius = 15
         button.layer.shadowOpacity = 0.3
         button.layer.cornerRadius = 15
@@ -257,6 +257,8 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     var presentationState = PresentView.completed
     
     var loadingIndicator: UIActivityIndicatorView?
+    
+    let generator = UIImpactFeedbackGenerator(style: .heavy)
 
     
     //MARK: - LifeCycle
@@ -276,7 +278,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     //MARK: - @objc functions
     @objc private func TappedstartRunningButton() {
         print("TappedstartRunningButton()")
-        
+        generator.impactOccurred()
         // RunningTimerLocationManager 인스턴스의 위치 데이터 및 거리 초기화
         RunningTimerLocationManager.shared.resetLocationData()
         
@@ -288,6 +290,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     
     @objc private func backToRunningTimerView() {
         closeModal()
+        generator.impactOccurred()
         if let firstViewController = parentVC?.viewControllers.first {
             parentVC?.pageViewController.setViewControllers([firstViewController], direction: .reverse, animated: true, completion: nil)
         }
@@ -295,7 +298,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
 
     
     @objc func currentLocationButtonAction() {
-        //        RunningTimerLocationManager.shared.getLocationUsagePermission()  //viewDidLoad 되었을 때 권한요청을 할 것인지, 현재 위치를 눌렀을 때 권한요청을 할 것인지
+        generator.impactOccurred()
         mapView.showsUserLocation = true
         mapView.setUserTrackingMode(.followWithHeading, animated: true)
         weatherDatabindViewModel()
@@ -303,12 +306,13 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     }
     
     @objc private func TappedstoreListButton() {
+        generator.impactOccurred()
         isActive.toggle()
     }
     
     // 유저에게 편의전 옵션을 주고, 편의점 옵션을 선택해서 하프모달로 노출
     @objc func presentConvenienceStoreAnnotations() {
-
+        generator.impactOccurred()
         let convenienceStores = ["GS25", "CU", "세븐일레븐", "이마트24", "미니스톱"]
         let category = "편의점"
 
@@ -318,7 +322,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     }
 
     @objc func presentcoffeeAndBakeryFranchisesAnnotations() {
-        
+        generator.impactOccurred()
         let coffeeAndBakeryFranchises = ["Cafe", "coffee", "투썸플레이스", "컴포즈커피",
                                          "스타벅스", "파리바게뜨", "뚜레쥬르", "할리스커피",
                                          "이디야커피", "메가커피", "브레드톡"]
@@ -331,7 +335,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     }
     
     @objc func presenthealthyEatingOptionsAnnotations() {
-        
+        generator.impactOccurred()
         let healthyEatingOptions = ["샐러디", "subway"]
         let category = "건강식"
         
@@ -1039,7 +1043,6 @@ extension RunningMapViewController {
     func weatherDatabindViewModel() {
         // 현재 위치 정보가 있는지 확인
         if let location = self.currentLocation {
-            print("현재 위치: 위도 \(location.coordinate.latitude), 경도 \(location.coordinate.longitude)")
             // 위치 정보가 있을 경우, 해당 위치를 사용하여 날씨 정보를 업데이트
             weatherViewModel.getWeather(location: location)
             

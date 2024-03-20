@@ -191,6 +191,8 @@ class ProfileViewController: UIViewController
         return button
     }()
     
+
+    let generator = UIImpactFeedbackGenerator(style: .heavy)
     lazy var withdrawButton: UIButton =
     {
         let button = UIButton()
@@ -201,8 +203,7 @@ class ProfileViewController: UIViewController
         
         return button
     }()
-    
-    
+
 // MARK: - Life Cycle
     override func viewDidLoad()
     {
@@ -680,6 +681,7 @@ class ProfileViewController: UIViewController
     
     @objc func touchedWeeklyButton()    // 주별 기록
     {
+        generator.impactOccurred()
         weeklyButton.backgroundColor = .systemBlue
         monthlyButton.backgroundColor = .gray
         thisWeek_MonthLabel.text = "이번 주"
@@ -695,6 +697,7 @@ class ProfileViewController: UIViewController
     
     @objc func touchedMonthlyButton()       // 월별 기록
     {
+        generator.impactOccurred()
         monthlyButton.backgroundColor = .systemBlue
         weeklyButton.backgroundColor =  .gray
         thisWeek_MonthLabel.text = "이번 달"

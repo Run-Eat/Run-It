@@ -6,12 +6,14 @@
 //
 
 import UIKit
-
+import AVFoundation
 import SnapKit
 
 class RunningTimerViewController: UIViewController {
 
     let runningTimer = RunningTimer()
+
+    
     //MARK: - UI properties
     
     var distance: Double = 0
@@ -24,8 +26,8 @@ class RunningTimerViewController: UIViewController {
     let timeLabel: UILabel = {
         let label = UILabel()
         label.text = "시간"
-        label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 30)
+        label.textColor = .darkGray
+        label.font = UIFont.systemFont(ofSize: 22)
         return label
     }()
     
@@ -33,7 +35,7 @@ class RunningTimerViewController: UIViewController {
         let label = UILabel()
         label.text = "0:00:00"
         label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 45)
+        label.font = UIFont.boldSystemFont(ofSize: 45)
         return label
     }()
     
@@ -48,22 +50,22 @@ class RunningTimerViewController: UIViewController {
     let topSplitLine: UIView = {
         let line = UIView()
         line.alpha = 0.5
-        line.backgroundColor = .gray
+        line.backgroundColor = .darkGray
         return line
     }()
     
     let middleSplitLine: UIView = {
         let line = UIView()
         line.alpha = 0.5
-        line.backgroundColor = .gray
+        line.backgroundColor = .darkGray
         return line
     }()
     
     let paceLabel: UILabel = {
         let label = UILabel()
         label.text = "페이스"
-        label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 30)
+        label.textColor = .darkGray
+        label.font = UIFont.systemFont(ofSize: 22)
         return label
     }()
     
@@ -71,15 +73,15 @@ class RunningTimerViewController: UIViewController {
         let label = UILabel()
         label.text = "0:00"
         label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 45)
+        label.font = UIFont.boldSystemFont(ofSize: 45)
         return label
     }()
     
     let distanceLabel: UILabel = {
         let label = UILabel()
         label.text = "거리"
-        label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 30)
+        label.textColor = .darkGray
+        label.font = UIFont.systemFont(ofSize: 22)
         return label
     }()
     
@@ -95,8 +97,8 @@ class RunningTimerViewController: UIViewController {
     let kilometerLabel: UILabel = {
         let label = UILabel()
         label.text = "킬로미터"
-        label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 30)
+        label.textColor = .darkGray
+        label.font = UIFont.boldSystemFont(ofSize: 30)
         return label
     }()
     
@@ -108,7 +110,7 @@ class RunningTimerViewController: UIViewController {
         if let image = UIImage(systemName: "pause.fill", withConfiguration: configuration) {
             button.setImage(image, for: .normal)
         }
-        button.backgroundColor = .systemBlue
+        button.backgroundColor = .systemTeal
         button.layer.shadowRadius = 15
         button.layer.shadowOpacity = 0.3
         button.layer.cornerRadius = 50
@@ -120,6 +122,8 @@ class RunningTimerViewController: UIViewController {
     }()
     
     let bottomView = UIView()
+    
+    let generator = UIImpactFeedbackGenerator(style: .heavy)
     
     //MARK: - Life Cycle
     override func viewDidLoad() {
@@ -156,15 +160,15 @@ class RunningTimerViewController: UIViewController {
     @objc private func pauseRunning() {
         print("TappedButton - pauseRunning()")
         self.runningTimer.pause()
-        
+        generator.impactOccurred()
         let pauseRunningHalfModalViewController = PauseRunningHalfModalViewController()
         pauseRunningHalfModalViewController.time = self.time
         pauseRunningHalfModalViewController.distance = self.distance
         pauseRunningHalfModalViewController.pace = self.pace
         pauseRunningHalfModalViewController.delegate = self
-
         
         showMyViewControllerInACustomizedSheet(pauseRunningHalfModalViewController)
+        SpeechService.shared.speakTimeDistancePace(time: self.time, distance: self.distance, pace: Int(self.pace))
     }
     
     func didDismissPauseRunningHalfModalViewController() {
@@ -188,7 +192,7 @@ extension RunningTimerViewController {
             let paceSeconds = Int(round(pace)) % 60
             paceNumberLabel.text = String(format: "%02d:%02d", paceMinutes, paceSeconds)
             distanceNumberLabel.text = String(format: "%.2f", distance / 1000)
-            print("거리: \(String(describing: distanceNumberLabel.text))")
+//            print("거리: \(String(describing: distanceNumberLabel.text))")
         } else {
             paceNumberLabel.text = "--:--"
             distanceNumberLabel.text = "0.00"
