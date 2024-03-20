@@ -29,7 +29,7 @@ class LoginViewController: UIViewController
     let emailTextField: UITextField =
     {
         let textField = UITextField()
-        textField.placeholder = "이메일 주소"
+        textField.attributedPlaceholder = NSAttributedString(string: "이메일 주소", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         textField.borderStyle = .roundedRect
         textField.keyboardType = .emailAddress
         textField.returnKeyType = .continue
@@ -40,13 +40,14 @@ class LoginViewController: UIViewController
         textField.spellCheckingType = .no
         textField.layer.borderWidth = 0.7
         textField.layer.cornerRadius = 7
+        textField.backgroundColor = UIColor.white
         return textField
     }()
     
     let passwordTextField: UITextField =
     {
         let textField = UITextField()
-        textField.placeholder = "비밀번호"
+        textField.attributedPlaceholder = NSAttributedString(string: "비밀번호", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         textField.borderStyle = .roundedRect
         textField.keyboardType = .default
         textField.returnKeyType = .go
@@ -58,6 +59,7 @@ class LoginViewController: UIViewController
         textField.isSecureTextEntry = true
         textField.layer.borderWidth = 0.7
         textField.layer.cornerRadius = 7
+        textField.backgroundColor = UIColor.white
         return textField
     }()
     
@@ -131,6 +133,7 @@ class LoginViewController: UIViewController
         let label = UILabel()
         label.text = "또는 소셜 계정으로 로그인"
         label.font = UIFont.systemFont(ofSize: CGFloat(14))
+        label.textColor = UIColor.black
         return label
     }()
     

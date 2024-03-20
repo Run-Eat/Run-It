@@ -33,6 +33,7 @@ class SignUpViewController: UIViewController
         let label = UILabel()
         label.text = "회원가입"
         label.font = UIFont.systemFont(ofSize: CGFloat(17))
+        label.textColor = UIColor.black
         return label
     }()
     
@@ -42,13 +43,14 @@ class SignUpViewController: UIViewController
         label.text = "이메일과 비밀번호만으로 \nRUN IT에 가입할 수 있어요!"
         label.font = UIFont.systemFont(ofSize: CGFloat(21))
         label.numberOfLines = 2
+        label.textColor = UIColor.black
         return label
     }()
     
     let emailTextField: UITextField =
     {
         let textField = UITextField()
-        textField.placeholder = "RUNIT@xxxxx.com"
+        textField.attributedPlaceholder = NSAttributedString(string: "RUNIT@xxxxx.com", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         textField.borderStyle = .roundedRect
         textField.keyboardType = .emailAddress
         textField.returnKeyType = .continue
@@ -59,6 +61,7 @@ class SignUpViewController: UIViewController
         textField.spellCheckingType = .no
         textField.layer.borderWidth = 0.7
         textField.layer.cornerRadius = 7
+        textField.backgroundColor = UIColor.white
         return textField
     }()
     
@@ -67,13 +70,14 @@ class SignUpViewController: UIViewController
         let label = UILabel()
         label.text = "정확한 이메일을 입력해주세요"
         label.font = UIFont.systemFont(ofSize: CGFloat(12))
+        label.textColor = UIColor.black
         return label
     }()
     
     let passwordTextField: UITextField =
     {
         let textField = UITextField()
-        textField.placeholder = "비밀번호 설정"
+        textField.attributedPlaceholder = NSAttributedString(string: "비밀번호 설정", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         textField.borderStyle = .roundedRect
         textField.keyboardType = .default
         textField.returnKeyType = .go
@@ -84,6 +88,7 @@ class SignUpViewController: UIViewController
         textField.spellCheckingType = .no
         textField.layer.borderWidth = 0.7
         textField.layer.cornerRadius = 7
+        textField.backgroundColor = UIColor.white
         return textField
     }()
     
@@ -102,6 +107,7 @@ class SignUpViewController: UIViewController
         label.text = "비밀번호는 영문, 숫자, 특수문자를 포함해 8 - 20자 이내로 입력해주세요"
         label.font = UIFont.systemFont(ofSize: CGFloat(12))
         label.numberOfLines = 2
+        label.textColor = UIColor.black
         return label
     }()
     
@@ -121,6 +127,7 @@ class SignUpViewController: UIViewController
         let label = UILabel()
         label.text = "또는 소셜 계정으로 가입"
         label.font = UIFont.systemFont(ofSize: CGFloat(14))
+        label.textColor = UIColor.black
         return label
     }()
     
