@@ -484,6 +484,14 @@ class LoginViewController: UIViewController
             self.present(alertController, animated: true, completion: nil)
         }
         
+        else if result == "needSignup"
+        {
+            let alertController = UIAlertController(title: "로그인 실패", message: "회원 가입을 먼저 진행해주세요.", preferredStyle: .alert)
+            let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
+            alertController.addAction(confirm)
+            self.present(alertController, animated: true, completion: nil)
+        }
+        
         else if result == "successLogin"
         {
             let VC = MainTabBarViewController()

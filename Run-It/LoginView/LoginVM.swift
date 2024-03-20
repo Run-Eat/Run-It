@@ -145,6 +145,7 @@ func bringKakaoInfo()
                 print("로그인 실패")
                 if let error = error
                 {
+                    sendTask(task: "needSignup")
                     print(error)
                 }
             }
