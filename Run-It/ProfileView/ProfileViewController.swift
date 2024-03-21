@@ -133,6 +133,7 @@ class ProfileViewController: UIViewController
     {
         let lineView = UIView()
         lineView.backgroundColor = UIColor.label
+        lineView.alpha = 0.7
         return lineView
     }()
     
@@ -361,22 +362,21 @@ class ProfileViewController: UIViewController
             make.leading.equalTo(view.snp.leading).inset(20)
         }
         
-        weeklyButton.snp.makeConstraints
-        {   make in
+        weeklyButton.snp.makeConstraints { make in
             make.width.equalTo(100)
             make.height.equalTo(30)
-            make.top.equalTo(totalRunningDistanceLabel.snp.bottom).offset(20)
-            make.leading.equalTo(view.snp.leading).inset(100)
+            make.top.equalTo(totalRunningDistanceLabel.snp.bottom).offset(32)
+            // weeklyButton은 뷰의 중앙에서 왼쪽으로 (50/2)인 25만큼 이동
+            make.centerX.equalToSuperview().offset(-25 - 50) // 50은 두 버튼 사이의 간격
         }
         
-        monthlyButton.snp.makeConstraints
-        {   make in
+        monthlyButton.snp.makeConstraints { make in
             make.width.equalTo(100)
             make.height.equalTo(30)
-            make.top.equalTo(weeklyButton.snp.top).offset(0)
-            make.trailing.equalTo(weeklyButton.snp.trailing).offset(150)
+            make.top.equalTo(weeklyButton.snp.top)
+            make.leading.equalTo(weeklyButton.snp.trailing).offset(50)
         }
-
+        
         resetButton.snp.makeConstraints
         {   make in
             make.centerY.equalTo(pointImage.snp.centerY)
