@@ -660,213 +660,248 @@ class ProfileViewController: UIViewController
         }
     }
     
-//MARK: - 이메일 회원 탈퇴
-    func deleteAccount() 
-    {
-        if  let user = Auth.auth().currentUser {
-            user.delete
-            {   [self] error in
-                if let error = error
-                {
-                    print("Firebase Error : ",error)
-                }
-                else
-                {
-//                    dismiss(animated: true)
-                    let VC = LoginViewController()
-                    VC.modalPresentationStyle = .fullScreen
-                    self.present(VC, animated: true)
-                    print("회원탈퇴 성공!")
-                }
-            }
-        }
-        else
+    //MARK: - 이메일 회원 탈퇴
+        func deleteAccount()
         {
-            print("로그인 정보가 존재하지 않습니다")
-        }
-    }
-    
-    func deleteAppleAccount()
-    {
-        let jwtString = self.makeJWT()
-        // JWT 값 저장
-        let keychain = Keychain(service: "com.team5.Run-It")
-        
-        do
-        {
-            try keychain.set(jwtString, key: "secret")
-        }
-        catch
-        {
-            print("키 체인 저장 실패 - \(error)")
-        }
-        
-        // authorizationCode 불러오기
-        do {
-            if let taCode = try keychain.get("authorizationCode")
-            {
-                print("authorizationCode: \(taCode)")
-                
-                self.getAppleRefreshToken(code: taCode, completionHandler: { output in
-                
-                    let clientSecret = jwtString
-                    if let refreshToken = output
+            if  let user = Auth.auth().currentUser {
+                user.delete
+                {   [self] error in
+                    if let error = error
                     {
-                        print("Client_secret - \(clientSecret)")
-                        print("refresh_token - \(refreshToken)")
-                        
-                        self.revokeAppleToken(clientSecret: clientSecret, token: refreshToken)
-                        {
-                            print("Apple revokeToken Success")
-                        }
-                        
-//                        self.dismiss(animated: true)
+                        print("Firebase Error : ",error)
+                    }
+                    else
+                    {
+    //                    dismiss(animated: true)
                         let VC = LoginViewController()
                         VC.modalPresentationStyle = .fullScreen
                         self.present(VC, animated: true)
+                        
+                        print("회원탈퇴 성공!")
                     }
-                    
-                    else
-                    {
-                        let dialog = UIAlertController(title: "error", message: "회원탈퇴 실패", preferredStyle: .alert)
-                        let okayAction = UIAlertAction(title: "확인", style: .default, handler: {_ in})
-                        dialog.addAction(okayAction)
-                        self.present(dialog, animated: true, completion: nil)
-                    }
-                })
+                }
             }
             else
             {
-                print("authorizationCode이 저장되지 않았습니다.")
+                print("로그인 정보가 존재하지 않습니다")
             }
         }
-        catch
+        
+        func deleteKakaoAccount()
         {
-            print("Error fetching from Keychain: \(error)")
+            UserApi.shared.unlink
+            {   (error) in
+                if let error = error
+                {
+                    print(error)
+                }
+                else
+                {
+    //                self.dismiss(animated: true)
+                    let VC = LoginViewController()
+                    VC.modalPresentationStyle = .fullScreen
+                    self.present(VC, animated: true)
+                    
+                    print("카카오 계정 연결 끊기 성공")
+                }
+            }
         }
-    }
-
-    
-// MARK: - 버튼 함수
-    @objc func selectImage()    // 프로필 사진
-    {
-        let imagePickerController = UIImagePickerController()
-        imagePickerController.delegate = self
-        imagePickerController.sourceType = .photoLibrary
-        present(imagePickerController, animated: true, completion: nil)
-    }
-    
-    @objc func touchedLogoutButton()    // 로그아웃 버튼
-    {
-        let alertController = UIAlertController(title: "알림", message: "로그아웃을 하시겠습니까?", preferredStyle: .alert)
-        let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
-        let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-            self.kakaoLogout()
-            self.emailLogout()
-            let VC = LoginViewController()
-            VC.modalPresentationStyle = .fullScreen
-            self.present(VC, animated: true)
-        }
-        alertController.addAction(cancel)
-        alertController.addAction(confirm)
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
-    @objc func touchedWeeklyButton()    // 주별 기록
-    {
-        generator.impactOccurred()
-        weeklyButton.backgroundColor = .systemBlue
-        monthlyButton.backgroundColor = .gray
-        thisWeek_MonthLabel.text = "이번 주"
-        thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisWeekDistance))"
-        thisWeek_MonthPaceLabel.text = String(format: "%.2f", thisWeekPace)
-        thisWeek_MonthRunningCountLabel.text = "\(thisWeekRunningCount) 회"
         
-        lastWeek_MonthLabel.text = "지난 주"
-        lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", lastWeekDistance))"
-        lastWeek_MonthPaceLabel.text = String(format: "%.2f", lastWeekPace)
-        lastWeek_MonthRunningCountLabel.text = "\(lastWeekRunningCount) 회"
-    }
-    
-    @objc func touchedMonthlyButton()       // 월별 기록
-    {
-        generator.impactOccurred()
-        monthlyButton.backgroundColor = .systemBlue
-        weeklyButton.backgroundColor =  .gray
-        thisWeek_MonthLabel.text = "이번 달"
-        thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisMonthDistance))"
-        thisWeek_MonthPaceLabel.text = String(format: "%.2f", thisMonthPace)
-        thisWeek_MonthRunningCountLabel.text = "\(thisMonthRunningCount) 회"
-        
-        lastWeek_MonthLabel.text = "지난 달"
-        lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", lastMonthDistance))"
-        lastWeek_MonthPaceLabel.text = String(format: "%.2f", lastMonthPace)
-        lastWeek_MonthRunningCountLabel.text = "\(lastMonthRunningCount) 회"
-    }
-    
-    @objc func noticeButtonTapped()     // 공지 버튼 present
-    {
-        let eventVC = EventViewController()
-        self.navigationController?.pushViewController(eventVC, animated: true)
-    }
-    // 추후 coreData 활용 데이터 관리 코드 작성
-    
-    @objc func resetRecord()    // 러닝 기록 초기화
-    {
-        print("러닝 기록 초기화")
-        let alertController = UIAlertController(title: "알림", message: "러닝 기록을 초기화 하시겠습니까?", preferredStyle: .alert)
-        let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
-        let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-            guard let context = self.persistentContainer?.viewContext else { return }
-            
-            let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "RunningRecord")
+        func deleteAppleAccount()
+        {
+            let jwtString = self.makeJWT()
+            // JWT 값 저장
+            let keychain = Keychain(service: "com.team5.Run-It")
             
             do
             {
-                let datas = try context.fetch(fetchRequest)
-                for data in datas
-                {
-                    guard let removeData = data as? NSManagedObject else { continue }
-                    context.delete(removeData)
-                }
-                
-                try context.save()
+                try keychain.set(jwtString, key: "secret")
             }
             catch
             {
-                print("error")
+                print("키 체인 저장 실패 - \(error)")
             }
             
-            self.thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", 0))"
-            self.thisWeek_MonthPaceLabel.text = String(format: "%.2f", 0)
-            self.thisWeek_MonthRunningCountLabel.text = "0 회"
+            // authorizationCode 불러오기
+            do {
+                if let taCode = try keychain.get("authorizationCode")
+                {
+                    print("authorizationCode: \(taCode)")
+                    
+                    self.getAppleRefreshToken(code: taCode, completionHandler: { output in
+                    
+                        let clientSecret = jwtString
+                        if let refreshToken = output
+                        {
+                            print("Client_secret - \(clientSecret)")
+                            print("refresh_token - \(refreshToken)")
+                            
+                            self.revokeAppleToken(clientSecret: clientSecret, token: refreshToken)
+                            {
+                                print("Apple revokeToken Success")
+                            }
+                            
+    //                        self.dismiss(animated: true)
+                            let VC = LoginViewController()
+                            VC.modalPresentationStyle = .fullScreen
+                            self.present(VC, animated: true)
+                        }
+                        
+                        else
+                        {
+                            let dialog = UIAlertController(title: "error", message: "회원탈퇴 실패", preferredStyle: .alert)
+                            let okayAction = UIAlertAction(title: "확인", style: .default, handler: {_ in})
+                            dialog.addAction(okayAction)
+                            self.present(dialog, animated: true, completion: nil)
+                        }
+                    })
+                }
+                else
+                {
+                    print("authorizationCode이 저장되지 않았습니다.")
+                }
+            }
+            catch
+            {
+                print("Error fetching from Keychain: \(error)")
+            }
+        }
+
+        
+    // MARK: - 버튼 함수
+        @objc func selectImage()    // 프로필 사진
+        {
+            let imagePickerController = UIImagePickerController()
+            imagePickerController.delegate = self
+            imagePickerController.sourceType = .photoLibrary
+            present(imagePickerController, animated: true, completion: nil)
+        }
+        
+        @objc func touchedLogoutButton()    // 로그아웃 버튼
+        {
+            let alertController = UIAlertController(title: "알림", message: "로그아웃을 하시겠습니까?", preferredStyle: .alert)
+            let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
+            let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+                self.kakaoLogout()
+                self.emailLogout()
+                let VC = LoginViewController()
+                VC.modalPresentationStyle = .fullScreen
+                self.present(VC, animated: true)
+            }
+            alertController.addAction(cancel)
+            alertController.addAction(confirm)
+            self.present(alertController, animated: true, completion: nil)
+        }
+        
+        @objc func touchedWeeklyButton()    // 주별 기록
+        {
+            generator.impactOccurred()
+            weeklyButton.backgroundColor = .systemBlue
+            monthlyButton.backgroundColor = .gray
+            thisWeek_MonthLabel.text = "이번 주"
+            thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisWeekDistance))"
+            thisWeek_MonthPaceLabel.text = String(format: "%.2f", thisWeekPace)
+            thisWeek_MonthRunningCountLabel.text = "\(thisWeekRunningCount) 회"
             
-            self.lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", 0))"
-            self.lastWeek_MonthPaceLabel.text = String(format: "%.2f", 0)
-            self.lastWeek_MonthRunningCountLabel.text = "0 회"
-        }
-        alertController.addAction(cancel)
-        alertController.addAction(confirm)
-        present(alertController, animated: true, completion: nil)
-        
-    }
-    
-    @objc func withdrawal()     // 회원탈퇴
-    {
-        let alertController = UIAlertController(title: "알림", message: "회원 탈퇴를 하시겠습니까?", preferredStyle: .alert)
-        let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
-        let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-            let loginType = self.loginType()
-            loginType == "Email" || loginType == "Kakao" ? self.deleteAccount() : self.deleteAppleAccount()
-            self.kakaoLogout()
-            self.emailLogout()
+            lastWeek_MonthLabel.text = "지난 주"
+            lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", lastWeekDistance))"
+            lastWeek_MonthPaceLabel.text = String(format: "%.2f", lastWeekPace)
+            lastWeek_MonthRunningCountLabel.text = "\(lastWeekRunningCount) 회"
         }
         
-        alertController.addAction(cancel)
-        alertController.addAction(confirm)
-        present(alertController, animated: true, completion: nil)
+        @objc func touchedMonthlyButton()       // 월별 기록
+        {
+            generator.impactOccurred()
+            monthlyButton.backgroundColor = .systemBlue
+            weeklyButton.backgroundColor =  .gray
+            thisWeek_MonthLabel.text = "이번 달"
+            thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", thisMonthDistance))"
+            thisWeek_MonthPaceLabel.text = String(format: "%.2f", thisMonthPace)
+            thisWeek_MonthRunningCountLabel.text = "\(thisMonthRunningCount) 회"
+            
+            lastWeek_MonthLabel.text = "지난 달"
+            lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", lastMonthDistance))"
+            lastWeek_MonthPaceLabel.text = String(format: "%.2f", lastMonthPace)
+            lastWeek_MonthRunningCountLabel.text = "\(lastMonthRunningCount) 회"
+        }
+        
+        @objc func noticeButtonTapped()     // 공지 버튼 present
+        {
+            let eventVC = EventViewController()
+            self.navigationController?.pushViewController(eventVC, animated: true)
+        }
+        // 추후 coreData 활용 데이터 관리 코드 작성
+        
+        @objc func resetRecord()    // 러닝 기록 초기화
+        {
+            print("러닝 기록 초기화")
+            let alertController = UIAlertController(title: "알림", message: "러닝 기록을 초기화 하시겠습니까?", preferredStyle: .alert)
+            let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
+            let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+                guard let context = self.persistentContainer?.viewContext else { return }
+                
+                let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "RunningRecord")
+                
+                do
+                {
+                    let datas = try context.fetch(fetchRequest)
+                    for data in datas
+                    {
+                        guard let removeData = data as? NSManagedObject else { continue }
+                        context.delete(removeData)
+                    }
+                    
+                    try context.save()
+                }
+                catch
+                {
+                    print("error")
+                }
+                
+                self.thisWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", 0))"
+                self.thisWeek_MonthPaceLabel.text = String(format: "%.2f", 0)
+                self.thisWeek_MonthRunningCountLabel.text = "0 회"
+                
+                self.lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", 0))"
+                self.lastWeek_MonthPaceLabel.text = String(format: "%.2f", 0)
+                self.lastWeek_MonthRunningCountLabel.text = "0 회"
+            }
+            alertController.addAction(cancel)
+            alertController.addAction(confirm)
+            present(alertController, animated: true, completion: nil)
+            
+        }
+        
+        @objc func withdrawal()     // 회원탈퇴
+        {
+            let alertController = UIAlertController(title: "알림", message: "회원 탈퇴를 하시겠습니까?", preferredStyle: .alert)
+            let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
+            let confirm = UIAlertAction(title: "확인", style: .default) { _ in
+                let loginType = self.loginType()
+                
+                if loginType == "Email"
+                {
+                    self.deleteAccount()
+                    self.emailLogout()
+                }
+                
+                else if loginType == "Kakao"
+                {
+                    self.deleteKakaoAccount()
+                    self.kakaoLogout()
+                }
+                
+                else
+                {
+                    self.deleteAppleAccount()
+                }
+            }
+            
+            alertController.addAction(cancel)
+            alertController.addAction(confirm)
+            present(alertController, animated: true, completion: nil)
+        }
     }
-}
 
 
 // MARK: - UIImage extension
