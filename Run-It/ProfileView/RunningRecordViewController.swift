@@ -29,7 +29,7 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
         textField.textAlignment = .left
         
         textField.snp.makeConstraints { make in
-            make.height.equalTo(90)
+            make.height.equalTo(60)
         }
         
         let editButton = UIButton(type: .system)
@@ -138,7 +138,7 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
     func setupRecordStackView(){
         let userInfoStackView = UIStackView(arrangedSubviews: [userDate, recordTextField])
         userInfoStackView.axis = .vertical
-        userInfoStackView.spacing = 5.0
+//        userInfoStackView.spacing = 5.0
         
         let distanceStackView = UIStackView(arrangedSubviews: [recordDistance, distanceLabel])
         distanceStackView.axis = .vertical
@@ -151,7 +151,7 @@ class RunningRecordViewController: UIViewController, UITextFieldDelegate {
         
         let stackView = UIStackView(arrangedSubviews: [userInfoStackView, distanceStackView,timeStackView,paceStackView])
         stackView.axis = .vertical
-        stackView.spacing = 8.0
+//        stackView.spacing = 8.0
         
         view.addSubview(stackView)
         
