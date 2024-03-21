@@ -159,7 +159,6 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         button.configuration = config
         button.layer.cornerRadius = 25
         button.layer.shadowOpacity = 0.3
-        button.clipsToBounds = true
         button.addTarget(self, action: #selector(presentConvenienceStoreAnnotations), for: .touchUpInside)
         return button
     }()
@@ -174,7 +173,6 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         button.configuration = config
         button.layer.cornerRadius = 25
         button.layer.shadowOpacity = 0.3
-        button.clipsToBounds = true
         button.addTarget(self, action: #selector(presentcoffeeAndBakeryFranchisesAnnotations), for: .touchUpInside)
         return button
     }()
@@ -189,12 +187,11 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         button.configuration = config
         button.layer.cornerRadius = 25
         button.layer.shadowOpacity = 0.3
-        button.clipsToBounds = true
         button.addTarget(self, action: #selector(presenthealthyEatingOptionsAnnotations), for: .touchUpInside)
         return button
     }()
     
-    private var isActive: Bool = false {
+    private var isActive: Bool = true {
         didSet {
             showActionButtons()
         }
@@ -214,8 +211,6 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         button.layer.shadowRadius = 15
         button.layer.shadowOpacity = 0.3
         button.layer.cornerRadius = 45
-        button.clipsToBounds = true
-        
         button.addTarget(self, action: #selector(TappedstartRunningButton), for: .touchUpInside)
         return button
     }()
@@ -957,7 +952,6 @@ extension RunningMapViewController {
     private func setLayout() {
         mapView.snp.makeConstraints {
             $0.top.leading.trailing.bottom.equalToSuperview()
-//            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
         
         weatherContainer.snp.makeConstraints {
