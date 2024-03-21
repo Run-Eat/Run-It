@@ -105,7 +105,7 @@ class PauseRunningHalfModalViewController: UIViewController {
     lazy var restartRunningButton: UIButton = {
         let button = UIButton()
         button.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
-        button.tintColor = .systemYellow
+        button.tintColor = .white
         let configuration = UIImage.SymbolConfiguration(pointSize: 50)
         if let image = UIImage(systemName: "restart", withConfiguration: configuration) {
             button.setImage(image, for: .normal)
@@ -311,8 +311,8 @@ extension PauseRunningHalfModalViewController {
             make.leading.equalTo(modaldistanceLabel)
         }
         modalkilometerLabel.snp.makeConstraints { make in
-            make.top.equalTo(modaldistanceNumberLabel.snp.bottom).offset(2)
-            make.centerX.equalTo(modaldistanceNumberLabel.snp.centerX)
+            make.leading.equalTo(modaldistanceNumberLabel.snp.trailing).offset(3)
+            make.bottom.equalTo(modaltimeNumberLabel.snp.bottom).inset(10)
         }
         
         
@@ -338,14 +338,14 @@ extension PauseRunningHalfModalViewController {
             make.centerX.equalToSuperview()
             make.top.equalTo(modaltopContainer.snp.bottom)
             make.width.equalTo(360)
-            make.height.equalTo(150)
+            make.height.equalTo(120)
         }
         
         modalmiddleSplitLine.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.centerX.equalToSuperview()
             make.height.equalTo(1)
-            make.width.equalTo(350) //
+            make.width.equalTo(350)
         }
         
         bottombuttonContainer.snp.makeConstraints { make in

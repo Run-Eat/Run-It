@@ -35,7 +35,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     
     //MARK: - UI Properties
     var favoritesViewModel: FavoritesViewModel!
-    var tabBarHeight: CGFloat = .zero
+//    var tabBarHeight: CGFloat = .zero
     
     lazy var locationManager: CLLocationManager = {
         let manager = CLLocationManager()
@@ -45,6 +45,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         manager.allowsBackgroundLocationUpdates = true
         manager.showsBackgroundLocationIndicator = true
         manager.pausesLocationUpdatesAutomatically = false
+        
         return manager
     }()
     
@@ -55,7 +56,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         mapView.isRotateEnabled = true
         mapView.mapType = MKMapType.standard
         mapView.showsCompass = false
-        mapView.userTrackingMode = .followWithHeading
+//        mapView.userTrackingMode = .followWithHeading
         return mapView
     }()
     
@@ -63,7 +64,6 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         let container = UIView()
         container.backgroundColor = UIColor.systemGray6
         container.layer.cornerRadius = 20
-        container.layer.shadowRadius = 15
         container.layer.shadowOpacity = 0.3
         container.alpha = 0.8
         return container
@@ -113,14 +113,13 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     }()
     
     lazy var compassButton: MKCompassButton = {
-        let compassButton = MKCompassButton(mapView: self.mapView)
-        compassButton.compassVisibility = .visible
+        let Button = MKCompassButton(mapView: self.mapView)
+        Button.compassVisibility = .visible
         var config = UIButton.Configuration.filled()
         config.cornerStyle = .capsule
-        compassButton.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
-        compassButton.layer.shadowRadius = 15
-        compassButton.layer.shadowOpacity = 0.3
-        return compassButton
+        Button.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
+        Button.layer.shadowOpacity = 0.3
+        return Button
     }()
     
     lazy var currentLocationButton: UIButton = {
@@ -131,8 +130,6 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         config.cornerStyle = .capsule
         config.image = UIImage(systemName: "location")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .medium))
         button.configuration = config
-        button.layer.cornerRadius = 25
-        button.layer.shadowRadius = 15
         button.layer.shadowOpacity = 0.3
         button.addTarget(self, action: #selector(currentLocationButtonAction), for: .touchUpInside)
         return button
@@ -141,12 +138,12 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     lazy var storeListButton: UIButton = {
         let button = UIButton()
         var config = UIButton.Configuration.filled()
+        config.baseForegroundColor = .white
         config.baseBackgroundColor = .systemBlue
         config.cornerStyle = .capsule
         config.image = UIImage(systemName: "plus")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .medium))
         button.configuration = config
         button.layer.cornerRadius = 25
-        button.layer.shadowRadius = 10
         button.layer.shadowOpacity = 0.3
         button.addTarget(self, action: #selector(TappedstoreListButton), for: .touchUpInside)
         return button
@@ -155,46 +152,46 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     lazy var convenienceStoreButton: UIButton = {
         let button = UIButton()
         var config = UIButton.Configuration.filled()
+        config.baseForegroundColor = .white
         config.baseBackgroundColor = .systemIndigo
+        config.image = UIImage(systemName: "drop")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 15, weight: .medium))
         config.cornerStyle = .capsule
-        config.image = UIImage(systemName: "waterbottle")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 18, weight: .medium))
         button.configuration = config
-        button.layer.shadowRadius = 10
+        button.layer.cornerRadius = 25
         button.layer.shadowOpacity = 0.3
-        button.alpha = 0.0
         button.addTarget(self, action: #selector(presentConvenienceStoreAnnotations), for: .touchUpInside)
         return button
     }()
-    
+
     lazy var coffeeAndBakeryFranchisesButton: UIButton = {
         let button = UIButton()
         var config = UIButton.Configuration.filled()
+        config.baseForegroundColor = .white
         config.baseBackgroundColor = .systemIndigo
+        config.image = UIImage(systemName: "cup.and.saucer")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 15, weight: .medium))
         config.cornerStyle = .capsule
-        config.image = UIImage(systemName: "cup.and.saucer")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 18, weight: .medium))
         button.configuration = config
-        button.layer.shadowRadius = 10
+        button.layer.cornerRadius = 25
         button.layer.shadowOpacity = 0.3
-        button.alpha = 0.0
         button.addTarget(self, action: #selector(presentcoffeeAndBakeryFranchisesAnnotations), for: .touchUpInside)
         return button
     }()
-    
+
     lazy var healthyEatingOptionsButton: UIButton = {
         let button = UIButton()
         var config = UIButton.Configuration.filled()
+        config.baseForegroundColor = .white
         config.baseBackgroundColor = .systemIndigo
+        config.image = UIImage(systemName: "takeoutbag.and.cup.and.straw")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 15, weight: .medium))
         config.cornerStyle = .capsule
-        config.image = UIImage(systemName: "storefront")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 18, weight: .medium))
         button.configuration = config
-        button.layer.shadowRadius = 10
+        button.layer.cornerRadius = 25
         button.layer.shadowOpacity = 0.3
-        button.alpha = 0.0
         button.addTarget(self, action: #selector(presenthealthyEatingOptionsAnnotations), for: .touchUpInside)
         return button
     }()
     
-    private var isActive: Bool = false {
+    private var isActive: Bool = true {
         didSet {
             showActionButtons()
         }
@@ -205,7 +202,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     lazy var startRunningButton: UIButton = {
         let button = UIButton()
         button.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
-        button.tintColor = .systemYellow
+        button.tintColor = .white
         let configuration = UIImage.SymbolConfiguration(pointSize: 50)
         if let image = UIImage(systemName: "figure.run", withConfiguration: configuration) {
             button.setImage(image, for: .normal)
@@ -214,8 +211,6 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         button.layer.shadowRadius = 15
         button.layer.shadowOpacity = 0.3
         button.layer.cornerRadius = 45
-        button.clipsToBounds = true
-        
         button.addTarget(self, action: #selector(TappedstartRunningButton), for: .touchUpInside)
         return button
     }()
@@ -223,7 +218,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     lazy var backToRunningTimerViewButton: UIButton = {
         let button = UIButton()
         button.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
-        button.tintColor = .systemYellow
+        button.tintColor = .white
         let configuration = UIImage.SymbolConfiguration(pointSize: 50)
         if let image = UIImage(systemName: "restart", withConfiguration: configuration) {
             button.setImage(image, for: .normal)
@@ -956,8 +951,7 @@ extension RunningMapViewController {
     
     private func setLayout() {
         mapView.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
-            $0.bottom.equalToSuperview().offset(-self.tabBarHeight * 1.8)
+            $0.top.leading.trailing.bottom.equalToSuperview()
         }
         
         weatherContainer.snp.makeConstraints {
@@ -1018,20 +1012,28 @@ extension RunningMapViewController {
             $0.top.equalTo(currentLocationButton.snp.bottom).offset(20)
         }
         
-        convenienceStoreButton.snp.makeConstraints {
-            $0.top.equalTo(storeListButton.snp.bottom).offset(20)
-            $0.centerX.equalTo(storeListButton)
+        convenienceStoreButton.snp.makeConstraints { make in
+            make.width.height.equalTo(50)
+            make.top.equalTo(storeListButton.snp.bottom).offset(20)
+            make.centerX.equalTo(storeListButton)
+           
         }
+
+        coffeeAndBakeryFranchisesButton.snp.makeConstraints { make in
+            make.width.height.equalTo(50)
+            make.top.equalTo(convenienceStoreButton.snp.bottom).offset(20)
+            make.centerX.equalTo(storeListButton)
+            
+        }
+
+        healthyEatingOptionsButton.snp.makeConstraints { make in
+            make.width.height.equalTo(50)
+            make.top.equalTo(coffeeAndBakeryFranchisesButton.snp.bottom).offset(20)
+            make.centerX.equalTo(storeListButton)
+            
+        }
+
         
-        coffeeAndBakeryFranchisesButton.snp.makeConstraints {
-            $0.top.equalTo(convenienceStoreButton.snp.bottom).offset(20)
-            $0.centerX.equalTo(storeListButton)
-        }
-        
-        healthyEatingOptionsButton.snp.makeConstraints {
-            $0.top.equalTo(coffeeAndBakeryFranchisesButton.snp.bottom).offset(20)
-            $0.centerX.equalTo(storeListButton)
-        }
     }
     
     

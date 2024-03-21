@@ -325,7 +325,7 @@ extension RunningTimerViewController {
         
         bottomView.snp.makeConstraints { make in
             make.leading.bottom.trailing.equalToSuperview()
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.bottomMargin)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
 
     }

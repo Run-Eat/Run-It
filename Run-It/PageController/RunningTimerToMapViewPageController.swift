@@ -6,22 +6,57 @@
 //
 
 import UIKit
+import SnapKit
 
 class RunningTimerToMapViewPageController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     
     var pageViewController: UIPageViewController!
     var viewControllers: [UIViewController] = []
-    var pageControl = UIPageControl() // 페이지 인디케이터
+    
+//    lazy var pageControl: UIPageControl = {
+//        let pageControl = UIPageControl()
+//        pageControl.currentPageIndicatorTintColor = .systemYellow
+//        pageControl.pageIndicatorTintColor = .systemTeal
+//        return pageControl
+//    }()
+    
+    let statusBarView = UIView()
+    let bottomView = UIView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setuptoolbarbutton()
+        setupUI()
     }
     
     @objc func switchToRunningTimer() {
         pageViewController.setViewControllers([viewControllers[0]], direction: .reverse, animated: true, completion: nil)
     }
-
+    
+    func setupUI() {
+        
+        view.addSubview(statusBarView)
+        view.addSubview(bottomView)
+        
+        view.backgroundColor = .black
+        statusBarView.backgroundColor = .black
+        bottomView.backgroundColor = .black
+        
+        [statusBarView, bottomView].forEach { subView in view.addSubview(subView)
+        }
+        
+        statusBarView.snp.makeConstraints { make in
+            make.leading.top.trailing.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.topMargin)
+        }
+        
+        bottomView.snp.makeConstraints { make in
+            make.leading.bottom.trailing.equalToSuperview()
+            make.width.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+        }
+        
+    }
 
 
     // MARK: - UIPageViewControllerDataSource
