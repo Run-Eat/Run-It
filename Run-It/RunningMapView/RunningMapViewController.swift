@@ -111,6 +111,11 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         label.textAlignment = .center
         return label
     }()
+    lazy var attributionImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.isUserInteractionEnabled = true
+        return imageView
+    }()
     
     lazy var compassButton: MKCompassButton = {
         let Button = MKCompassButton(mapView: self.mapView)
@@ -268,6 +273,8 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         favoritesViewModel = FavoritesViewModel()
         RunningTimerLocationManager.shared.resetActivityTimer()
         mapView.setUserTrackingMode(.followWithHeading, animated: true)
+        setupAttribution()
+        weatherViewModel.loadWeatherAttribution()
     }
     
     //MARK: - @objc functions
@@ -277,11 +284,19 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         // RunningTimerLocationManager 인스턴스의 위치 데이터 및 거리 초기화
         RunningTimerLocationManager.shared.resetLocationData()
         
-        let startRunningViewController =  StartRunningViewController()
+        if let presentedVC = self.presentedViewController {
+          presentedVC.dismiss(animated: true) {
+            self.showStartRunningViewController()
+          }
+        } else {
+          self.showStartRunningViewController()
+        }
+      }
+      private func showStartRunningViewController() {
+        let startRunningViewController = StartRunningViewController()
         startRunningViewController.modalPresentationStyle = .fullScreen
         self.present(startRunningViewController, animated: true)
-        
-    }
+      }
     
     @objc private func backToRunningTimerView() {
         closeModal()
@@ -942,6 +957,7 @@ extension RunningMapViewController {
         view.addSubview(coffeeAndBakeryFranchisesButton)
         view.addSubview(healthyEatingOptionsButton)
         view.addSubview(weatherContainer)
+        view.addSubview(attributionImageView)
         weatherContainer.addSubview(temperatureLabel)
         weatherContainer.addSubview(humidityLabel)
         weatherContainer.addSubview(windspeedLabel)
@@ -983,6 +999,10 @@ extension RunningMapViewController {
             $0.top.equalTo(windspeedLabel.snp.bottom).offset(10)
         }
         
+        attributionImageView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(30)
+            make.top.equalTo(weatherContainer.snp.bottom).offset(8)
+        }
         startRunningButton.snp.makeConstraints {
             $0.width.height.equalTo(90)
             $0.centerX.equalToSuperview()
@@ -1075,4 +1095,32 @@ extension RunningMapViewController {
         }
     }
     
+    func setupAttribution() {
+        weatherViewModel.$weatherAttribution.receive(on: DispatchQueue.main).sink { [weak self] attributionImageURLString in
+            let url = URL(string: attributionImageURLString)
+            self?.downloadAndSetAttributionImage(from: url)
+        }.store(in: &cancellables)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(attributionTapped))
+        attributionImageView.isUserInteractionEnabled = true
+        attributionImageView.addGestureRecognizer(tapGesture)
+    }
+
+    @objc func attributionTapped() {
+        if let url = weatherViewModel.legalPageURL {
+            UIApplication.shared.open(url)
+        }
+    }
+
+    func downloadAndSetAttributionImage(from url: URL?) {
+        guard let url = url else { return }
+        
+        let task = URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
+            guard let data = data, let image = UIImage(data: data) else { return }
+            DispatchQueue.main.async {
+                self?.attributionImageView.image = image
+            }
+        }
+        task.resume()
+    }
 }
