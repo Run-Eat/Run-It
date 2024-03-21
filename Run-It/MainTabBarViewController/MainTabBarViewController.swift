@@ -13,11 +13,18 @@ class MainTabBarViewController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .systemBackground
+
+        // 모든 탭 바 상태에 대해 동일한 외관을 사용
+        tabBar.standardAppearance = appearance
+        tabBar.scrollEdgeAppearance = appearance
+        tabBar.isTranslucent = false
         let runningMapVC = RunningMapViewController()
         let runningMapViewNavigationController = UINavigationController(rootViewController: runningMapVC)
         runningMapViewNavigationController.tabBarItem = UITabBarItem(title: "러닝", image: UIImage(systemName: "figure.run"), tag: 0)
-        runningMapVC.tabBarHeight = self.tabBar.frame.height
+//        runningMapVC.tabBarHeight = self.tabBar.frame.height
         
         let bookmarkVC = BookmarkViewController()
         let BookmarkViewNavigationController = UINavigationController(rootViewController: bookmarkVC)

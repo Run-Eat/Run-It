@@ -311,8 +311,8 @@ extension PauseRunningHalfModalViewController {
             make.leading.equalTo(modaldistanceLabel)
         }
         modalkilometerLabel.snp.makeConstraints { make in
-            make.top.equalTo(modaldistanceNumberLabel.snp.bottom).offset(2)
-            make.centerX.equalTo(modaldistanceNumberLabel.snp.centerX)
+            make.leading.equalTo(modaldistanceNumberLabel.snp.trailing).offset(3)
+            make.bottom.equalTo(modaltimeNumberLabel.snp.bottom).inset(10)
         }
         
         

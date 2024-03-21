@@ -35,7 +35,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     
     //MARK: - UI Properties
     var favoritesViewModel: FavoritesViewModel!
-    var tabBarHeight: CGFloat = .zero
+//    var tabBarHeight: CGFloat = .zero
     
     lazy var locationManager: CLLocationManager = {
         let manager = CLLocationManager()
@@ -956,8 +956,8 @@ extension RunningMapViewController {
     
     private func setLayout() {
         mapView.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+            $0.top.leading.trailing.bottom.equalToSuperview()
+//            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
         
         weatherContainer.snp.makeConstraints {

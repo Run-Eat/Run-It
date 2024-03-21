@@ -207,7 +207,8 @@ class ProfileViewController: UIViewController
         
         return button
     }()
-
+    
+    let buttonsContainerView = UIView()
 // MARK: - Life Cycle
     override func viewDidLoad()
     {
@@ -387,7 +388,7 @@ class ProfileViewController: UIViewController
         {   make in
             make.trailing.equalTo(view.snp.trailing).inset(30)
             make.top.equalTo(noticeButton.snp.bottom).offset(10)
-            make.width.equalTo(70)
+            make.width.equalTo(80)
         }
         
     }
