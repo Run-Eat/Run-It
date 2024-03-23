@@ -180,52 +180,83 @@ class PauseRunningHalfModalViewController: UIViewController {
     
     func presentCompletionAlert() {
         SpeechService.shared.speak("러닝을 종료하시겠습니까?")
-        // 거리가 0이면 삭제 여부를 묻는 알림창을 표시
-        if self.distance == 0 {
-            let deleteAlert = UIAlertController(title: "기록을 삭제할까요?", message: "운동 거리가 0km로 기록됩니다.", preferredStyle: .alert)
-            
-            deleteAlert.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-                
-                self.delegate?.pauseRunningHalfModalViewControllerDidRequestReset(self)
-                let mainTabBarVC = MainTabBarViewController()
-                mainTabBarVC.modalPresentationStyle = .fullScreen
-                self.present(mainTabBarVC, animated: true)
+        // 코어 데이터에 러닝 기록이 있는지 확인합니다.
+        let records = CoreDataManager.shared.fetchRunningRecords()
+        if records.isEmpty {
+            // 러닝 기록이 없는 경우, 위치 데이터 사용에 대한 동의를 요청하는 알림을 표시합니다.
+            let consentAlert = UIAlertController(
+                title: "운동 기록 저장",
+                message: "운동을 완료하면, 이 앱은 운동의 위치 데이터, 경로, 시간 및 날짜를 기기에 저장합니다. 이 기록은 귀하의 운동 성과를 추적하고 개선하기 위한 용도로만 사용되며, 귀하만이 접근할 수 있습니다. 저장된 정보는 언제든지 활동기록에서 삭제할 수 있으며, 이 데이터는 귀하의 명시적 동의 없이 앱 외부로 공개되지 않습니다.",
+                preferredStyle: .alert
+            )
+            consentAlert.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+                if self.distance == 0 {
+                    self.deleteRunningRecord()
+                } else {
+                    self.completeRunningAndSaveRecord()
+                }
             }))
+            consentAlert.addAction(UIAlertAction(title: "취소하기", style: .cancel, handler: nil))
             
-            deleteAlert.addAction(UIAlertAction(title: "취소하기", style: .cancel))
-            
-            self.present(deleteAlert, animated: true, completion: nil)
+            self.present(consentAlert, animated: true, completion: nil)
         } else {
-            let alert = UIAlertController(title: "운동을 완료하시겠습니까?", message: "근처 편의점에서 물 한잔 어떠신가요?", preferredStyle: .alert)
-            
-            alert.addAction(UIAlertAction(title: "운동 완료하기", style: .default, handler: { _ in
-                let locations = RunningTimerLocationManager.shared.getLocations()
+            if self.distance == 0 {
+                deleteRunningRecord()
+            } else {
+                let alert = UIAlertController(title: "운동을 완료하시겠습니까?", message: "근처 편의점에서 물 한잔 어떠신가요?", preferredStyle: .alert)
                 
-                // 맵 스냅샷 생성
-                MapSnapshotManager.createSnapshot(for: locations) { [weak self] image in
-                    guard let self = self, let image = image, let imageData = image.pngData() else {
-                        print("Failed to create route image snapshot.")
-                        return
-                    }
+                alert.addAction(UIAlertAction(title: "운동 완료하기", style: .default, handler: { _ in
                     
-                    // 스냅샷 이미지 데이터와 함께 코어 데이터에 러닝 기록 저장
-                    if let recordId = CoreDataManager.shared.createRunningRecord(time: self.time, distance: self.distance, pace: self.pace, routeImage: imageData) {
-                        print("Running record with route saved successfully. Record ID: \(recordId)")
-                    } else {
-                        print("Failed to save running record with route image.")
-                    }
-                }
-                DispatchQueue.main.async {
-                    self.delegate?.pauseRunningHalfModalViewControllerDidRequestStop(self)
-                    let mainTabBarViewController = MainTabBarViewController()
-                    mainTabBarViewController.modalPresentationStyle = .fullScreen
-                    self.present(mainTabBarViewController, animated: true)
-                }
-            }))
+                    self.completeRunningAndSaveRecord()
+                }))
+                
+                alert.addAction(UIAlertAction(title: "취소하기", style: .destructive, handler: nil))
+                
+                self.present(alert, animated: true, completion: nil)
+            }
+        }
+    }
+    
+    func deleteRunningRecord() {
+        let deleteAlert = UIAlertController(title: "기록을 삭제할까요?", message: "운동 거리가 0km로 기록하지 않습니다.", preferredStyle: .alert)
+        
+        deleteAlert.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
             
-            alert.addAction(UIAlertAction(title: "취소하기", style: .destructive, handler: nil))
+            self.delegate?.pauseRunningHalfModalViewControllerDidRequestReset(self)
+            let mainTabBarVC = MainTabBarViewController()
+            mainTabBarVC.modalPresentationStyle = .fullScreen
+            self.present(mainTabBarVC, animated: true)
+        }))
+        
+        deleteAlert.addAction(UIAlertAction(title: "취소하기", style: .cancel))
+        
+        self.present(deleteAlert, animated: true, completion: nil)
+    }
+    
+    func completeRunningAndSaveRecord() {
+        
+        let locations = RunningTimerLocationManager.shared.getLocations()
+        
+        // 맵 스냅샷 생성
+        MapSnapshotManager.createSnapshot(for: locations) { [weak self] image in
+            guard let self = self, let image = image, let imageData = image.pngData() else {
+                print("Failed to create route image snapshot.")
+                return
+            }
             
-            self.present(alert, animated: true, completion: nil)
+            // 스냅샷 이미지 데이터와 함께 코어 데이터에 러닝 기록 저장
+            if let recordId = CoreDataManager.shared.createRunningRecord(time: self.time, distance: self.distance, pace: self.pace, routeImage: imageData) {
+                print("Running record with route saved successfully. Record ID: \(recordId)")
+            } else {
+                print("Failed to save running record with route image.")
+            }
+        }
+        
+        DispatchQueue.main.async {
+            self.delegate?.pauseRunningHalfModalViewControllerDidRequestStop(self)
+            let mainTabBarViewController = MainTabBarViewController()
+            mainTabBarViewController.modalPresentationStyle = .fullScreen
+            self.present(mainTabBarViewController, animated: true)
         }
     }
 }
