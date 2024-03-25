@@ -35,7 +35,7 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     
     //MARK: - UI Properties
     var favoritesViewModel: FavoritesViewModel!
-//    var tabBarHeight: CGFloat = .zero
+    var tabBarHeight: CGFloat = .zero
     
     lazy var locationManager: CLLocationManager = {
         let manager = CLLocationManager()
