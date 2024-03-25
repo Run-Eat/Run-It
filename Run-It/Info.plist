@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>&quot;사용자의 위치 정보를 받아오려고 합니다&quot;</string>
+	<string>수집한 사용자 위치 정보는 현재 위치에 기반한 날씨 및 지도 정보, 러닝 경로 제공을 위해 사용됩니다.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>&quot;위치 사용을 항상 허용하시겠습니까?</string>
+	<string>수집한 사용자 위치 정보는 현재 위치에 기반한 날씨 및 지도 정보, 러닝 경로 제공을 위해 사용됩니다.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>&quot;현재 위치 사용을 허용하시겠습니까?&quot;</string>
+	<string>수집한 사용자 위치 정보는 현재 위치에 기반한 날씨 및 지도 정보, 러닝 경로 제공을 위해 사용됩니다.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

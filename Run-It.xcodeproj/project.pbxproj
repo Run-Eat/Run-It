@@ -120,6 +120,7 @@
 		C879CD082B8B405E00DBFB82 /* RunningTimerLocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningTimerLocationManager.swift; sourceTree = "<group>"; };
 		C87BF1102BA193B00066073C /* Run-It.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Run-It.entitlements"; sourceTree = "<group>"; };
 		C87BF1112BA194320066073C /* WeatherViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewModel.swift; sourceTree = "<group>"; };
+		C891DF142BAC601F00C86AAE /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		C893A7222B955B0E00D5466E /* RunningTimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningTimerManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -283,6 +284,7 @@
 			isa = PBXGroup;
 			children = (
 				C82CEDCC2B86FCB200B619AD /* MainTabBarViewController.swift */,
+				C891DF142BAC601F00C86AAE /* PrivacyInfo.xcprivacy */,
 			);
 			path = MainTabBarViewController;
 			sourceTree = "<group>";
@@ -594,9 +596,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Run-It/Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "\"현재 위치 사용을 허용하시겠습니까?\"";
-				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "\"위치 사용을 항상 허용하시겠습니까?";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "\"사용자의 위치 정보를 받아오려고 합니다\"";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "수집한 사용자 위치 정보는 현재 위치에 기반한 날씨 및 지도 정보, 러닝 경로 제공을 위해 사용됩니다.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "수집한 사용자 위치 정보는 현재 위치에 기반한 날씨 및 지도 정보, 러닝 경로 제공을 위해 사용됩니다.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "수집한 사용자 위치 정보는 현재 위치에 기반한 날씨 및 지도 정보, 러닝 경로 제공을 위해 사용됩니다.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -606,7 +608,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.team5.Run-It";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -634,9 +636,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Run-It/Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "\"현재 위치 사용을 허용하시겠습니까?\"";
-				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "\"위치 사용을 항상 허용하시겠습니까?";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "\"사용자의 위치 정보를 받아오려고 합니다\"";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "수집한 사용자 위치 정보는 현재 위치에 기반한 날씨 및 지도 정보, 러닝 경로 제공을 위해 사용됩니다.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "수집한 사용자 위치 정보는 현재 위치에 기반한 날씨 및 지도 정보, 러닝 경로 제공을 위해 사용됩니다.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "수집한 사용자 위치 정보는 현재 위치에 기반한 날씨 및 지도 정보, 러닝 경로 제공을 위해 사용됩니다.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -646,7 +648,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.team5.Run-It";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

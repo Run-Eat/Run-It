@@ -29,6 +29,7 @@ class BookmarkViewController: UIViewController, UITableViewDataSource, UITableVi
     // MARK: - UI Setup
     func setupFavoriteUI() {
         setupFavoriteListUI()
+        navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     func setupFavoriteListUI() {
