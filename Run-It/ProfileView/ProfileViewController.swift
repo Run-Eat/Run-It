@@ -256,7 +256,8 @@ class ProfileViewController: UIViewController
     // MARK: - addSubView
     func addScrollView()
     {
-        scrollView.addSubview(noticeButton)
+//        navigationController?.setNavigationBarHidden(true, animated: true)
+//        scrollView.addSubview(noticeButton)
         scrollView.addSubview(loginTypeIcon)
         scrollView.addSubview(logoutButton)
         scrollView.addSubview(titleLabel)
@@ -271,8 +272,6 @@ class ProfileViewController: UIViewController
         scrollView.addSubview(monthlyButton)
         scrollView.addSubview(userRecord)
         scrollView.addSubview(uiView)
-        scrollView.addSubview(resetButton)
-        scrollView.addSubview(withdrawButton)
 
     }
     
@@ -284,16 +283,16 @@ class ProfileViewController: UIViewController
             make.edges.equalToSuperview()
         }
         
-        noticeButton.snp.makeConstraints
-        {   make in
-            make.top.equalTo(scrollView.snp.top).inset(0)
-            make.trailing.equalTo(view.snp.trailing).inset(20)
-            make.width.equalTo(90)
-        }
+//        noticeButton.snp.makeConstraints
+//        {   make in
+//            make.top.equalTo(scrollView.snp.top)equalTo(scrollView.snp.top).inset(0)
+//            make.trailing.equalTo(view.snp.trailing).inset(20)
+//            make.width.equalTo(90)
+//        }
         
         loginTypeIcon.snp.makeConstraints
         {   make in
-            make.centerY.equalTo(noticeButton.snp.centerY)
+            make.top.equalToSuperview().offset(10)
             make.leading.equalTo(view.snp.leading).inset(20)
             make.width.equalTo(20)
             make.height.equalTo(20)
@@ -308,7 +307,7 @@ class ProfileViewController: UIViewController
         
         titleLabel.snp.makeConstraints
         {   make in
-            make.top.equalTo(noticeButton.snp.bottom).offset(20)
+            make.top.equalTo(scrollView.snp.top).offset(20)
             make.centerX.equalTo(view.snp.centerX)
         }
         
@@ -377,20 +376,6 @@ class ProfileViewController: UIViewController
             make.leading.equalTo(weeklyButton.snp.trailing).offset(50)
         }
         
-        resetButton.snp.makeConstraints
-        {   make in
-            make.centerY.equalTo(pointImage.snp.centerY)
-            make.leading.equalTo(view.snp.leading).inset(30)
-            make.width.equalTo(120)
-        }
-        
-        withdrawButton.snp.makeConstraints
-        {   make in
-            make.trailing.equalTo(view.snp.trailing).inset(30)
-            make.top.equalTo(noticeButton.snp.bottom).offset(10)
-            make.width.equalTo(80)
-        }
-        
     }
     
     func setupRecordStackView() {
@@ -415,6 +400,8 @@ class ProfileViewController: UIViewController
         stackView.spacing = 40.0
         
         scrollView.addSubview(stackView)
+        scrollView.addSubview(withdrawButton)
+        scrollView.addSubview(resetButton)
         
         stackView.snp.makeConstraints { make in
             make.top.equalTo(weeklyButton.snp.bottom).offset(25)
@@ -438,6 +425,20 @@ class ProfileViewController: UIViewController
             make.leading.equalToSuperview().offset(16)
             make.trailing.equalToSuperview().offset(-16)
             self.tableViewHeightConstraint = make.height.equalTo(runningRecords.count * 170).constraint
+        }
+        
+        withdrawButton.snp.makeConstraints
+        {   make in
+            make.top.equalTo(tableView.snp.bottom).offset(20)
+            make.trailing.equalTo(view.snp.trailing).inset(30)
+            make.width.equalTo(80)
+        }
+        
+        resetButton.snp.makeConstraints
+        {   make in
+            make.top.equalTo(tableView.snp.bottom).offset(20)
+            make.leading.equalTo(view.snp.leading).inset(30)
+            make.width.equalTo(120)
         }
     }
     
