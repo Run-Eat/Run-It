@@ -117,6 +117,15 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         return imageView
     }()
     
+    lazy var attributionURL: UIButton = {
+        let button = UIButton(type: .system) // 시스템 타입의 버튼을 생성합니다.
+        button.setTitle("Weather Attribution", for: .normal) // 버튼의 타이틀을 설정합니다.
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 11) // 타이틀의 폰트 크기를 설정합니다.
+        button.setTitleColor(.systemBlue, for: .normal) // 타이틀의 색상을 시스템 블루로 설정합니다.
+        button.addTarget(self, action: #selector(attributionTapped), for: .touchUpInside)
+        return button
+    }()
+    
     lazy var compassButton: MKCompassButton = {
         let Button = MKCompassButton(mapView: self.mapView)
         Button.compassVisibility = .visible
@@ -958,6 +967,7 @@ extension RunningMapViewController {
         view.addSubview(healthyEatingOptionsButton)
         view.addSubview(weatherContainer)
         view.addSubview(attributionImageView)
+        view.addSubview(attributionURL)
         weatherContainer.addSubview(temperatureLabel)
         weatherContainer.addSubview(humidityLabel)
         weatherContainer.addSubview(windspeedLabel)
@@ -1002,6 +1012,11 @@ extension RunningMapViewController {
         attributionImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(30)
             make.top.equalTo(weatherContainer.snp.bottom).offset(8)
+        }
+        
+        attributionURL.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(30)
+            make.top.equalTo(attributionImageView.snp.bottom)
         }
         startRunningButton.snp.makeConstraints {
             $0.width.height.equalTo(90)
@@ -1100,10 +1115,6 @@ extension RunningMapViewController {
             let url = URL(string: attributionImageURLString)
             self?.downloadAndSetAttributionImage(from: url)
         }.store(in: &cancellables)
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(attributionTapped))
-        attributionImageView.isUserInteractionEnabled = true
-        attributionImageView.addGestureRecognizer(tapGesture)
     }
 
     @objc func attributionTapped() {

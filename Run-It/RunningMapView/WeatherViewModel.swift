@@ -82,7 +82,7 @@ extension WeatherViewModel {
             do {
                 let attributionData = try JSONDecoder().decode(AttributionData.self, from: data)
                 let baseURLString = "https://weatherkit.apple.com"
-                let imageURLString = baseURLString + attributionData.logoDark1x
+                let imageURLString = baseURLString + attributionData.logoLight1x
                 
                 DispatchQueue.main.async {
                     self?.weatherAttribution = imageURLString
