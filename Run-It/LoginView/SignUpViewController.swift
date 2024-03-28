@@ -158,8 +158,30 @@ class SignUpViewController: UIViewController
     lazy var appleSignupButton: UIButton =
     {
         let button = UIButton()
-        button.setImage(UIImage(named: "AppleLogo"), for: .normal)
+        let logoImage = UIImage(systemName: "applelogo")
+        button.setImage(logoImage, for: .normal)
         button.addTarget(self, action: #selector(touchedAppleSignupButton), for: .touchUpInside)
+        let buttonSize: CGFloat = 40
+            button.frame = CGRect(x: 0, y: 0, width: buttonSize, height: buttonSize)
+        // cornerRadius를 버튼 높이의 절반으로 설정하여 원형으로 만듭니다.
+        button.layer.cornerRadius = buttonSize / 2
+        // 클립 투 바운즈를 true로 설정하여 레이어 바깥으로 내용이 표시되지 않도록 합니다.
+        button.clipsToBounds = true
+        if #available(iOS 13.0, *) {
+            // 초기 인터페이스 스타일에 따라 버튼의 색상을 설정합니다.
+            let userInterfaceStyle = traitCollection.userInterfaceStyle
+            if userInterfaceStyle == .dark {
+                button.backgroundColor = .white
+                button.tintColor = .black
+            } else {
+                button.backgroundColor = .black
+                button.tintColor = .white
+            }
+        } else {
+            // iOS 13 미만에서는 기본 테마를 사용합니다.
+            button.backgroundColor = .black
+            button.tintColor = .white
+        }
         return button
     }()
 
@@ -183,6 +205,7 @@ class SignUpViewController: UIViewController
         updateTextFieldBorderColor()
     }
     
+    
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
@@ -191,6 +214,19 @@ class SignUpViewController: UIViewController
         if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             // 색상 모드가 변경되었다면 테두리 색상을 업데이트합니다.
             updateTextFieldBorderColor()
+        }
+        
+        if #available(iOS 13.0, *) {
+            // 현재 트레이트 컬렉션을 가져와서 인터페이스 스타일을 확인합니다.
+            let userInterfaceStyle = traitCollection.userInterfaceStyle
+            // 다크 모드일 때
+            if userInterfaceStyle == .dark {
+                appleSignupButton.backgroundColor = .white
+                appleSignupButton.tintColor = .black
+            } else { // 라이트 모드 또는 미정의일 때
+                appleSignupButton.backgroundColor = .black
+                appleSignupButton.tintColor = .white
+            }
         }
     }
 
