@@ -394,7 +394,7 @@ class SignUpViewController: UIViewController
     {
         guard let email = emailTextField.text else { return }
         guard let password = passwordTextField.text else { return }
-        createUser(email: email, password: password)
+        emailSignUp(email: email, password: password)
 
         let alertController = UIAlertController(title: "알림", message: "회원가입이 완료되었습니다", preferredStyle: .alert)
         let confirm = UIAlertAction(title: "확인", style: .default) { _ in self.dismiss(animated: true) }
@@ -404,28 +404,8 @@ class SignUpViewController: UIViewController
     
     @objc func touchedKakaoSignupButton()
     {
-        if AuthApi.hasToken()
-        {
-            UserApi.shared.accessTokenInfo
-            {   accessTokenInfo, error in
-                if let error = error
-                {
-                    print("DEBUG: 카카오톡 토큰 가져오기 에러 \(error.localizedDescription)")
-                    kakaoSignup()
-                }
-                
-                else
-                {
-                    // 토큰 유효성 체크 성공 (필요 시 토큰 갱신됨)
-                }
-            }
-        }
-        
-        else
-        {
             kakaoSignup()
             dismiss(animated: true)
-        }
     }
     
     @objc func touchedAppleSignupButton()

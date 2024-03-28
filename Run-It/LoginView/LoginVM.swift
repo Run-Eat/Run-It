@@ -14,6 +14,7 @@ import CryptoKit
 import SwiftJWT
 import Alamofire
 import KeychainAccess
+import CoreData
 
 
 // MARK: - Firebase 로그인
@@ -145,7 +146,6 @@ func bringKakaoInfo()
                 print("로그인 실패")
                 if let error = error
                 {
-                    sendTask(task: "needSignup")
                     print(error)
                 }
             }
@@ -153,6 +153,7 @@ func bringKakaoInfo()
             else if authResult != nil
             {
                 print("로그인 성공")
+                checkData(loginType: "Kakao", email: email)
                 sendTask(task: "successLogin")
             }
         }
@@ -253,6 +254,8 @@ class LoginVM: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationContr
             let fullName = appleIDCredential.fullName
             let email = appleIDCredential.email
             
+            checkData(loginType: "Apple", email: email ?? "none")
+            
             if let authorizationCode = appleIDCredential.authorizationCode,
                let identityToken = appleIDCredential.identityToken,
                let authCodeString = String(data: authorizationCode, encoding: .utf8),
@@ -263,6 +266,7 @@ class LoginVM: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationContr
                 do
                 {
                     try keychain.set(authorizationCode, key: "authorizationCode")
+                    try keychain.set(userIdentifier, key: "UserID")
                 }
                 catch
                 {
@@ -307,3 +311,42 @@ func sendTask(task: String)
     NotificationCenter.default.post(name: Notification.Name("loginTask"), object: task)
 }
 
+
+var persistentContainer: NSPersistentContainer?
+{
+    (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer
+}
+
+// MARK: - CoreData 데이터 확인 후 수정
+func checkData(loginType: String, email: String)
+{
+    guard let context = persistentContainer?.viewContext else { return }
+    
+    let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
+    fetchRequest.predicate = NSPredicate(value: true)
+    
+    do
+    {
+        let results = try context.fetch(fetchRequest)
+        
+        if results.isEmpty
+        {
+            print("데이터 비어있음")
+            return
+        }
+        
+        else
+        {
+            print("데이터 존재")
+            let user = results[0]
+            user.loginType = loginType
+            user.email = email
+            print(user.loginType as Any)
+            try context.save()
+        }
+    }
+    catch
+    {
+        print("error")
+    }
+}

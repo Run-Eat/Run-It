@@ -201,6 +201,7 @@ class LoginViewController: UIViewController
         setLayout()
         registerObserver()
         addInputAccessoryForTextFields()
+        createUser()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -384,40 +385,6 @@ class LoginViewController: UIViewController
         passwordTextField.layer.borderWidth = 0.7
     }
     
-// MARK: - CoreData 데이터 확인 후 수정
-    func checkData(loginType: String, email: String)
-    {
-        guard let context = self.persistentContainer?.viewContext else { return }
-        
-        let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
-        fetchRequest.predicate = NSPredicate(value: true)
-        
-        do
-        {
-            let results = try context.fetch(fetchRequest)
-            
-            if results.isEmpty
-            {
-                createUser()
-                print("데이터 비어있음")
-            }
-            
-            else
-            {
-                print("데이터 존재")
-                let user = results[0]
-                user.loginType = loginType
-                user.email = email
-                print(user.loginType as Any)
-                try context.save()
-            }
-        }
-        catch
-        {
-            print("error")
-        }
-    }
-    
 // MARK: - 데이터 생성
     func createUser()
     {
@@ -452,35 +419,11 @@ class LoginViewController: UIViewController
     
     @objc func touchedKakaoLoginButton()
     {
-        var email: String = ""
-        
-            UserApi.shared.me
-            {   user, error in
-                
-                guard let useremail = user?.kakaoAccount?.email else { return }
-
-                if user == nil
-                {
-                    print("이메일 가져오기 실패")
-                    if let error = error
-                    {
-                        print(error)
-                    }
-                }
-                
-                else if user != nil
-                {
-                    email = useremail
-                    print("이메일 가져오기 성공")
-                }
-            }
-        self.checkData(loginType: "Kakao", email: email)
-        kakaoLogin()
+        kakaoSignup()
     }
     
     @objc func touchedAppleLoginButton()
     {
-        self.checkData(loginType: "Apple", email: "appleLogin")
         
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
         {
@@ -567,15 +510,6 @@ class LoginViewController: UIViewController
             self.present(alertController, animated: true, completion: nil)
         }
         
-        else if result == "needSignup"
-        {
-            ProfileViewController().kakaoLogout()
-            let alertController = UIAlertController(title: "로그인 실패", message: "회원 가입을 먼저 진행해주세요.", preferredStyle: .alert)
-            let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
-            alertController.addAction(confirm)
-            self.present(alertController, animated: true, completion: nil)
-        }
-        
         else if result == "successLogin"
         {
             let VC = MainTabBarViewController()
@@ -588,10 +522,18 @@ class LoginViewController: UIViewController
         
         else if result == "KakaoSignupSucces"
         {
-            let alertController = UIAlertController(title: "알림", message: "카카오 계정 회원가입에 성공하였습니다.", preferredStyle: .alert)
-            let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
-            alertController.addAction(confirm)
-            self.present(alertController, animated: true, completion: nil)
+            let VC = MainTabBarViewController()
+            
+            VC.modalPresentationStyle = .fullScreen
+            self.present(VC, animated: true, completion: nil)
+        }
+        
+        else if result == "Account Exists - Login"
+        {
+            let VC = MainTabBarViewController()
+            
+            VC.modalPresentationStyle = .fullScreen
+            self.present(VC, animated: true, completion: nil)
         }
         
         else if result == "signupToAppleLogin"

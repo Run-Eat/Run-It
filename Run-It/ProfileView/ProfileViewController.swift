@@ -233,6 +233,7 @@ class ProfileViewController: UIViewController
         setLayout()
         setupProfileUI()
         setupRecordStackView()
+        print(imageName)
     }
     
     override func viewDidLayoutSubviews() {
@@ -477,7 +478,9 @@ class ProfileViewController: UIViewController
             let data = try context.fetch(request)
             let user = data.first!
             
-            return user.loginType ?? ""
+            guard let loginType = user.loginType else { return ""}
+            
+            return loginType
         }
         catch
         {
@@ -857,17 +860,15 @@ class ProfileViewController: UIViewController
                 
                 let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "RunningRecord")
                 
-                do
+                let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+                
+                do 
                 {
-                    let datas = try context.fetch(fetchRequest)
-                    for data in datas
-                    {
-                        guard let removeData = data as? NSManagedObject else { continue }
-                        context.delete(removeData)
-                    }
-                    
-                    try context.save()
+                    // Batch Delete 실행
+                    try context.execute(batchDeleteRequest)
+                    try context.save() // 변경 사항 저장
                 }
+                
                 catch
                 {
                     print("error")
@@ -880,6 +881,31 @@ class ProfileViewController: UIViewController
                 self.lastWeek_MonthDistanceLabel.text = "\(String(format: "%.2f", 0))"
                 self.lastWeek_MonthPaceLabel.text = String(format: "%.2f", 0)
                 self.lastWeek_MonthRunningCountLabel.text = "0 회"
+                
+                // 총 뛴 거리
+                self.totalRunningDistance = 0
+
+                // 이번 주 데이터
+                self.thisWeekDistance = 0
+                self.thisWeekPace = 0
+                self.thisWeekRunningCount = 0
+
+                // 지난 주 데이터
+                self.lastWeekDistance = 0
+                self.lastWeekPace = 0
+                self.lastWeekRunningCount = 0
+
+                // 이번 달 데이터
+                self.thisMonthDistance = 0
+                self.thisMonthPace = 0
+                self.thisMonthRunningCount = 0
+
+                // 지난 달 데이터
+                self.lastMonthDistance = 0
+                self.lastMonthPace = 0
+                self.lastMonthRunningCount = 0
+                
+                self.tableView.reloadData()
             }
             alertController.addAction(cancel)
             alertController.addAction(confirm)
@@ -902,6 +928,7 @@ class ProfileViewController: UIViewController
                 
                 else if loginType == "Kakao"
                 {
+                    self.deleteAccount()
                     self.deleteKakaoAccount()
                     self.kakaoLogout()
                 }
@@ -909,6 +936,31 @@ class ProfileViewController: UIViewController
                 else
                 {
                     self.deleteAppleAccount()
+                }
+                
+                guard let context = self.persistentContainer?.viewContext else { return }
+                
+                let fetchRequestRunningRecord: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "RunningRecord")
+                let batchDeleteRequestRunningRecord = NSBatchDeleteRequest(fetchRequest: fetchRequestRunningRecord)
+                
+                let fetchRequestFavorite: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "Favorite")
+                let batchDeleteRequestFavorite = NSBatchDeleteRequest(fetchRequest: fetchRequestFavorite)
+                
+                let fetchRequestUser: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "User")
+                let batchDeleteRequestUser = NSBatchDeleteRequest(fetchRequest: fetchRequestUser)
+                
+                do
+                {
+                    // Batch Delete 실행
+                    try context.execute(batchDeleteRequestRunningRecord)
+                    try context.execute(batchDeleteRequestFavorite)
+                    try context.execute(batchDeleteRequestUser)
+                    try context.save() // 변경 사항 저장
+                }
+                
+                catch
+                {
+                    print("error")
                 }
             }
             

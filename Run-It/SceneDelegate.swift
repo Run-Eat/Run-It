@@ -7,6 +7,9 @@
 
 import UIKit
 import KakaoSDKAuth
+import AuthenticationServices
+import KeychainAccess
+import KakaoSDKUser
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
@@ -51,6 +54,61 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
         runningTimer.state = .foreground
         runningTimer.timerWillEnterForeground()
+        
+        // 카카오 자동 로그인
+        if AuthApi.hasToken()
+        {
+            UserApi.shared.accessTokenInfo
+            {   accessTokenInfo, error in
+                
+                if let error = error
+                {
+                    print("DEBUG: 카카오톡 토큰 가져오기 에러 \(error.localizedDescription)")
+                    
+                }
+                
+                else
+                {
+                    // 토큰 유효성 체크 성공 (필요 시 토큰 갱신됨)
+                }
+            }
+            self.window?.rootViewController = MainTabBarViewController()
+        }
+        
+        // 애플 자동 로그인
+        let keychain = Keychain(service: "com.team5.Run-It")
+        
+        do
+        {   // Keychain에 저장된 UserID 불러오기
+            guard let userID = try keychain.get("UserID") else { return }
+            
+            let appleIDProvider = ASAuthorizationAppleIDProvider()
+            appleIDProvider.getCredentialState(forUserID: userID) { (credentialState, error) in
+                switch credentialState
+                {
+                case .authorized:
+                    print("authorized")
+                    // The Apple ID credential is valid.
+                    DispatchQueue.main.async
+                    {
+                        //authorized된 상태이므로 바로 로그인 완료 화면으로 이동
+                        self.window?.rootViewController = MainTabBarViewController()
+                    }
+                case .revoked:
+                    print("revoked")
+                case .notFound:
+                    print("notFound")
+                    
+                default:
+                    break
+                }
+            }
+        }
+        
+        catch
+        {
+            print("Can't bring userID: \(error)")
+        }
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
