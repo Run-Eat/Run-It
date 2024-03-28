@@ -27,7 +27,7 @@ enum PresentView {
     case completed
 }
 
-class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRecognizerDelegate {
+class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRecognizerDelegate  {
     weak var parentVC: RunningTimerToMapViewPageController?
     
     var weatherViewModel = WeatherViewModel()
@@ -115,6 +115,15 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         let imageView = UIImageView()
         imageView.isUserInteractionEnabled = true
         return imageView
+    }()
+    
+    lazy var attributionURL: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Weather Attribution", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 11)
+        button.setTitleColor(.systemBlue, for: .normal)
+        button.addTarget(self, action: #selector(attributionTapped), for: .touchUpInside)
+        return button
     }()
     
     lazy var compassButton: MKCompassButton = {
@@ -273,9 +282,20 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         favoritesViewModel = FavoritesViewModel()
         RunningTimerLocationManager.shared.resetActivityTimer()
         mapView.setUserTrackingMode(.followWithHeading, animated: true)
+        let isDarkMode = (traitCollection.userInterfaceStyle == .dark)
+        weatherViewModel.loadWeatherAttribution(isDarkMode: isDarkMode)
         setupAttribution()
-        weatherViewModel.loadWeatherAttribution()
     }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            let isDarkMode = (traitCollection.userInterfaceStyle == .dark)
+            weatherViewModel.loadWeatherAttribution(isDarkMode: isDarkMode)
+        }
+    }
+
     
     //MARK: - @objc functions
     @objc private func TappedstartRunningButton() {
@@ -958,6 +978,7 @@ extension RunningMapViewController {
         view.addSubview(healthyEatingOptionsButton)
         view.addSubview(weatherContainer)
         view.addSubview(attributionImageView)
+        view.addSubview(attributionURL)
         weatherContainer.addSubview(temperatureLabel)
         weatherContainer.addSubview(humidityLabel)
         weatherContainer.addSubview(windspeedLabel)
@@ -1003,6 +1024,11 @@ extension RunningMapViewController {
             make.leading.equalToSuperview().offset(30)
             make.top.equalTo(weatherContainer.snp.bottom).offset(8)
         }
+        
+        attributionURL.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(30)
+            make.top.equalTo(attributionImageView.snp.bottom)
+        }
         startRunningButton.snp.makeConstraints {
             $0.width.height.equalTo(90)
             $0.centerX.equalToSuperview()
@@ -1012,7 +1038,7 @@ extension RunningMapViewController {
         backToRunningTimerViewButton.snp.makeConstraints {
             $0.width.height.equalTo(90)
             $0.leading.equalToSuperview().offset(10)
-            $0.bottom.equalToSuperview().offset(-120)
+            $0.bottom.equalToSuperview().offset(-130)
         }
         
         compassButton.snp.makeConstraints {
@@ -1097,13 +1123,9 @@ extension RunningMapViewController {
     
     func setupAttribution() {
         weatherViewModel.$weatherAttribution.receive(on: DispatchQueue.main).sink { [weak self] attributionImageURLString in
-            let url = URL(string: attributionImageURLString)
+            guard let url = URL(string: attributionImageURLString) else { return }
             self?.downloadAndSetAttributionImage(from: url)
         }.store(in: &cancellables)
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(attributionTapped))
-        attributionImageView.isUserInteractionEnabled = true
-        attributionImageView.addGestureRecognizer(tapGesture)
     }
 
     @objc func attributionTapped() {

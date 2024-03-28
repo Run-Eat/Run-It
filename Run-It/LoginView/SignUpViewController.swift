@@ -23,7 +23,7 @@ class SignUpViewController: UIViewController
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular, scale: .large)
         button.setImage(UIImage(systemName: "xmark", withConfiguration: config), for: .normal)
-        button.tintColor = .black
+        button.tintColor = UIColor.label
         button.addTarget(self, action: #selector(cancelSignUp), for: .touchUpInside)
         return button
     }()
@@ -33,7 +33,7 @@ class SignUpViewController: UIViewController
         let label = UILabel()
         label.text = "회원가입"
         label.font = UIFont.systemFont(ofSize: CGFloat(17))
-        label.textColor = UIColor.black
+        label.textColor = UIColor.label
         return label
     }()
     
@@ -43,7 +43,7 @@ class SignUpViewController: UIViewController
         label.text = "이메일과 비밀번호만으로 \nRUN IT에 가입할 수 있어요!"
         label.font = UIFont.systemFont(ofSize: CGFloat(21))
         label.numberOfLines = 2
-        label.textColor = UIColor.black
+        label.textColor = UIColor.label
         return label
     }()
     
@@ -61,7 +61,8 @@ class SignUpViewController: UIViewController
         textField.spellCheckingType = .no
         textField.layer.borderWidth = 0.7
         textField.layer.cornerRadius = 7
-        textField.backgroundColor = UIColor.white
+        textField.backgroundColor = UIColor.systemBackground
+        textField.textColor = UIColor.label
         return textField
     }()
     
@@ -70,7 +71,7 @@ class SignUpViewController: UIViewController
         let label = UILabel()
         label.text = "정확한 이메일을 입력해주세요"
         label.font = UIFont.systemFont(ofSize: CGFloat(12))
-        label.textColor = UIColor.black
+        label.textColor = UIColor.label
         return label
     }()
     
@@ -88,7 +89,8 @@ class SignUpViewController: UIViewController
         textField.spellCheckingType = .no
         textField.layer.borderWidth = 0.7
         textField.layer.cornerRadius = 7
-        textField.backgroundColor = UIColor.white
+        textField.backgroundColor = UIColor.systemBackground
+        textField.textColor = UIColor.label
         return textField
     }()
     
@@ -107,7 +109,7 @@ class SignUpViewController: UIViewController
         label.text = "비밀번호는 영문, 숫자, 특수문자를 포함해 8 - 20자 이내로 입력해주세요"
         label.font = UIFont.systemFont(ofSize: CGFloat(12))
         label.numberOfLines = 2
-        label.textColor = UIColor.black
+        label.textColor = UIColor.label
         return label
     }()
     
@@ -127,21 +129,21 @@ class SignUpViewController: UIViewController
         let label = UILabel()
         label.text = "또는 소셜 계정으로 가입"
         label.font = UIFont.systemFont(ofSize: CGFloat(14))
-        label.textColor = UIColor.black
+        label.textColor = UIColor.label
         return label
     }()
     
     let leftLine: UIView =
     {
         let lineView = UIView()
-        lineView.backgroundColor = UIColor.black
+        lineView.backgroundColor = UIColor.label
         return lineView
     }()
     
     let rightLine: UIView =
     {
         let lineView = UIView()
-        lineView.backgroundColor = UIColor.black
+        lineView.backgroundColor = UIColor.label
         return lineView
     }()
     
@@ -156,8 +158,30 @@ class SignUpViewController: UIViewController
     lazy var appleSignupButton: UIButton =
     {
         let button = UIButton()
-        button.setImage(UIImage(named: "AppleLogo"), for: .normal)
+        let logoImage = UIImage(systemName: "applelogo")
+        button.setImage(logoImage, for: .normal)
         button.addTarget(self, action: #selector(touchedAppleSignupButton), for: .touchUpInside)
+        let buttonSize: CGFloat = 40
+            button.frame = CGRect(x: 0, y: 0, width: buttonSize, height: buttonSize)
+        // cornerRadius를 버튼 높이의 절반으로 설정하여 원형으로 만듭니다.
+        button.layer.cornerRadius = buttonSize / 2
+        // 클립 투 바운즈를 true로 설정하여 레이어 바깥으로 내용이 표시되지 않도록 합니다.
+        button.clipsToBounds = true
+        if #available(iOS 13.0, *) {
+            // 초기 인터페이스 스타일에 따라 버튼의 색상을 설정합니다.
+            let userInterfaceStyle = traitCollection.userInterfaceStyle
+            if userInterfaceStyle == .dark {
+                button.backgroundColor = .white
+                button.tintColor = .black
+            } else {
+                button.backgroundColor = .black
+                button.tintColor = .white
+            }
+        } else {
+            // iOS 13 미만에서는 기본 테마를 사용합니다.
+            button.backgroundColor = .black
+            button.tintColor = .white
+        }
         return button
     }()
 
@@ -165,7 +189,7 @@ class SignUpViewController: UIViewController
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         
         addSubView()
         setLayout()
@@ -174,6 +198,36 @@ class SignUpViewController: UIViewController
         emailTextField.delegate = self
         passwordTextField.delegate = self
         passwordTextField.isSecureTextEntry = true
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateTextFieldBorderColor()
+    }
+    
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        // 이전 트레이트 컬렉션과 현재 트레이트 컬렉션을 비교하여
+        // 색상 모드(다크 모드, 라이트 모드)가 변경되었는지 확인합니다.
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            // 색상 모드가 변경되었다면 테두리 색상을 업데이트합니다.
+            updateTextFieldBorderColor()
+        }
+        
+        if #available(iOS 13.0, *) {
+            // 현재 트레이트 컬렉션을 가져와서 인터페이스 스타일을 확인합니다.
+            let userInterfaceStyle = traitCollection.userInterfaceStyle
+            // 다크 모드일 때
+            if userInterfaceStyle == .dark {
+                appleSignupButton.backgroundColor = .white
+                appleSignupButton.tintColor = .black
+            } else { // 라이트 모드 또는 미정의일 때
+                appleSignupButton.backgroundColor = .black
+                appleSignupButton.tintColor = .white
+            }
+        }
     }
 
 // MARK: - 레이아웃 지정
@@ -298,6 +352,18 @@ class SignUpViewController: UIViewController
         }
     }
     
+    func updateTextFieldBorderColor() {
+        emailTextField.layer.borderColor = (traitCollection.userInterfaceStyle == .dark)
+            ? UIColor.white.cgColor
+            : UIColor.black.cgColor
+        emailTextField.layer.borderWidth = 0.7
+        
+        passwordTextField.layer.borderColor = (traitCollection.userInterfaceStyle == .dark)
+            ? UIColor.white.cgColor
+            : UIColor.black.cgColor
+        passwordTextField.layer.borderWidth = 0.7
+    }
+    
 // MARK: - 버튼 함수
     @objc func cancelSignUp()
     {
@@ -338,7 +404,7 @@ class SignUpViewController: UIViewController
     
     @objc func touchedKakaoSignupButton()
     {
-        if AuthApi.hasToken() 
+        if AuthApi.hasToken()
         {
             UserApi.shared.accessTokenInfo
             {   accessTokenInfo, error in
@@ -353,9 +419,9 @@ class SignUpViewController: UIViewController
                     // 토큰 유효성 체크 성공 (필요 시 토큰 갱신됨)
                 }
             }
-        } 
+        }
         
-        else 
+        else
         {
             kakaoSignup()
             dismiss(animated: true)
@@ -410,22 +476,22 @@ extension SignUpViewController: UITextFieldDelegate
             {
                 emailTextField.layer.borderColor = UIColor.green.cgColor
                 emailExplainLabel.text = "이메일 주소가 올바릅니다."
-            } 
+            }
             else
             {
                 emailTextField.layer.borderColor = UIColor.red.cgColor
                 emailExplainLabel.text = "올바른 이메일을 입력했는지 확인하세요."
             }
-        } 
+        }
         
         else if textField == passwordTextField
         {
-            if isPasswordValid 
+            if isPasswordValid
             {
                 
                 passwordTextField.layer.borderColor = UIColor.green.cgColor
                 passwordExplainLabel.text = "비밀번호가 올바릅니다."
-            } 
+            }
             else
             {
                 passwordTextField.layer.borderColor = UIColor.red.cgColor

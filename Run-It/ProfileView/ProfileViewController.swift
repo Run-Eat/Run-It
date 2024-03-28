@@ -26,6 +26,17 @@ class ProfileViewController: UIViewController
     }
     private var stackView: UIStackView!
     // 총 뛴 거리
+    
+    lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "내 정보"
+        label.font = UIFont.systemFont(ofSize: 25, weight: .bold)
+        label.textColor = .label
+        label.textAlignment = .left
+        
+        return label
+    }()
+    
     var totalRunningDistance: Double = 0
 
     // 이번 주 데이터
@@ -97,7 +108,7 @@ class ProfileViewController: UIViewController
         return button
     }()
     
-    lazy var titleLabel = createLabel("내 정보", 35)
+//    lazy var titleLabel = createLabel("내 정보", 35)
     
     let profileImageView: UIImageView =
     {
@@ -215,6 +226,7 @@ class ProfileViewController: UIViewController
     {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        view.addSubview(titleLabel)
         view.addSubview(scrollView)
         scrollView.contentSize = CGSize(width: view.frame.width, height: 2000)
         addScrollView()
@@ -226,13 +238,15 @@ class ProfileViewController: UIViewController
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        let uiViewHeight = CGFloat(runningRecords.count) * 170.0 + 16.0
+        let uiViewHeight = CGFloat(runningRecords.count) * 150 + 16.0
         let contentHeight = 671.33 + 44 + 8 + uiViewHeight
         scrollView.contentSize = CGSize(width: view.frame.width, height: contentHeight)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // 네비게이션 바 숨기기
+        navigationController?.setNavigationBarHidden(true, animated: animated)
         loadRunningRecords()
         displayProfileImage()
         statisticsManager(true)
@@ -251,6 +265,8 @@ class ProfileViewController: UIViewController
     
     override func viewWillDisappear(_ animated: Bool) {
         statisticsManager(false)
+        // 네비게이션 바 다시 보이기
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
    
     // MARK: - addSubView
@@ -260,7 +276,7 @@ class ProfileViewController: UIViewController
 //        scrollView.addSubview(noticeButton)
         scrollView.addSubview(loginTypeIcon)
         scrollView.addSubview(logoutButton)
-        scrollView.addSubview(titleLabel)
+//        scrollView.addSubview(titleLabel)
         scrollView.addSubview(profileImageView)
         scrollView.addSubview(imageSettingButton)
         scrollView.addSubview(pointImage)
@@ -280,15 +296,9 @@ class ProfileViewController: UIViewController
     {
         scrollView.snp.makeConstraints
         {   make in
-            make.edges.equalToSuperview()
+            make.top.equalTo(titleLabel.snp.bottom)
+            make.left.right.bottom.equalToSuperview()
         }
-        
-//        noticeButton.snp.makeConstraints
-//        {   make in
-//            make.top.equalTo(scrollView.snp.top)equalTo(scrollView.snp.top).inset(0)
-//            make.trailing.equalTo(view.snp.trailing).inset(20)
-//            make.width.equalTo(90)
-//        }
         
         loginTypeIcon.snp.makeConstraints
         {   make in
@@ -307,13 +317,15 @@ class ProfileViewController: UIViewController
         
         titleLabel.snp.makeConstraints
         {   make in
-            make.top.equalTo(scrollView.snp.top).offset(20)
-            make.centerX.equalTo(view.snp.centerX)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(16)
+            make.leading.equalTo(view.safeAreaLayoutGuide).offset(20)
+//            make.top.equalTo(scrollView.snp.top).offset(20)
+//            make.centerX.equalTo(view.snp.centerX)
         }
         
         profileImageView.snp.makeConstraints
         {   make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(30)
+            make.top.equalToSuperview().offset(30)
             make.centerX.equalTo(view.snp.centerX)
             make.width.equalTo(150)
             make.height.equalTo(150)
@@ -321,7 +333,7 @@ class ProfileViewController: UIViewController
         
         imageSettingButton.snp.makeConstraints
         {   make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(145)
+            make.top.equalToSuperview().offset(145)
             make.trailing.equalTo(view.snp.trailing).inset(130)
             make.width.equalTo(35)
             make.height.equalTo(35)
@@ -343,7 +355,7 @@ class ProfileViewController: UIViewController
         
         statsLabel.snp.makeConstraints
         {   make in
-            make.top.equalTo(pointImage.snp.bottom).offset(20)
+            make.top.equalTo(pointImage.snp.bottom).offset(16)
             make.leading.equalTo(view.snp.leading).inset(20)
         }
         
@@ -413,18 +425,20 @@ class ProfileViewController: UIViewController
             make.top.equalTo(stackView.snp.bottom).offset(20)
             make.leading.equalToSuperview().offset(20)
         }
+        
         uiView.snp.makeConstraints { make in
             make.top.equalTo(userRecord.snp.bottom).offset(16)
             make.leading.equalTo(view.snp.leading)
             make.trailing.equalTo(view.snp.trailing)
-            make.height.equalTo(runningRecords.count * 170 + 16)
+            make.height.equalTo(runningRecords.count * 150 + 16)
         }
         
         tableView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(8)
             make.leading.equalToSuperview().offset(16)
             make.trailing.equalToSuperview().offset(-16)
-            self.tableViewHeightConstraint = make.height.equalTo(runningRecords.count * 170).constraint
+            make.bottom.equalToSuperview()
+            self.tableViewHeightConstraint = make.height.equalTo(runningRecords.count * 150).constraint
         }
         
         withdrawButton.snp.makeConstraints
@@ -1027,7 +1041,7 @@ extension ProfileViewController {
         tableView.layoutIfNeeded()
         tableViewHeightConstraint?.update(offset: runningRecords.count * 170)
         uiView.snp.updateConstraints { make in
-            make.height.equalTo(runningRecords.count * 170 + 16)
+            make.height.equalTo(runningRecords.count * 150 + 16)
         }
         view.layoutIfNeeded()
     }
@@ -1066,7 +1080,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 170
+        return 150
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -1113,7 +1127,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
 // MARK: - 애플 엑세스 토큰 발급 응답 모델
 extension ProfileViewController
 {
-    struct AppleTokenResponse: Codable 
+    struct AppleTokenResponse: Codable
     {
         var access_token: String?
         var token_type: String?
@@ -1199,7 +1213,7 @@ extension ProfileViewController
                                 {
                                     completionHandler(refreshToken)
                                 }
-                                else 
+                                else
                                 {
                                     let alert = UIAlertController(title: "Error", message: "토큰 생성 실패", preferredStyle: .alert)
                                     let okayAction = UIAlertAction(title: "확인", style: .default, handler: {_ in})
