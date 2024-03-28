@@ -40,7 +40,8 @@ class LoginViewController: UIViewController
         textField.spellCheckingType = .no
         textField.layer.borderWidth = 0.7
         textField.layer.cornerRadius = 7
-        textField.backgroundColor = UIColor.white
+        textField.backgroundColor = UIColor.systemBackground
+        textField.textColor = UIColor.label
         return textField
     }()
     
@@ -59,7 +60,8 @@ class LoginViewController: UIViewController
         textField.isSecureTextEntry = true
         textField.layer.borderWidth = 0.7
         textField.layer.cornerRadius = 7
-        textField.backgroundColor = UIColor.white
+        textField.backgroundColor = UIColor.systemBackground
+        textField.textColor = UIColor.label
         return textField
     }()
     
@@ -98,7 +100,7 @@ class LoginViewController: UIViewController
     {
         let button = UIButton()
         button.setTitle("비밀번호 재설정", for: .normal)
-        button.setTitleColor(.black, for: .normal)
+        button.setTitleColor(.label, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         button.addTarget(self, action: #selector(touchedResetPasswordButton), for: .touchUpInside)
         return button
@@ -108,7 +110,7 @@ class LoginViewController: UIViewController
     {
         let button = UIButton()
         button.setTitle("회원가입", for: .normal)
-        button.setTitleColor(.black, for: .normal)
+        button.setTitleColor(.label, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         button.addTarget(self, action: #selector(touchedSignUpButton), for: .touchUpInside)
         return button
@@ -117,14 +119,14 @@ class LoginViewController: UIViewController
     let leftLine_verticality: UIView =
     {
         let lineView = UIView()
-        lineView.backgroundColor = UIColor.black
+        lineView.backgroundColor = UIColor.label
         return lineView
     }()
     
     let rightLine_verticality: UIView =
     {
         let lineView = UIView()
-        lineView.backgroundColor = UIColor.black
+        lineView.backgroundColor = UIColor.label
         return lineView
     }()
     
@@ -133,21 +135,21 @@ class LoginViewController: UIViewController
         let label = UILabel()
         label.text = "또는 소셜 계정으로 로그인"
         label.font = UIFont.systemFont(ofSize: CGFloat(14))
-        label.textColor = UIColor.black
+        label.textColor = UIColor.label
         return label
     }()
     
     let leftLine: UIView =
     {
         let lineView = UIView()
-        lineView.backgroundColor = UIColor.black
+        lineView.backgroundColor = UIColor.label
         return lineView
     }()
     
     let rightLine: UIView =
     {
         let lineView = UIView()
-        lineView.backgroundColor = UIColor.black
+        lineView.backgroundColor = UIColor.label
         return lineView
     }()
     
@@ -162,8 +164,30 @@ class LoginViewController: UIViewController
     lazy var appleLoginButton: UIButton =
     {
         let button = UIButton()
-        button.setImage(UIImage(named: "AppleLogo"), for: .normal)
+        let logoImage = UIImage(systemName: "applelogo")
+        button.setImage(logoImage, for: .normal)
         button.addTarget(self, action: #selector(touchedAppleLoginButton), for: .touchUpInside)
+        let buttonSize: CGFloat = 40
+            button.frame = CGRect(x: 0, y: 0, width: buttonSize, height: buttonSize)
+        // cornerRadius를 버튼 높이의 절반으로 설정하여 원형으로 만듭니다.
+        button.layer.cornerRadius = buttonSize / 2
+        // 클립 투 바운즈를 true로 설정하여 레이어 바깥으로 내용이 표시되지 않도록 합니다.
+        button.clipsToBounds = true
+        if #available(iOS 13.0, *) {
+            // 초기 인터페이스 스타일에 따라 버튼의 색상을 설정합니다.
+            let userInterfaceStyle = traitCollection.userInterfaceStyle
+            if userInterfaceStyle == .dark {
+                button.backgroundColor = .white
+                button.tintColor = .black
+            } else {
+                button.backgroundColor = .black
+                button.tintColor = .white
+            }
+        } else {
+            // iOS 13 미만에서는 기본 테마를 사용합니다.
+            button.backgroundColor = .black
+            button.tintColor = .white
+        }
         return button
     }()
     
@@ -171,13 +195,43 @@ class LoginViewController: UIViewController
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         
         addSubView()
         setLayout()
         registerObserver()
         addInputAccessoryForTextFields()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateTextFieldBorderColor()
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        // 이전 트레이트 컬렉션과 현재 트레이트 컬렉션을 비교하여
+        // 색상 모드(다크 모드, 라이트 모드)가 변경되었는지 확인합니다.
+        if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            // 색상 모드가 변경되었다면 테두리 색상을 업데이트합니다.
+            updateTextFieldBorderColor()
+        }
+        
+        if #available(iOS 13.0, *) {
+            // 현재 트레이트 컬렉션을 가져와서 인터페이스 스타일을 확인합니다.
+            let userInterfaceStyle = traitCollection.userInterfaceStyle
+            // 다크 모드일 때
+            if userInterfaceStyle == .dark {
+                appleLoginButton.backgroundColor = .white
+                appleLoginButton.tintColor = .black
+            } else { // 라이트 모드 또는 미정의일 때
+                appleLoginButton.backgroundColor = .black
+                appleLoginButton.tintColor = .white
+            }
+        }
+    }
+
 
 // MARK: - 레이아웃 설정
     func addSubView()
@@ -316,6 +370,18 @@ class LoginViewController: UIViewController
             make.height.equalTo(40)
         }
         
+    }
+    
+    func updateTextFieldBorderColor() {
+        emailTextField.layer.borderColor = (traitCollection.userInterfaceStyle == .dark)
+            ? UIColor.white.cgColor
+            : UIColor.black.cgColor
+        emailTextField.layer.borderWidth = 0.7
+        
+        passwordTextField.layer.borderColor = (traitCollection.userInterfaceStyle == .dark)
+            ? UIColor.white.cgColor
+            : UIColor.black.cgColor
+        passwordTextField.layer.borderWidth = 0.7
     }
     
 // MARK: - CoreData 데이터 확인 후 수정

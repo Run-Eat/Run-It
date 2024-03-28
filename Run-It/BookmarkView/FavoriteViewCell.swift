@@ -72,7 +72,7 @@ class FavoriteViewCell: UITableViewCell {
     private func setupLayout() {
         
         nameLabel.snp.makeConstraints { make in
-            make.top.equalTo(contentView.snp.top).offset(15)
+            make.top.equalTo(contentView.snp.top).offset(16)
             make.leading.equalTo(contentView.snp.leading).offset(16)
             make.trailing.equalTo(storeImage.snp.leading).offset(-16)
             make.height.equalTo(18)
@@ -81,19 +81,20 @@ class FavoriteViewCell: UITableViewCell {
         categoryLabel.snp.makeConstraints { make in
             make.top.equalTo(nameLabel.snp.bottom).offset(4)
             make.leading.equalTo(contentView.snp.leading).offset(16)
-            make.height.equalTo(18)
+            make.height.equalTo(15)
         }
         
         adressLabel.snp.makeConstraints { make in
             make.top.equalTo(categoryLabel.snp.bottom).offset(4)
             make.leading.equalTo(contentView.snp.leading).offset(16)
             make.trailing.equalTo(storeImage.snp.leading).offset(-16)
-            make.height.equalTo(60)
+            make.height.equalTo(50)
         }
         
         storeImage.snp.makeConstraints { make in
             make.top.equalTo(contentView.snp.top).offset(16)
             make.trailing.equalTo(contentView.snp.trailing).offset(-16)
+            make.bottom.equalTo(contentView.snp.top).offset(-16)
             make.width.height.equalTo(90)
         }
 

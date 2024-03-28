@@ -75,6 +75,9 @@ extension WeatherViewModel {
     func loadWeatherAttribution() {
         guard let url = URL(string: "https://weatherkit.apple.com/attribution/en-US") else { return }
 
+        // 메인 스레드에서 현재 인터페이스 스타일을 확인합니다.
+        let isDarkMode = (UITraitCollection.current.userInterfaceStyle == .dark)
+        
         let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
 
             guard let data = data, error == nil else { return }
@@ -82,7 +85,8 @@ extension WeatherViewModel {
             do {
                 let attributionData = try JSONDecoder().decode(AttributionData.self, from: data)
                 let baseURLString = "https://weatherkit.apple.com"
-                let imageURLString = baseURLString + attributionData.logoLight1x
+                // 인터페이스 스타일에 따라 이미지 URL을 선택합니다.
+                let imageURLString = isDarkMode ? baseURLString + attributionData.logoDark1x : baseURLString + attributionData.logoLight1x
                 
                 DispatchQueue.main.async {
                     self?.weatherAttribution = imageURLString
