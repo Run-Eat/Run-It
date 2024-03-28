@@ -27,7 +27,7 @@ enum PresentView {
     case completed
 }
 
-class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRecognizerDelegate {
+class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRecognizerDelegate  {
     weak var parentVC: RunningTimerToMapViewPageController?
     
     var weatherViewModel = WeatherViewModel()
@@ -118,10 +118,10 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
     }()
     
     lazy var attributionURL: UIButton = {
-        let button = UIButton(type: .system) // 시스템 타입의 버튼을 생성합니다.
-        button.setTitle("Weather Attribution", for: .normal) // 버튼의 타이틀을 설정합니다.
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 11) // 타이틀의 폰트 크기를 설정합니다.
-        button.setTitleColor(.systemBlue, for: .normal) // 타이틀의 색상을 시스템 블루로 설정합니다.
+        let button = UIButton(type: .system)
+        button.setTitle("Weather Attribution", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 11)
+        button.setTitleColor(.systemBlue, for: .normal)
         button.addTarget(self, action: #selector(attributionTapped), for: .touchUpInside)
         return button
     }()
@@ -282,9 +282,20 @@ class RunningMapViewController: UIViewController, MKMapViewDelegate, UIGestureRe
         favoritesViewModel = FavoritesViewModel()
         RunningTimerLocationManager.shared.resetActivityTimer()
         mapView.setUserTrackingMode(.followWithHeading, animated: true)
+        let isDarkMode = (traitCollection.userInterfaceStyle == .dark)
+        weatherViewModel.loadWeatherAttribution(isDarkMode: isDarkMode)
         setupAttribution()
-        weatherViewModel.loadWeatherAttribution()
     }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            let isDarkMode = (traitCollection.userInterfaceStyle == .dark)
+            weatherViewModel.loadWeatherAttribution(isDarkMode: isDarkMode)
+        }
+    }
+
     
     //MARK: - @objc functions
     @objc private func TappedstartRunningButton() {
@@ -1027,7 +1038,7 @@ extension RunningMapViewController {
         backToRunningTimerViewButton.snp.makeConstraints {
             $0.width.height.equalTo(90)
             $0.leading.equalToSuperview().offset(10)
-            $0.bottom.equalToSuperview().offset(-120)
+            $0.bottom.equalToSuperview().offset(-130)
         }
         
         compassButton.snp.makeConstraints {
@@ -1112,7 +1123,7 @@ extension RunningMapViewController {
     
     func setupAttribution() {
         weatherViewModel.$weatherAttribution.receive(on: DispatchQueue.main).sink { [weak self] attributionImageURLString in
-            let url = URL(string: attributionImageURLString)
+            guard let url = URL(string: attributionImageURLString) else { return }
             self?.downloadAndSetAttributionImage(from: url)
         }.store(in: &cancellables)
     }

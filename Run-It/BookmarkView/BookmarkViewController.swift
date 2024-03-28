@@ -14,6 +14,22 @@ class BookmarkViewController: UIViewController, UITableViewDataSource, UITableVi
     var favoritesViewModel = FavoritesViewModel()
     var favoriteRecords: [Favorite] = []
     
+    lazy var favoriteLabel: UILabel = {
+        let label = UILabel()
+        label.text = "즐겨찾기"
+        label.font = UIFont.systemFont(ofSize: 25, weight: .bold)
+        label.textColor = .label
+        label.textAlignment = .left
+        
+        return label
+    }()
+    
+    lazy var imageBar: UIImageView = {
+        let imageView = UIImageView()
+        imageView.backgroundColor = UIColor.systemGray6
+        return imageView
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -33,6 +49,8 @@ class BookmarkViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func setupFavoriteListUI() {
+        view.addSubview(favoriteLabel)
+        view.addSubview(imageBar)
         view.addSubview(tableView)
         tableView.delegate = self
         tableView.dataSource = self
@@ -41,32 +59,42 @@ class BookmarkViewController: UIViewController, UITableViewDataSource, UITableVi
         tableView.backgroundColor = UIColor.systemBackground
         tableView.isScrollEnabled = true
         
+        favoriteLabel.snp.makeConstraints{ make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(16)
+            make.leading.equalTo(view.safeAreaLayoutGuide).offset(20)
+        }
+        imageBar.snp.makeConstraints { make in
+            make.top.equalTo(favoriteLabel.snp.bottom).offset(8)
+            make.left.right.equalTo(view.safeAreaLayoutGuide)
+            make.height.equalTo(8)
+        }
         tableView.snp.makeConstraints { make in
-            make.top.left.right.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.top.equalTo(imageBar.snp.bottom)
+            make.left.right.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }
     
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 40
-    }
-
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerView = UIView()
-        headerView.backgroundColor = UIColor.systemBlue
-
-        let label = UILabel()
-        label.text = "즐겨찾기"
-        label.font = UIFont.systemFont(ofSize: 25)
-        label.textColor = UIColor.label
-        label.textAlignment = .left
-        headerView.addSubview(label)
-
-        label.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 20))
-        }
-
-        return headerView
-    }
+//    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+//        return 40
+//    }
+//
+//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+//        let headerView = UIView()
+//        headerView.backgroundColor = UIColor.systemBackground
+//
+//        let label = UILabel()
+//        label.text = "즐겨찾기"
+//        label.font = UIFont.systemFont(ofSize: 25)
+//        label.textColor = UIColor.label
+//        label.textAlignment = .left
+//        headerView.addSubview(label)
+//
+//        label.snp.makeConstraints { make in
+//            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 20))
+//        }
+//
+//        return headerView
+//    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         favoriteRecords.count
@@ -100,7 +128,7 @@ class BookmarkViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 130
+        return 122
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
