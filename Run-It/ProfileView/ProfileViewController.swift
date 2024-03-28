@@ -233,6 +233,7 @@ class ProfileViewController: UIViewController
         setLayout()
         setupProfileUI()
         setupRecordStackView()
+        print(imageName)
     }
     
     override func viewDidLayoutSubviews() {
@@ -477,7 +478,9 @@ class ProfileViewController: UIViewController
             let data = try context.fetch(request)
             let user = data.first!
             
-            return user.loginType ?? ""
+            guard let loginType = user.loginType else { return ""}
+            
+            return loginType
         }
         catch
         {
