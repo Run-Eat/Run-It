@@ -925,6 +925,7 @@ class ProfileViewController: UIViewController
                 
                 else if loginType == "Kakao"
                 {
+                    self.deleteAccount()
                     self.deleteKakaoAccount()
                     self.kakaoLogout()
                 }

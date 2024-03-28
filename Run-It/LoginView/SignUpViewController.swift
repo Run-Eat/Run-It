@@ -394,7 +394,7 @@ class SignUpViewController: UIViewController
     {
         guard let email = emailTextField.text else { return }
         guard let password = passwordTextField.text else { return }
-        createUser(email: email, password: password)
+        emailSignUp(email: email, password: password)
 
         let alertController = UIAlertController(title: "알림", message: "회원가입이 완료되었습니다", preferredStyle: .alert)
         let confirm = UIAlertAction(title: "확인", style: .default) { _ in self.dismiss(animated: true) }
@@ -408,10 +408,11 @@ class SignUpViewController: UIViewController
         {
             UserApi.shared.accessTokenInfo
             {   accessTokenInfo, error in
+                
                 if let error = error
                 {
                     print("DEBUG: 카카오톡 토큰 가져오기 에러 \(error.localizedDescription)")
-                    kakaoSignup()
+                    
                 }
                 
                 else
@@ -423,6 +424,26 @@ class SignUpViewController: UIViewController
         
         else
         {
+            UserApi.shared.me
+            {   user, error in
+                
+                guard let useremail = user?.kakaoAccount?.email else { return }
+                if user == nil
+                {
+                    print("이메일 가져오기 실패")
+                    if let error = error
+                    {
+                        print(error)
+                    }
+                }
+                
+                else if user != nil
+                {
+                    print("이메일 가져오기 성공")
+                    checkData(loginType: "Kakao", email: useremail)
+                }
+                
+            }
             kakaoSignup()
             dismiss(animated: true)
         }

@@ -57,7 +57,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let keychain = Keychain(service: "com.team5.Run-It")
         
         do
-        {
+        {   // Keychain에 저장된 UserID 불러오기
             guard let userID = try keychain.get("UserID") else { return }
             
             let appleIDProvider = ASAuthorizationAppleIDProvider()
@@ -75,7 +75,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 case .revoked:
                     print("revoked")
                 case .notFound:
-                    // The Apple ID credential is either revoked or was not found, so show the sign-in UI.
                     print("notFound")
                     
                 default:

@@ -60,7 +60,7 @@ func isValidPassword(_ password: String) -> (isVaild: Bool, message: String)    
 }
 
 // MARK: - Firebase 유저 생성
-func createUser(email: String, password: String)
+func emailSignUp(email: String, password: String)
     {
         Auth.auth().createUser(withEmail: email, password: password)
         {   result,error in
@@ -152,11 +152,14 @@ func createUserByKakao()
             {   result, error in
                 if error != nil
                 {
-                    print("사용자 생성 실패")
+                    print("사용자 생성 실패 - \(String(describing: error))")
+                    checkData(loginType: "Kakao", email: email)
+                    sendTask(task: "Account Exists - Login")
                 }
                 if result != nil
                 {
                     print("사용자 생성 성공")
+                    checkData(loginType: "Kakao", email: email)
                     sendTask(task: "KakaoSignupSucces")
                 }
                 
