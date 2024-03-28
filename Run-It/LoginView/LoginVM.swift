@@ -253,6 +253,7 @@ class LoginVM: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationContr
             let fullName = appleIDCredential.fullName
             let email = appleIDCredential.email
             
+            
             if let authorizationCode = appleIDCredential.authorizationCode,
                let identityToken = appleIDCredential.identityToken,
                let authCodeString = String(data: authorizationCode, encoding: .utf8),
@@ -263,6 +264,7 @@ class LoginVM: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationContr
                 do
                 {
                     try keychain.set(authorizationCode, key: "authorizationCode")
+                    try keychain.set(userIdentifier, key: "UserID")
                 }
                 catch
                 {

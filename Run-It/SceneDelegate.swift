@@ -7,6 +7,8 @@
 
 import UIKit
 import KakaoSDKAuth
+import AuthenticationServices
+import KeychainAccess
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
@@ -51,6 +53,41 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
         runningTimer.state = .foreground
         runningTimer.timerWillEnterForeground()
+        
+        let keychain = Keychain(service: "com.team5.Run-It")
+        
+        do
+        {
+            guard let userID = try keychain.get("UserID") else { return }
+            
+            let appleIDProvider = ASAuthorizationAppleIDProvider()
+            appleIDProvider.getCredentialState(forUserID: userID) { (credentialState, error) in
+                switch credentialState
+                {
+                case .authorized:
+                    print("authorized")
+                    // The Apple ID credential is valid.
+                    DispatchQueue.main.async
+                    {
+                        //authorized된 상태이므로 바로 로그인 완료 화면으로 이동
+                        self.window?.rootViewController = MainTabBarViewController()
+                    }
+                case .revoked:
+                    print("revoked")
+                case .notFound:
+                    // The Apple ID credential is either revoked or was not found, so show the sign-in UI.
+                    print("notFound")
+                    
+                default:
+                    break
+                }
+            }
+        }
+        
+        catch
+        {
+            print("Can't bring userID: \(error)")
+        }
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
